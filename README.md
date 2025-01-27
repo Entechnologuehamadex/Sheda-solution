@@ -16,7 +16,7 @@ To view the landing page locally:
 
 * **Responsive Design:**  Adapts seamlessly to different screen sizes for optimal viewing on desktops, tablets, and mobile devices.
 * **Modern UI:**  Clean and professional design, incorporating current web design trends.
-* **Interactive Elements:**  JavaScript is used to enhance interactivity, such as smooth scrolling and potentially form submissions (if applicable).
+* **Interactive Elements:**  JavaScript is used to enhance interactivity, such as smooth scrolling and potentially form submissions
 * **Clear Call to Action:**  Prominent calls to action guide users towards downloading the SHEDA app or exploring further information.
 
 
@@ -24,7 +24,7 @@ To view the landing page locally:
 
 * `index.html`: The main HTML file for the landing page.
 * `css/conmmonstyle.css`: The primary stylesheet for the landing page.
-* `js/main.js`:  JavaScript file for interactive elements (if applicable).
+* `js/main.js`:  JavaScript file for interactive elements.
 * `imgage/`:  Folder containing images used on the landing page.
 
 
@@ -32,11 +32,11 @@ To view the landing page locally:
 
 The landing page is designed to effectively communicate SHEDA's value proposition.  It highlights key features such as:
 
-* **Property Search:**  (Describe how SHEDA makes property searching easy)
-* **Direct Communication:**  (Explain how SHEDA facilitates communication between buyers and sellers)
-* **Secure Transactions:**  (Emphasize the security and reliability of transactions on the platform)
-* **Advanced Filtering:** (Describe any advanced filtering options available in the app)
-* **Personalized Recommendations:** (If applicable, mention personalized property recommendations)
+* **Property Search:**  
+* **Direct Communication:** 
+* **Secure Transactions:** 
+* **Advanced Filtering:** 
+* **Personalized Recommendations:**
 
 
 

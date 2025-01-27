@@ -25,7 +25,7 @@ To view the landing page locally:
 * `index.html`: The main HTML file for the landing page.
 * `css/conmmonstyle.css`: The primary stylesheet for the landing page.
 * `js/main.js`:  JavaScript file for interactive elements.
-* `imgage/`:  Folder containing images used on the landing page.
+* `image/`:  Folder containing images used on the landing page.
 
 
 ## Design and Functionality
@@ -44,10 +44,10 @@ The landing page is designed to effectively communicate SHEDA's value propositio
 
 * **HTML5:**  Provides the structural foundation of the landing page.
 * **CSS3:**  Styles the landing page, ensuring a visually appealing and consistent design.
-* **JavaScript:** Adds interactivity and dynamic behavior (if applicable).
+* **JavaScript:** Adds interactivity and dynamic behavior.
 
 
-## Future Enhancements (Optional)
+## Future Enhancements 
 * **Allowing user to reach out to customercase email:**
 
 

@@ -48,7 +48,7 @@ The landing page is designed to effectively communicate SHEDA's value propositio
 
 
 ## Future Enhancements 
-* **Allowing user to reach out to customercase email:**
+* **Allow user to reach out to customercare through the contact-us page**
 
 
 ## License 

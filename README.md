@@ -1,55 +1,55 @@
-# SHEDA Landing Page
+# SHEDA Solution: Web3 Real Estate Platform
 
-This repository contains the source code for the SHEDA landing page, a modern and responsive website built with HTML, CSS, and JavaScript.  SHEDA is a cutting-edge real estate application that simplifies the process of buying, selling, and renting properties.
+**A decentralized real estate platform leveraging blockchain smart contracts, AI agents, and chain signatures to create a fully peer-to-peer (P2P) and diverse marketplace.**
+
+SHEDA Solution revolutionizes real estate transactions by implementing a fully decentralized, peer-to-peer marketplace powered by blockchain technology.  By leveraging smart contracts, AI agents, and chain signatures, SHEDA Solution ensures secure, transparent, and efficient property transactions.
 
 
 ## Getting Started
 
-To view the landing page locally:
+This repository contains both the landing page and the main application for SHEDA Solution.
 
-1. **Clone the Repository:** `git clone https://github.com/yuslove1/sheda-landing-page.git`
-2. **Open `index.html`:**  Simply open the `index.html` file in your web browser.
+**Landing Page:**
 
+* **Navigate:** `cd landing-page`
+* **Install:** `npm install` (or `yarn install`)
+* **Run:** `npm run dev` (or `yarn dev`)  (This will likely run on a local development server like `localhost:3000`)
+
+**Application:**
+
+* **Navigate:** `cd application`
+* **Install:** `npm install` (or `yarn install`)
+* **Run:** `npm run dev` (or `yarn dev`) (This will likely run on a different port, e.g., `localhost:3001`)
 
 
 ## Features
 
-* **Responsive Design:**  Adapts seamlessly to different screen sizes for optimal viewing on desktops, tablets, and mobile devices.
-* **Modern UI:**  Clean and professional design, incorporating current web design trends.
-* **Interactive Elements:**  JavaScript is used to enhance interactivity, such as smooth scrolling and potentially form submissions
-* **Clear Call to Action:**  Prominent calls to action guide users towards downloading the SHEDA app or exploring further information.
+* **Peer-to-Peer Transactions:** Directly connect buyers and sellers, eliminating intermediaries.
+* **Smart Contracts:**  Automates and secures agreements, ensuring trust and transparency.
+* **AI Agents:**  Provides intelligent assistance for property valuation, search, and negotiation.
+* **Chain Signatures:**  Guarantees the authenticity and integrity of transactions.
+* **Decentralized Governance:** Empowers users with control over the platform's future.
+* **Diverse Marketplace:**  Caters to a wide range of property types and investment opportunities.
+
+
+## Tech Stack
+
+* **Frontend:**  
+* **Backend:** 
+* **Smart Contracts:** 
+* **Database:**  
+* **AI/ML:** 
 
 
 ## Project Structure
 
-* `index.html`: The main HTML file for the landing page.
-* `css/conmmonstyle.css`: The primary stylesheet for the landing page.
-* `js/main.js`:  JavaScript file for interactive elements.
-* `image/`:  Folder containing images used on the landing page.
-
-
-## Design and Functionality
-
-The landing page is designed to effectively communicate SHEDA's value proposition.  It highlights key features such as:
-
-* **Property Search:**  
-* **Direct Communication:** 
-* **Secure Transactions:** 
-* **Advanced Filtering:** 
-* **Personalized Recommendations:**
-
-
-
-## Technologies Used
-
-* **HTML5:**  Provides the structural foundation of the landing page.
-* **CSS3:**  Styles the landing page, ensuring a visually appealing and consistent design.
-* **JavaScript:** Adds interactivity and dynamic behavior.
-
-
-## Future Enhancements 
-* **Allow user to reach out to customercare through the contact-us page**
-
-
-## License 
-Mit license
+sheda-solution/
+├── landing-page/ // Source code for the landing page
+│ ├── ...
+├── application/ // Source code for the main application
+│ ├── ...
+├── contracts/ // Smart contract code
+│ ├── ...
+├── scripts/ // Deployment and utility scripts
+│ ├── ...
+└── README.md // This file

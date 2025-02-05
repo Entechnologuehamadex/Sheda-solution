@@ -1,0 +1,114 @@
+main .how-it-works {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-image: url(/images/about-Hero-grid.png);
+    background-position: center;
+    background-size: cover;
+    text-align: center;
+}
+.hero-content{
+    max-width: 525px;
+    height: 325px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.hero-content p {
+    margin-top: 20px;
+    font-family: Inter;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 70px;
+}
+
+#headbadge {
+    width: 118px;
+    font-family: Manrope;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    color: #C1272D;
+    padding: 4px 20px 4px 20px;
+    border-radius: 8px;
+    background: #C1272D0A;
+}
+
+/*
+
+  .text-container h2{
+font-family: Inter;
+font-size: 30px;
+font-weight: 600;
+line-height: 38px;
+text-align: left;
+margin-bottom: 16px;
+  }
+
+  .text-container p{
+    font-family: Inter;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
+    margin-bottom: 15px;
+    color:#000000A6;
+}
+*/
+
+
+.about .containerA:first-of-type{
+    margin-bottom: 0;
+}
+
+.feature .card-container{
+    max-width: 1280px;
+    margin: 96px auto;
+    display: flex;
+    gap: 32px;
+    padding: 0 32px;
+
+}
+
+.card-container .card{
+    background-color:#F9FAFB;
+    max-width: 385px;
+    width: calc(90%/3);
+    padding: 24px;
+    
+}
+
+.card h3{
+    margin: 64px 0 8px;
+    font-family: Inter;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    text-align: left;
+
+}
+.card p{
+    font-family: Inter;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
+    color: #000000A6;
+
+}
+
+@media (max-width: 600px) {
+    .card-container{
+        flex-direction: column;
+    }
+    .card-container .card{
+        width: inherit;
+        
+    }
+}

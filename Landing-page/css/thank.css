@@ -1,0 +1,16 @@
+main{
+    height: 100vh;
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thankcard{
+    text-align: center;
+    /* margin: auto; */
+    display:;
+    width: fit-content;
+}
+

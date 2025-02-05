@@ -1,0 +1,573 @@
+/* Reset CSS */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/font/Inter/Inter-VariableFont_slnt\,wght.ttf");
+}
+@font-face {
+  font-family: "Manrope";
+  src: url("/font/Manrope/Manrope-VariableFont_wght.ttf");
+}
+
+/* Nav */
+  header {
+    position: sticky;
+    top: 5px;
+    background-color: #fff;
+    z-index: 10; 
+  }
+
+nav .navWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Manrope", sans-serif;
+  height: 57px;
+  max-width: 1240px;
+  margin: 10px auto;
+  padding: 0 10px;
+}
+
+
+
+/* nav menu toggle button */
+.menuLogo #menu-toggle {
+  /* background-color: #ffffff; */
+  border: none;
+  display: none;
+}
+
+
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo span {
+  margin-left: 10px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #000;
+}
+
+nav .menu li a.active{
+  color: #c1272d;
+  font-weight: 700;
+}
+
+nav .btn {
+  font-family: Manrope;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24.59px;
+  color: #ffffff;
+  background-color: #c1272d;
+  padding: 16px 28px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+
+nav .menu {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* height: 1.75rem; */
+  width: 257px;
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+
+.containerA {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 64px auto;
+  padding: 20px;
+  max-width: 1280px;
+}
+
+.text-container {
+  width: 50%;
+  max-width: 610px;
+  padding: 20px;
+  align-self: center;
+}
+
+.image-container {
+  width: 50%;
+  max-width: 505px;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+}
+
+#headbadge {
+  width: 118px;
+  /*height: 30px; */
+  font-family: Manrope;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  color: #c1272d;
+  padding: 4px 20px 4px 20px;
+  border-radius: 8px;
+  background: #c1272d0a;
+}
+
+h2 {
+  font-family: Inter;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 44px;
+  letter-spacing: -0.02em;
+  margin: 12px 0;
+}
+
+p {
+  font-family: Inter;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: #000000a6;
+}
+
+/* **************Faq section************** */
+
+/* FAQs section */
+
+.faq {
+  margin: 0 auto;
+  padding: 96px 0;
+}
+
+.faq #headbadge {
+  margin: 0 auto;
+}
+
+.faq .first-part {
+  text-align: center;
+}
+
+.questions {
+  max-width: 768px;
+  margin: 64px auto 0;
+  padding: 0 20px;
+}
+
+.questions .question p {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.questions .question {
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #000000a6;
+}
+
+.question .toggle-answer {
+  align-self: baseline;
+}
+
+.questions .question .answer {
+  display: none;
+}
+
+.questions .question .answer.show {
+  display: block;
+}
+
+.questions .question p:nth-last-child(1) {
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 200;
+  line-height: 24px;
+}
+
+.questions .question:nth-of-type(1) {
+  border-top: none;
+}
+
+/* **************cta section************** */
+
+.cta {
+  background-color: #c1272d;
+  text-align: center;
+  padding: 96px 0;
+  color: white;
+}
+
+.cta-content {
+  margin-bottom: 30px;
+}
+
+.cta-content h2 {
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+.cta-content p {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  text-align: center;
+  color: white;
+  margin: 0 0 40px;
+}
+.cta #brochure {
+  display: flex;
+   justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  padding: 16px;
+  gap: 20px;
+  border-radius: 8px;
+  border: 1px solid white;
+  opacity: 0px;
+  max-width: 229px;
+  margin: 0 auto;
+}
+
+/* **************footer************** */
+
+footer .about-links {
+  margin: 48px auto 64px;
+  max-width: 1244px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.logo-info {
+  max-width: 604px;
+  flex: 1;
+}
+
+.info {
+  max-width: 350px;
+  margin-top: 32px;
+}
+
+.logo-info p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+}
+
+.about-links .links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  flex: 1;
+}
+
+.links ul li:first-of-type {
+  color: #c1272d;
+  margin-bottom: 16px;
+}
+
+.links ul li {
+  margin: 12px;
+}
+.links ul {
+  max-width: 170px;
+  /* padding: ; */
+}
+
+footer .foot-text {
+  border-top: 2px solid #ffffff26;
+  padding: 32px 10px 0;
+  margin: 0 auto 48px;
+  max-width: 1244px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  color: #000000a6;
+}
+
+.foot-text .social {
+  max-width: 168px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  nav .navWrapper {
+    flex-wrap: wrap;
+    padding: 0;
+    height: fit-content;
+  }
+
+  .menuLogo {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+  .menuLogo #menu-toggle {
+    display: block;
+    width: 28px;
+    height: 25px;
+    gap: 8px;
+    opacity: 0px;
+  }
+
+  nav .logo {
+    height: 40px;
+    padding: 10px 0;
+    margin-right: auto;
+  }
+
+
+  nav .menu {
+    display: none;
+    font-weight: 800;
+    width: 100%;
+  }
+  nav .menu li{
+    padding: 8px 0;
+  }
+  nav .btn {
+    margin: 0 auto;
+    width: 80%;
+    display: none;
+  }
+
+  nav .menu.active {
+    display: block;
+    text-align: center;
+  }
+
+  nav .btn.active {
+    display: block;
+  }
+
+
+  h2 {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 38px;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+  }
+
+  .containerA {
+    flex-direction: column;
+  }
+
+  .text-container,
+  .image-container {
+    width: 100%;
+  }
+
+  .image-container {
+    margin-top: 20px;
+  }
+
+  /* ******Footer*********** */
+  .about-links {
+    flex-direction: column;
+  }
+
+  .about-links .links {
+    display: grid;
+    grid-template-columns: 170px 170px;
+    gap: 32px;
+  }
+
+  #headbadge {
+    width: 118px;
+    font-family: Manrope;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    color: #c1272d;
+    padding: 4px 20px 4px 20px; /* litle addition change*/
+    border-radius: 8px;
+    background: #c1272d0a;
+  }
+
+  h2 {
+    font-family: Inter;
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 44px;
+    letter-spacing: -0.02em;
+    margin: 12px 0;
+  }
+
+  p {
+    font-family: Inter;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 30px;
+    color: #000000a6;
+  }
+
+  .foot-text {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .foot-text p {
+    order: 2;
+  }
+}

@@ -12,5 +12,15 @@ main{
     /* margin: auto; */
     display:;
     width: fit-content;
+    padding: 10px;
 }
+
+a{
+    text-decoration: none;
+}
+
+p{
+    padding-bottom: 60px;
+}
+
 

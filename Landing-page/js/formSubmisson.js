@@ -4,6 +4,7 @@ form.addEventListener('submit', (event) => {
 
   event.preventDefault(); // Prevent default form submission
   const formData = new FormData(form);
+  console.log(formData)
 
     fetch(form.action, {
       method: 'POST',

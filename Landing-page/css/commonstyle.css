@@ -222,7 +222,7 @@ nav .menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 64px auto;
+  margin: 32px auto;
   padding: 20px;
   max-width: 1280px;
 }
@@ -543,23 +543,6 @@ footer .foot-text {
     padding: 4px 20px 4px 20px; /* litle addition change*/
     border-radius: 8px;
     background: #c1272d0a;
-  }
-
-  h2 {
-    font-family: Inter;
-    font-size: 36px;
-    font-weight: 600;
-    line-height: 44px;
-    letter-spacing: -0.02em;
-    margin: 12px 0;
-  }
-
-  p {
-    font-family: Inter;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 30px;
-    color: #000000a6;
   }
 
   .foot-text {

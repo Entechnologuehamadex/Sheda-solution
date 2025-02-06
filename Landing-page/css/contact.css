@@ -162,9 +162,7 @@ line-height: 30px;
         flex-direction: column;
         margin-bottom: 20px;
     }
-    .input-group input{
-        /* margin-bottom: 20px; */
-    }
+    
     #socials .social-container{
     flex-direction: column;
     gap: 32px;

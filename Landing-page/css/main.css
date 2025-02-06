@@ -633,7 +633,7 @@ footer .foot-text {
       line-height: 30px;
       text-align: center;
     }
-    .containerA h2 {
+    /* .containerA h2 {
       font-size: 30px;
       font-weight: 600;
       line-height: 38px;
@@ -645,7 +645,7 @@ footer .foot-text {
       font-weight: 400;
       line-height: 28px;
       text-align: center;
-    }
+    } */
     .containerC h3 {
       font-family: Inter;
       font-size: 18px;
@@ -681,9 +681,10 @@ footer .foot-text {
     padding: 4px 20px 4px 20px; /* litle addition change*/
     border-radius: 8px;
     background: #c1272d0a;
+    
   }
   
-  h2 {
+  /* h2 {
     font-family: Inter;
     font-size: 36px;
     font-weight: 600;
@@ -698,7 +699,7 @@ footer .foot-text {
     font-weight: 400;
     line-height: 30px;
     color: #000000a6;
-  }
+  } */
 
   .foot-text{
     flex-direction: column;

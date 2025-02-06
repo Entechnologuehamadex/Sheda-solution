@@ -15,7 +15,7 @@ form.addEventListener('submit', (event) => {
     })
     .then(response => {
       if (response.ok) {  // Check for successful response (status 200-299)
-        window.location.href = 'thankyou.html';
+        window.location.href = 'thankYou.html';
         form.reset(); // Clear the form
       } else {
         return response.json().then(err => {throw new Error(err.message)});

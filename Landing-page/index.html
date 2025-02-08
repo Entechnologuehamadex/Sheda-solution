@@ -33,10 +33,11 @@
                     <li><a class="active" href="/index.html">Home</a></li>
                     <li><a href="/about.html">About</a></li>
                     <li><a href="/contact.html">Contact Us</a></li>
+                    <li><a href="/#docs">Docs</a></li>
                 </ul>
                 <!-- </div> -->
 
-                <a href="#" class="btn">Get the app</a>
+                <a href="#waitInput" class="btn">Get the app</a>
 
             </div>
 
@@ -45,6 +46,7 @@
     </header>
 
     <main>
+   
         <section class="how-it-works">
             <div class="hero">
                 <!-- <div class="grid-background"></div> -->
@@ -52,13 +54,24 @@
                     <h1>Your perfect home is a few clicks away</h1>
                     <p>Making real estate operations affable, affordable, available, and secure through blockchain</p>
                     <div id="image-container">
-                        <a href="#"><img src="/images/Google Play Badge US.png" alt="Get it on play store"></a>
-                        <a href="#"><img src="/images/App Store Badge US Black.png" alt="Get it on App store"></a>
+                        <a href="#waitInput"><img src="/images/Google Play Badge US.png" alt="Get it on play store"></a>
+                        <a href="#waitInput"><img src="/images/App Store Badge US Black.png" alt="Get it on App store"></a>
                     </div>
                 </div>
+
+                <div class="waitlist">
+                    <form id="myForm" action="https://formspree.io/f/xqaelyne">
+                        <div class="input-container">
+                            <input type="text" name="Waiter's-Email" id="waitInput" placeholder="Enter Your Email">
+                            <button>Join Waitlist</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="heroImageContainer">
                     <img src="/images/iPhone 13 Pro.png" alt="hero page phone">
                 </div>
+                
             </div>
 
             <div class="containerA">
@@ -184,18 +197,18 @@
             </div>
         </section>
 
-        <section class="cta">
+        <section class="cta" id="docs">
             <div class="cta-content">
                 <h2>Get started now</h2>
                 <p>The solution to stress-free real estate operations</p>
                 <div id="image-container">
-                    <a href="#"><img src="/images/Google Play Badge US.png" alt="Get it on play store"></a>
-                    <a href="#"><img src="/images/App Store Badge US Black.png" alt="Get it on App store"></a>
+                    <a href="#waitInput"><img src="/images/Google Play Badge US.png" alt="Get it on play store"></a>
+                    <a href="#waitInput"><img src="/images/App Store Badge US Black.png" alt="Get it on App store"></a>
                 </div>
             </div>
 
-            <a id="brochure" href="#">
-                <h4>Download brochure</h4>
+            <a id="brochure" href="https://sheda-solutions.gitbook.io/sheda-solutions" target="_blank">
+                <h4>Our brochure</h4>
                 <img src="/images/pdf-icon.svg" alt="pdf icon">
             </a> 
         </section>
@@ -246,7 +259,11 @@
             </div>
     </footer>
 
+  
+
     <script src="/js/main.js"></script>
+    <script src="/js/formSubmisson.js"></script>
+
 </body>
 
 </html>

@@ -1,10 +1,69 @@
-
-
-/* ************** end here ************** */
-
 main .how-it-works {
   width: 90%;
   margin: 0 auto;
+}
+
+/* .waitlist{
+  background-color: antiquewhite;
+  width: 100%;
+  
+} */
+
+/* #waitlistWrapper{
+  display: inline-block;
+  width: 50%;
+  position: relative;
+  display: inline-block;
+ margin: 0 auto;
+} */
+/* #waitlistWrapper input { */
+#myForm input {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  box-sizing: border-box;
+  border-radius: 30px;
+  padding: 10px;
+  border-radius: 30px;
+}
+
+#myForn input::placeholder {
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 30px;
+  text-align: left;
+  color: #000000a6;
+}
+
+.waitlist .input-container {
+  position: relative;
+  width: 50%;
+  height: 60px;
+  margin: 0 auto;
+  border-radius: 30px;
+
+  /* background-color: transparent; */
+}
+
+#myForm button {
+  font-family: Manrope;
+  background-color: #c1272d;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  height: 90%;
+  padding: 0 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 30px;
+  border: 2px solid #ffffff;
+
+  font-family: Manrope;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24.59px;
+  color: #ffffff;
 }
 
 .hero {
@@ -48,8 +107,6 @@ main .frame48095733 {
   max-width: 522px;
   margin-top: 24px;
 }
-
-
 
 .containerC {
   display: flex;
@@ -119,7 +176,6 @@ main .features-section {
   text-align: center;
 }
 
-
 .features-section .containerA:last-of-type {
   margin: 0;
 }
@@ -141,62 +197,62 @@ main .features-section {
   color: #000000a6;
 }
 
-
-
-
-
-
-
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  
-    .how-it-works .containerC {
-      flex-direction: column;
-    }
-  
-    .frame48095733 h1 {
-      font-family: Inter;
-      font-size: 35px;
-      font-weight: 800;
-      line-height: 40px;
-    }
-    .frame48095733 p {
-      font-family: Inter;
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 25px;
-    }
-    #headbadge {
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 30px;
-      text-align: center;
-      margin: 0 auto;
-    }
-    .containerA h2 {
-      /* font-size: 30px;
+  .how-it-works .containerC {
+    flex-direction: column;
+  }
+
+  .waitlist .input-container {
+    width: 90%;
+  }
+  #myForn button {
+    font-size: small;
+  }
+
+  .frame48095733 h1 {
+    font-family: Inter;
+    font-size: 35px;
+    font-weight: 800;
+    line-height: 40px;
+  }
+  .frame48095733 p {
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+  #headbadge {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 30px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .containerA h2 {
+    /* font-size: 30px;
       font-weight: 600;
       line-height: 38px;
       letter-spacing: -0.02em; */
-      text-align: center;
-    }
-    .containerA p {
-      /* font-size: 18px;
+    text-align: center;
+  }
+  .containerA p {
+    /* font-size: 18px;
       font-weight: 400;
       line-height: 28px; */
-      text-align: center;
-    }
-    .containerC h3 {
-      font-family: Inter;
-      font-size: 18px;
-      font-weight: 500;
-      line-height: 28px;
-      text-align: center;
-    }
-    .containerC p {
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
-      text-align: center;
-    }
+    text-align: center;
+  }
+  .containerC h3 {
+    font-family: Inter;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    text-align: center;
+  }
+  .containerC p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: center;
+  }
 }

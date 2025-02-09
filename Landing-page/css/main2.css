@@ -3,19 +3,7 @@ main .how-it-works {
   margin: 0 auto;
 }
 
-/* .waitlist{
-  background-color: antiquewhite;
-  width: 100%;
-  
-} */
 
-/* #waitlistWrapper{
-  display: inline-block;
-  width: 50%;
-  position: relative;
-  display: inline-block;
- margin: 0 auto;
-} */
 /* #waitlistWrapper input { */
 #myForm input {
   width: 100%;
@@ -25,15 +13,20 @@ main .how-it-works {
   border-radius: 30px;
   padding: 10px;
   border-radius: 30px;
+
+  font-family: Manrope;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 30px;
+  color: #c1272d;
 }
 
-#myForn input::placeholder {
+#myForm input::placeholder {
   font-family: Inter;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 30px;
-  text-align: left;
-  color: #000000a6;
+  color: #000000A6;
 }
 
 .waitlist .input-container {
@@ -204,10 +197,13 @@ main .features-section {
   }
 
   .waitlist .input-container {
-    width: 90%;
+    width: 100%;
   }
-  #myForn button {
-    font-size: small;
+
+  #myForm button {
+    font-size: 14px;
+    padding: 0 14px;
+    font-weight: 800;
   }
 
   .frame48095733 h1 {

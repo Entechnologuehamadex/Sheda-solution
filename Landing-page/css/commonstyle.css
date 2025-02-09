@@ -112,6 +112,10 @@ ol,
 ul {
   list-style: none;
 }
+a{
+  text-decoration: none;
+  color: inherit;
+}
 
 blockquote,
 q {
@@ -142,7 +146,7 @@ table {
 /* Nav */
   header {
     position: sticky;
-    top: 5px;
+    top: 1px;
     background-color: #fff;
     z-index: 10; 
   }

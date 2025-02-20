@@ -14,4 +14,10 @@ PhoneStr = Annotated[str,Field(
 class AccountTypeEnum(str,Enum):
     buyer = 'buyer'
     seller = 'seller'
+    
+class KycStatusEnum(str,Enum):
+    pending = 'pending'
+    verified = 'verified'
+    rejected = 'rejected'
+    
 

@@ -5,29 +5,45 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from core.database import Base,engine
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
+from datetime import timedelta
+
+
 load_dotenv()
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s:     %(funcName)s: Line-%(lineno)d: %(message)s"
 )
+
+
 #NOTE - Regex for Phone
 PHONE_REGEX = r'^\+\d{10,15}$'
-#NOTE - Password Hashing
+
+
+#NOTE - Security
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
+expire_delta = timedelta(days=30)
+
 #NOTE - Debug mode
 DEBUG_MODE = os.getenv('DEBUG_MODE')== 'True'
-#NOTE - Database Setup
-sqlite_filename = 'database.db'
 
-db_url= f'sqlit+aiosqlite:///.{sqlite_filename}'
 
+
+
+#NOTE - Application startup
 @asynccontextmanager
 async def lifespan(app:FastAPI):
     async with engine.begin() as conn:
         if DEBUG_MODE:
             await conn.run_sync(Base.metadata.drop_all)
+            logging.info('Tables Dropped')
         await conn.run_sync(Base.metadata.create_all)
+        logging.info('Tables Created')
         
     yield
     
+
 

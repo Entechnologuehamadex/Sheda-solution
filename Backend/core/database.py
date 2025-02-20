@@ -1,8 +1,9 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import create_async_engine,async_sessionmaker
-from contextlib import asynccontextmanager
-from core.configs import db_url
 
+
+sqlite_filename = 'database.db'
+db_url= f'sqlite+aiosqlite:///./{sqlite_filename}'
 engine = create_async_engine(url=db_url)
 connect_args ={'check_same_thread':False}
 AsyncSessionLocal = async_sessionmaker(bind=engine)
@@ -16,4 +17,4 @@ async def get_db():
         await db.rollback()
         raise
     finally:
-        db.close()
+        await db.close()

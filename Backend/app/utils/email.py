@@ -15,7 +15,7 @@ redis = aioredis.from_url(REDIS_URL)
 async def send_otp_mail(to_email,otp:str):
     template = env.get_template("otp_email.txt")
     text = template.render(otp=otp, 
-                           expiry=VERIFICATION_CODE_EXP_MIN.total_seconds()/60, company_name="Sheda Solution", 
+                           expiry=int(VERIFICATION_CODE_EXP_MIN.total_seconds()/60), company_name="Sheda Solution", 
                            support_email=EMAIL)
     msg = MIMEMultipart()
     msg['From'] = EMAIL

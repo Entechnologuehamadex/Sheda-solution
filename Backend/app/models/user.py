@@ -26,7 +26,7 @@ class BaseUser(Base):
     is_active:Mapped[bool] = mapped_column(Boolean,default= True,)
     created_at: Mapped[datetime]= mapped_column(DateTime,default=datetime.now,)
     updated_at:Mapped[datetime]= mapped_column(DateTime,default=datetime.now,onupdate=datetime.now,)
-    verification_status:Mapped[bool] = mapped_column(Boolean,default=False,)
+    verified:Mapped[bool] = mapped_column(Boolean,default=False,)
     __mapper_args__ = {
         "polymorphic_identity": "user",
         "polymorphic_on": account_type,

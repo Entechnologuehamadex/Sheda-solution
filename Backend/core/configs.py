@@ -16,6 +16,10 @@ logging.basicConfig(
 )
 
 
+SIGN_UP_DESC ='''Once accounts are creaeted they are stored temporarily for 2 hours before deletion if email verification is not completed
+'''
+
+
 #NOTE - Regex for Phone
 PHONE_REGEX = r'^\+\d{10,15}$'
 
@@ -24,14 +28,23 @@ PHONE_REGEX = r'^\+\d{10,15}$'
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = os.getenv('ALGORITHM')
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/login')
 expire_delta = timedelta(days=30)
 
 #NOTE - Debug mode
 DEBUG_MODE = os.getenv('DEBUG_MODE')== 'True'
 
+#NOTE -  Email Credential
+EMAIL = os.getenv('EMAIL')
+APP_PASS = os.getenv('APP_PASS')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
 
+#NOTE - OTHER CONFIGS
+REDIS_URL = os.getenv('REDIS_URL')
+VERIFICATION_CODE_EXP_MIN = timedelta(minutes=int(os.getenv('VERIFICATION_CODE_EXP_MIN')))
 
+#NOTE -  Templates Dir
+Templates_dir = os.path.join(os.getcwd(),'app','templates')
 
 #NOTE - Application startup
 @asynccontextmanager

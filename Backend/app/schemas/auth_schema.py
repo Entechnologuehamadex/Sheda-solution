@@ -40,5 +40,5 @@ class UserInDB(UserShow):
 
 class OtpSchema(BaseModel):
     email:EmailStr
-    otp:Union[int,str]
+    otp:Union[str,int]
         

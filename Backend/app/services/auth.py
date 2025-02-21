@@ -119,13 +119,14 @@ async def process_verification(payload:OtpSchema,db:AsyncSession):
         access_token = await create_access_token(
         data={"sub": user.username}
         )
+        logging.info(f'{user.email} Sucessfully verified and created')
         return Token(access_token=access_token, token_type="Bearer")
-    else:
-        user = SellerCreate(**user_data)
-        await create_seller(user,db)
-        access_token = await create_access_token(
-        data={"sub": user.username}
-        )
-        return Token(access_token=access_token, token_type="Bearer")
+    
+    user = SellerCreate(**user_data)
+    await create_seller(user,db)
+    access_token = await create_access_token(
+    data={"sub": user.username}
+    )
+    return Token(access_token=access_token, token_type="Bearer")
     
 

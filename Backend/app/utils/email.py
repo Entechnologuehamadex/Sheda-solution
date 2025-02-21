@@ -31,13 +31,13 @@ async def send_otp_mail(to_email,otp:str):
         logging.info('OTP Mail Sent')
         return True
     except Exception as e:
-        logging.info(f'Failed to send email \n{str(e)}')
+        logging.error(f'Failed to send email \n{str(e)}')
         return False
         
 async def create_set_send_otp(email:str,user_data:dict) -> int:
-    otp= randint(1000,9999)
-    await redis.setex(f'otp:{email}',VERIFICATION_CODE_EXP_MIN,otp)
-    logging.info(f'otp saved to redis for {VERIFICATION_CODE_EXP_MIN}')
+    otp= str(randint(1000,9999))
+    await redis.setex(f'otp:{email}',timedelta(hours=2),otp)
+    logging.info(f'otp saved to redis for {int(VERIFICATION_CODE_EXP_MIN)}')
     await redis.hset(f'user_data:{email}',mapping=user_data)
     logging.info('User data set to redis')
     await redis.expire(f'user_data:{email}',timedelta(hours=2))
@@ -50,13 +50,15 @@ async def create_set_send_otp(email:str,user_data:dict) -> int:
 
 async def verify_otp(otp:str,email:str):
     stored_otp = await redis.get(f'otp:{email}')
-    if stored_otp and stored_otp == otp:
+    if stored_otp and stored_otp.decode() == otp:
+        logging.info(f'otp verified')
         user_data = await redis.hgetall(f'user_data:{email}')
-        logging.info('User Data retrieved from redis')
+        user_data ={key.decode():value.decode() for key,value in user_data.items()}
+        logging.info(f'{email} Data retrieved from redis')
         await redis.delete(f'user_data:{email}')
-        logging.info('User Data deleted from redis')
+        logging.info(f'{email} Data deleted from redis')
         return user_data
-    
+    logging.error('OTP not found')
     return False
     
     

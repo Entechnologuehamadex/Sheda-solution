@@ -21,6 +21,7 @@ from app.utils.enums import AccountTypeEnum
 async def create_buyer(request:BuyerCreate,db:AsyncSession):
     try:
         new_user = Buyer(**request.model_dump())
+        new_user.verified = True
         db.add(new_user)
         await db.commit()
         await db.refresh(new_user)
@@ -36,6 +37,7 @@ async def create_seller(request:SellerCreate,db:AsyncSession):
     new_user= Seller(**request.model_dump())
     try:
         db.add(new_user)
+        new_user.verified = True
         await db.commit()
         await db.refresh(new_user)
         logging.info(f'User {request.email} created')

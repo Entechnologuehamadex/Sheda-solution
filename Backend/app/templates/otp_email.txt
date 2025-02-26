@@ -1,0 +1,13 @@
+Hello There,
+
+You requested a one-time password (OTP) to verify your account. 
+
+🔢 OTP Code: {{ otp }}
+
+This code is valid for {{ expiry }} minutes. If you didn’t request this code, please ignore this email.
+
+For security reasons, never share your OTP with anyone.
+
+Best regards,  
+Sheda Solutions  
+{{ support_email }}

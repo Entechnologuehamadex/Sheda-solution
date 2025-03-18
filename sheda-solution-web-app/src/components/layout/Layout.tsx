@@ -1,15 +1,17 @@
-import Header from "./Header";
+import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { ReactNode } from "react";
 
-//layout that structures the page
-const Layout: React.FC = ({ children }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <>
-      <Header />
-      <main className="min-h-screen">{children}</main>
+      <Navbar />
+      <main className="min-h-screen">
+      {children}
+      </main>
       <Footer />
     </>
   );
-}
+};
 
 export default Layout;

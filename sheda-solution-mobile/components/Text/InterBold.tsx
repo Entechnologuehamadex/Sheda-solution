@@ -1,7 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextProps, StyleProp, TextStyle } from 'react-native';
 
-const InterBold = (props: any) => {
+// Define the props interface for InterBold
+interface InterBoldProps extends TextProps {
+  className?: string; // Optional: Tailwind classes
+  style?: StyleProp<TextStyle>; // Optional: Custom styles
+  children: React.ReactNode; // Text content
+}
+
+const InterBold: React.FC<InterBoldProps> = (props) => {
   return (
     <Text
       {...props}

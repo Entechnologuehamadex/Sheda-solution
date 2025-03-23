@@ -15,6 +15,7 @@ module.exports = {
         primaryText: "#000000",
         secondaryText: "#878787",
         cardBackground: "#F5F5F5",
+        borderColor: "#D8DADC",
         active: "#FFE6E6",
       },
       spacing: {

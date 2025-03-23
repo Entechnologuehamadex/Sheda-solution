@@ -34,10 +34,15 @@ function RootLayout() {
   }
 
   return(
-    <Stack>
-      <Stack.Screen name="/" />
+    <Stack 
+    screenOptions={{
+      headerShown: false
+    }}
+    >
+      <Stack.Screen name="/" options={{headerShown: false}}/>
       <Stack.Screen name="/(auth)/login" />
       <Stack.Screen name="/(auth)/signup" />
+      <Stack.Screen name="(tabs)" options={{headerShown: false}} />
     </Stack>
 
   )

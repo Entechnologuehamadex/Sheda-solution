@@ -1,7 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextProps, StyleProp, TextStyle } from 'react-native';
 
-const InterSemiBold = (props: any) => {
+// Define the props interface for InterSemiBold
+interface InterSemiBoldProps extends TextProps {
+  className?: string; // Optional: Tailwind classes
+  style?: StyleProp<TextStyle>; // Optional: Custom styles
+  children: React.ReactNode; // Text content
+}
+
+const InterSemiBold: React.FC<InterSemiBoldProps> = (props) => {
   return (
     <Text
       {...props}

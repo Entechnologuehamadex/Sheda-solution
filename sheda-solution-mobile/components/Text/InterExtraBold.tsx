@@ -1,7 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextProps, StyleProp, TextStyle } from 'react-native';
 
-const InterExtraBold = (props: any) => {
+// Define the props interface for InterExtraBold
+interface InterExtraBoldProps extends TextProps {
+  className?: string; // Optional: Tailwind classes
+  style?: StyleProp<TextStyle>; // Optional: Custom styles
+  children: React.ReactNode; // Text content
+}
+
+const InterExtraBold: React.FC<InterExtraBoldProps> = (props) => {
   return (
     <Text
       {...props}

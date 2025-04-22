@@ -1,7 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextProps, StyleProp, TextStyle } from 'react-native';
 
-const InterRegular = (props: any) => {
+// Define the props interface for InterRegular
+interface InterRegularProps extends TextProps {
+  className?: string; // Optional: Tailwind classes
+  style?: StyleProp<TextStyle>; // Optional: Custom styles
+  children: React.ReactNode; // Text content
+}
+
+const InterRegular: React.FC<InterRegularProps> = (props) => {
   return (
     <Text
       {...props}

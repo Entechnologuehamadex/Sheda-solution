@@ -4,18 +4,20 @@
     "slug": "sheda-solution-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/sheda-splash.png", 
+    "icon": "./assets/images/sheda-splash.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.shedasolutionmobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/sheda-logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.shedasolutionmobile"
     },
     "web": {
       "bundler": "metro",
@@ -27,7 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/sheda-logo.png",
+          "image": "./assets/images/sheda-splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

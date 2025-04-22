@@ -4,6 +4,7 @@ const INBOXICON = require('../assets/icons/inbox-icon.svg');
 const WALLETICON = require('../assets/icons/wallet-icon.svg');
 
 const HERO = require('../assets/images/hero.png')
+const APT = require('../assets/images/apt-1.png')
 
 export {
     HOMEICON,
@@ -11,4 +12,5 @@ export {
     INBOXICON,
     WALLETICON,
     HERO,
+    APT,
 }

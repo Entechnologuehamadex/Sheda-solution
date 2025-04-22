@@ -5,7 +5,8 @@ import { SvgProps } from 'react-native-svg';
 // Define the props interface for the Icon component
 interface IconProps extends SvgProps {
   icon: React.FC<SvgProps>; // The SVG component itself
-  size?: number; // Optional: Size of the icon (width and height)
+  width?: number; // Optional: Size of the icon (width)
+  heeigh?: number; // Optional: Size of the icon (height)
   color?: string; // Optional: Color of the icon (if supported by the SVG)
   className?: string; // Optional: Tailwind classes for the icon container
   [key: string]: any; // Allow any additional props to be passed to the SVG component
@@ -14,8 +15,9 @@ interface IconProps extends SvgProps {
 // Generic Icon component
 const Icon: React.FC<IconProps> = ({
   icon: IconComponent, // Rename the prop to IconComponent for clarity
-  size = 24, // Default size
-  color,
+  width = 24, // Default size
+  height=24,
+  color= 'transparent',
   className,
   ...props
 }) => {
@@ -28,8 +30,8 @@ const Icon: React.FC<IconProps> = ({
   return (
     <TouchableOpacity className={className}>
       <IconComponent
-        width={size}
-        height={size}
+        width={width}
+        height={height}
         fill={color} // Pass color to the SVG (if supported)
         {...props} // Spread any additional props to the SVG component
       />

@@ -1,12 +1,12 @@
 import { View, StyleSheet, Text } from 'react-native';
 import InterRegular from './Text/InterRegular';
 
-export default function Breaker() {
+  const Breaker = ({breakText}: {breakText:string}) => {
 
   return (
     <View style={styles.container}>
       <View className='border w-1/3 border-borderColor' />
-     <InterRegular className="">Or Login with</InterRegular>
+     <InterRegular className="">{breakText}</InterRegular>
       <View className='border w-1/3 border-borderColor' />
     </View>
   );
@@ -19,3 +19,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default Breaker

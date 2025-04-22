@@ -1,26 +1,27 @@
+// app/_layout.tsx
 import { Stack } from "expo-router";
-import "../global.css"
-
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import {useEffect} from 'react';
+import "../global.css";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
-function RootLayout() {
+const RootLayout = () => {
   const [loaded, error] = useFonts({
-    'Inter-Black': require('../assets/fonts/Inter_24pt-Black.ttf'),
-    'Inter-Bold': require('../assets/fonts/Inter_24pt-Bold.ttf'),
-    'Inter-ExtraBold': require('../assets/fonts/Inter_24pt-ExtraBold.ttf'),
-    'Inter-SemiBold': require('../assets/fonts/Inter_24pt-SemiBold.ttf'),
-    'Inter-Light': require('../assets/fonts/Inter_24pt-Light.ttf'),
-    'Inter-ExtraLight': require('../assets/fonts/Inter_24pt-ExtraLight.ttf'),
-    'Inter-Medium': require('../assets/fonts/Inter_24pt-Medium.ttf'),
-    'Inter-Regular': require('../assets/fonts/Inter_24pt-Regular.ttf'),
-    'Inter-Thin': require('../assets/fonts/Inter_24pt-Thin.ttf'),
-    'Sora-Bold': require('../assets/fonts/Sora-Bold.ttf'),
-    'Sora-Medium': require('../assets/fonts/Sora-Medium.ttf'),
-    'Manrope-Medium': require('../assets/fonts/Manrope-Medium.ttf'),
+    "Inter-Black": require("../assets/fonts/Inter_24pt-Black.ttf"),
+    "Inter-Bold": require("../assets/fonts/Inter_24pt-Bold.ttf"),
+    "Inter-ExtraBold": require("../assets/fonts/Inter_24pt-ExtraBold.ttf"),
+    "Inter-SemiBold": require("../assets/fonts/Inter_24pt-SemiBold.ttf"),
+    "Inter-Light": require("../assets/fonts/Inter_24pt-Light.ttf"),
+    "Inter-ExtraLight": require("../assets/fonts/Inter_24pt-ExtraLight.ttf"),
+    "Inter-Medium": require("../assets/fonts/Inter_24pt-Medium.ttf"),
+    "Inter-Regular": require("../assets/fonts/Inter_24pt-Regular.ttf"),
+    "Inter-Thin": require("../assets/fonts/Inter_24pt-Thin.ttf"),
+    "Sora-Bold": require("../assets/fonts/Sora-Bold.ttf"),
+    "Sora-Medium": require("../assets/fonts/Sora-Medium.ttf"),
+    "Manrope-Medium": require("../assets/fonts/Manrope-Medium.ttf"),
   });
 
   useEffect(() => {
@@ -33,19 +34,27 @@ function RootLayout() {
     return null;
   }
 
-  return(
-    <Stack 
-    screenOptions={{
-      headerShown: false
-    }}
-    >
-      <Stack.Screen name="/" options={{headerShown: false}}/>
-      <Stack.Screen name="/(auth)/login" />
-      <Stack.Screen name="/(auth)/signup" />
-      <Stack.Screen name="(tabs)" options={{headerShown: false}} />
-    </Stack>
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" />
 
-  )
-}
+          {/* <Stack.Screen name="(auth)/login" />
+      <Stack.Screen name="(auth)/signup" />
+      
+      
+      <Stack.Screen name="(auth)/forget-pass" />
+      <Stack.Screen name="(auth)/pass-changed" />
+      <Stack.Screen name="(auth)/reset-pass" />
+      <Stack.Screen name="(auth)/forget-pass-code" /> */}
+
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+};
 
 export default RootLayout;

@@ -4,14 +4,12 @@ import { Text, View, StyleSheet, TextInput } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
-import SoraBold from "@/components/Text/SoraBold";
-import InterExtraBold from "@/components/Text/InterExtraBold";
+import StyledTextInput from "@/components/textInput";
 import Socials from "@/components/Socials";
-// import { TextInput } from "react-native-paper";
 
 const Login = () => {
   const loginSchema = z.object({
@@ -27,37 +25,40 @@ const Login = () => {
     formState: { errors },
   } = useForm<UserFormType>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit: SubmitHandler<UserFormType> = (data: UserFormType) => {
-    console.log(data);
-  };
+  // const onSubmit: SubmitHandler<UserFormType> = (data: UserFormType) => {
+  //   console.log(data);
+  //   router.push('/(tabs)')
+  // };
+
+  const handleLogin = () => {
+    router.push('/(tabs)/home')
+  }
   return (
-    <View className="container mx-auto" style={{ padding: 20 }}>
+    <View className="container mx-auto max-w-2xl" style={{ padding: 20 }}>
       <View>
         <InterBold className="text-2xl lg:text-4xl mt-16">Login in</InterBold>
       </View>
 
       <View className="mt-8">
         <View>
-          <InterRegular className="p-1 lg:text-2xl">Email address</InterRegular>
-          <TextInput
-            className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-            placeholder="useremail@email.com"
-            style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
-          />
+          <InterRegular className="py-1 lg:text-2xl">Email address</InterRegular>
+          <StyledTextInput placeholder="useremail@email.com" />
         </View>
+
         <View className="my-4">
-          <InterRegular className="p-1 lg:text-2xl">Password</InterRegular>
-          <TextInput
-            className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-            style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
-          />
+          <InterRegular className="p-y1 lg:text-2xl">Password</InterRegular>
+          <StyledTextInput isPassword={true} placeholder="********" />
 
           <Link className="text-right my-1" href={"/(auth)/forget-pass"}>
-            <InterRegular className="text-sm lg:text-2xl">Forget password?</InterRegular>
+            <InterRegular className="text-sm lg:text-2xl">
+              Forget password?
+            </InterRegular>
           </Link>
         </View>
 
-        <Button className="rounded-lg">
+        <Button className="rounded-lg"
+        onPress={handleLogin}
+        >
           <InterSemiBold className="text-background text-base lg:text-2xl">
             Log in
           </InterSemiBold>
@@ -66,16 +67,16 @@ const Login = () => {
 
       <View>
         <View className="py-4">
-          <Breaker />
+          <Breaker breakText="Or Login with" />
         </View>
         <Socials />
 
-        <View className="mt-4 flex-row justify-center">
-            <Link href={'/(auth)/signup'}>
-            <InterRegular className="mr-1 lg:text-2xl">Don’t have an account?</InterRegular>
-            <InterBold className="lg:text-2xl">Sign up</InterBold>
-            </Link>  
-        </View>
+        <Link href={"/signup"} className="text-center mt-4">
+          <InterRegular className="mr-1 lg:text-2xl">
+            Don’t have an account?
+          </InterRegular>
+          <InterBold className="lg:text-2xl"> Sign up</InterBold>
+        </Link>
       </View>
     </View>
   );

@@ -9,6 +9,7 @@ import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
 import Socials from "@/components/Socials";
+import StyledTextInput from "@/components/textInput";
 
 
 
@@ -30,7 +31,7 @@ const Signup = () => {
     console.log(data);
   };
   return (
-    <View className="container mx-auto" style={{ padding: 20 }}>
+    <View className="container max-w-2xl mx-auto" style={{ padding: 20 }}>
       <View>
         <InterBold className="text-2xl lg:text-4xl mt-16">Sign up</InterBold>
       </View>
@@ -38,31 +39,27 @@ const Signup = () => {
       <View className="mt-8">
         {/* email input */}
         <View>
-          <InterRegular className="p-1 lg:text-2xl">Email address</InterRegular>
-          <TextInput
-            className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-            placeholder="example@email.com"
-            style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
+          <InterRegular className="py-1 lg:text-2xl">Email</InterRegular>
+          <StyledTextInput 
+          placeholder="example@email.com"
           />
         </View>
 
         {/* Password input */}
         <View className="my-4">
-          <InterRegular className="p-1 lg:text-2xl">Create a password</InterRegular>
-          <TextInput
-            className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-            style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
-            placeholder="must be 8 characters"
+          <InterRegular className="py-1 lg:text-2xl">Create a password</InterRegular>
+          <StyledTextInput 
+          isPassword={true}
+          placeholder="must be 8 characters"
           />
         </View>
 
          {/* Confirm Password input */}
         <View className="my-4">
-          <InterRegular className="p-1 lg:text-2xl">Confirm Password</InterRegular>
-          <TextInput
-            className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-            style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
-            placeholder="Repeat password"
+          <InterRegular className="py-1 lg:text-2xl">Confirm Password</InterRegular>
+          <StyledTextInput 
+          isPassword={true}
+          placeholder="repeat password"
           />
         </View>
 
@@ -75,16 +72,16 @@ const Signup = () => {
 
       <View>
         <View className="py-4">
-          <Breaker />
+          <Breaker breakText="Or Register with" />
         </View>
         <Socials />
 
-        <View className="mt-4 flex-row justify-center">
-            <Link href={'/(auth)/login'}>
-            <InterRegular className="mr-1 lg:text-2xl">Already have an account?</InterRegular>
-            <InterBold className="lg:text-2xl">Log in</InterBold>
-            </Link>  
-        </View>
+        <Link href={"/login"} className="text-center mt-4">
+          <InterRegular className="mr-1 lg:text-2xl">
+            Already have an account?
+          </InterRegular>
+          <InterBold className="lg:text-2xl"> Log in</InterBold>
+        </Link>
       </View>
     </View>
   );

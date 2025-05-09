@@ -9,9 +9,7 @@ main{
 
 .thankcard{
     text-align: center;
-    /* margin: auto; */
-    display:;
-    width: fit-content;
+    max-width: 500px;
     padding: 10px;
 }
 
@@ -19,8 +17,23 @@ a{
     text-decoration: none;
 }
 
-p{
-    padding-bottom: 60px;
+.thankcard p{
+    /* padding-bottom: 60px; */
+    font-style: italic;
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: 0%;
+
+}
+.thankcard .btnContainer{
+    margin: 20px 0;
+}
+.thankcard h1{
+    font-size: 30px;
+    font-weight: 700;
+    /* padding-bottom: 20px; */
 }
 
 

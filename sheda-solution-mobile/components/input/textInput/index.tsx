@@ -19,7 +19,7 @@ const StyledTextInput: React.FC<StyledTextInputProps> = ({
     <View className="w-full relative">
       <TextInput
         className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
-        style={{ fontFamily: "Inter-Regular", fontSize: 16 }}
+        style={{ fontFamily: "Inter-Regular", fontSize: 12 }}
         placeholder={placeholder}
         secureTextEntry= {isPassword && !showPassword}
         onPress={onPress}

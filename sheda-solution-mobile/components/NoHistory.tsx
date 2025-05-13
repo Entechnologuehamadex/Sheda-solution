@@ -5,7 +5,7 @@ import InterSemiBold from "./Text/InterSemiBold"
 import InterRegular from "./Text/InterRegular"
 import Button from "./common/Button"
 import { router } from "expo-router"
-export const NoPurchase = () => {
+export const NoHistory = ({headText}: {headText: any}) => {
     return(
 
         <View className="flex-1 justify-center">
@@ -18,10 +18,10 @@ export const NoPurchase = () => {
             />
             <View className="my-4 items-center">
               <InterSemiBold className="text-lg/5">
-                You have not made any purchase yet...
+                You have not made any {headText} history yet...
               </InterSemiBold>
               <InterRegular className="text-base/5 text-secondaryText">
-                Ongoing purchase will show here
+              {headText} purchase will show here
               </InterRegular>
             </View>
             <Button 

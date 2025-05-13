@@ -1,15 +1,15 @@
-import { View } from "react-native";
+import { View, ImageBackground, ScrollView } from "react-native";
 import { Link, router } from "expo-router";
 import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
-import { ImageBackground } from "react-native";
 import { HERO } from "@/constants/images-icons";
 import InterRegular from "@/components/Text/InterRegular";
+import { deviceHeight } from "@/constants/values";
 
 export default function Onboarding() {
   
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, height: deviceHeight }}>
       <View className="h-[60%] w-full">
         <ImageBackground
           resizeMode="cover"
@@ -20,12 +20,12 @@ export default function Onboarding() {
 
       <View className="flex-1 bg-background rounded-t-2xl lg:rounded-t-none -mt-5 lg:mt-none p-5">
         <View className="mt-5 flex items-center">
-          <InterSemiBold className="text-xl lg:text-4xl mb-2">Welcome to advanced real estate</InterSemiBold>
-          <InterRegular className="text-secondaryText text-base lg:text-2xl">Sheda solutions makes your real</InterRegular>
-          <InterRegular className="text-secondaryText text-base lg:text-2xl">estate operations very easy and stress-free.</InterRegular>
+          <InterSemiBold className="text-xl mb-2">Welcome to advanced real estate</InterSemiBold>
+          <InterRegular className="text-secondaryText text-base">Sheda solutions makes your real</InterRegular>
+          <InterRegular className="text-secondaryText text-base">estate operations very easy and stress-free.</InterRegular>
         </View>
 
-        <View className="mt-16">
+        <View className="mt-8">
           <Button 
           isFull={true}
           className="rounded-lg"

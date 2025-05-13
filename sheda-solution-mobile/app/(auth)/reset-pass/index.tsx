@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import InterBold from "@/components/Text/InterBold";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
-import StyledTextInput from "@/components/textInput";
+import StyledTextInput from "@/components/input/textInput";
 import { Text, View } from "react-native";
 import { Link, router } from "expo-router";
 

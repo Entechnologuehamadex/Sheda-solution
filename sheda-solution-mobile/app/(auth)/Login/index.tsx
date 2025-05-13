@@ -8,7 +8,7 @@ import { Link, router } from "expo-router";
 import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
-import StyledTextInput from "@/components/textInput";
+import StyledTextInput from "@/components/input/textInput";
 import Socials from "@/components/Socials";
 
 const Login = () => {

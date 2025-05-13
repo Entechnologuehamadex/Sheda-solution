@@ -25,7 +25,7 @@ const Wallet = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
-        className="container flex-1 mx-auto max-w-2xl"
+        className="container flex-1 mx-auto max-w-2xl py-5"
         //  style={{ padding: 20 }}
       >
         <View className="px-5 flex-row justify-between">
@@ -91,7 +91,7 @@ const Wallet = () => {
               key={index} 
               color=""
               onPress={() => handleWalletClick(index)} 
-              className={`w-1/3 h-full items-center py-3 ${index === activeIndex? 'border-b-2' : ""} border-primary transition-all duration-500`}
+              className={`w-1/3 h-full items-center py-3 ${index === activeIndex? 'border-b-2' : ""} border-primary`}
               >
                 <InterRegular className="text-sm/5">{item}</InterRegular>
               </Button>

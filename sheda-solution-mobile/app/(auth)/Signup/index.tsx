@@ -9,7 +9,7 @@ import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
 import Socials from "@/components/Socials";
-import StyledTextInput from "@/components/textInput";
+import StyledTextInput from "@/components/input/textInput";
 
 
 

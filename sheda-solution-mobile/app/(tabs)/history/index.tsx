@@ -4,14 +4,16 @@ import Button from "@/components/common/Button";
 import history from "../../../constants/historyHeader";
 import InterRegular from "@/components/Text/InterRegular";
 import { useState } from "react";
-import { NoPurchase } from "@/components/NoPurchase";
+import { NoHistory } from "@/components/NoHistory";
 
 
 const History = () => {
   const [activeIndex, setIsActiveIndex] = useState<null | number>(0);
+  const [activeItem, setIsActiveItem] = useState<null | string>('Ongoing');
 
-  const handleHistoryClick = (index: number) => {
+  const handleHistoryClick = (index: number, item: string) => {
     setIsActiveIndex(index);
+    setIsActiveItem(item);
   };
 
   return (
@@ -29,7 +31,7 @@ const History = () => {
             <Button
               key={index}
               color={activeIndex === index ? "#C1272D" : "#C1272D0A"}
-              onPress={() => handleHistoryClick(index)}
+              onPress={() => handleHistoryClick(index, item)}
               className="text-white rounded-lg"
             >
               <InterRegular
@@ -43,7 +45,7 @@ const History = () => {
           ))}
         </View>
 
-          <NoPurchase/>
+          <NoHistory headText={activeItem}/>
       </View>
     </SafeAreaView>
   );

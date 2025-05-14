@@ -39,8 +39,8 @@ const RootLayout = () => {
       <SafeAreaView style={{ flex: 1 }}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ headerShown: false }} />
-          <Stack.Screen name="filter" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="profile" options={{ headerShown: false }} />
+          <Stack.Screen name="filter" options={{ headerShown: false }} /> */}
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>

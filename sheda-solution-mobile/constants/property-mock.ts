@@ -3,7 +3,7 @@
 const properties = [
   {
     id: '1',
-    price: '₦75m',
+    price: '75000000',
     type: '4 Bedroom bungalow',
     location: 'Lekki, Lagos',
     bedrooms: 4,
@@ -39,7 +39,8 @@ const properties = [
   },
   {
     id: '2',
-    price: '₦50m',
+    price: '500000',
+    damages: '30000',
     type: '3 Bedroom apartment',
     location: 'Ikoyi, Lagos',
     bedrooms: 3,
@@ -75,7 +76,7 @@ const properties = [
   },
   {
     id: '3',
-    price: '₦120m',
+    price: '120000000',
     type: '5 Bedroom duplex',
     location: 'Victoria Island, Lagos',
     bedrooms: 5,
@@ -97,7 +98,7 @@ const properties = [
   },
   {
     id: '4',
-    price: '₦320m',
+    price: '320000000',
     type: '2 Bedroom duplex',
     location: 'ojota, Lagos',
     bedrooms: 2,
@@ -106,7 +107,7 @@ const properties = [
   },
   {
     id: '5',
-    price: '₦100m',
+    price: '100000000',
     type: '10 Bedroom duplex',
     location: 'Ikorodu, Lagos',
     bedrooms: 10,

@@ -6,11 +6,11 @@ import {
   Platform,
   Image,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import getDetails from "./getDetails";
+import { router, useLocalSearchParams } from "expo-router";
+import getDetails from "./getDetails"; //get local data
 import BackBtn from "@/components/common/BackBtn";
 import { HouseCardProps } from "@/components/HouseCard/types";
-import Favorite from "@/components/common/Favorite";
+import Favorite from "@/components/common/Favorite"; 
 import InterMedium from "@/components/Text/InterMedium";
 import { LOCATION, BED, BATH, MESSAGE, PHONE } from "@/assets/icons";
 import Icon from "@/components/common/Icon";
@@ -21,6 +21,7 @@ import StyledTextInput from "@/components/input/textInput";
 import Button from "@/components/common/Button";
 import HouseList from "@/components/HouseList";
 import InterBold from "@/components/Text/InterBold";
+import { Path } from "react-native-svg";
 
 const Details = () => {
   // Safely extract id from search params
@@ -54,7 +55,7 @@ const Details = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
-        className="flex-1"
+        className="container flex-1 mx-auto max-w-2xl"
         contentContainerStyle={{
           paddingBottom: 80,
           //   paddingTop: Platform.OS === "ios" ? 0 : 20,
@@ -162,7 +163,7 @@ const Details = () => {
           <View className="mt-3">
             <InterRegular className="text-base/5">Extras</InterRegular>
             <View className="flex-row gap-2 mt-2 w-full flex-wrap">
-              {property.extras.map((extra, index) => (
+              {property.extras?.map((extra, index) => (
                 <InterRegular
                   key={index}
                   className="bg-[#00000008] text-secondaryText p-2 rounded-lg"
@@ -221,11 +222,14 @@ const Details = () => {
                 {property.mode === "rent" ? "Rent" : "Buy" }
               </InterMedium>
               <InterBold className="text-lg text-primaryText">
-              {property.mode === "rent" ? `${property.price}/yr` : `${property.price}` }
+              {property.mode === "rent" ? `#${property.price}/yr` : `#${property.price}`}
               </InterBold>
             </View>
             <Button
-              onPress={() => console.log("Book Now pressed")} // Replace with your action
+              onPress={() => router.push({
+                pathname: '/property-agreement',
+                params: {id: property.id}
+              })} 
               className="bg-primary py-3 px-6 rounded-lg"
             >
               <InterRegular className="text-white text-center">

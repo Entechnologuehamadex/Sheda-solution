@@ -6,6 +6,9 @@ const WALLETICON = require('../assets/icons/wallet-icon.svg');
 const HERO = require('../assets/images/hero.png')
 const APT = require('../assets/images/apt-1.png')
 const PROFILE = require('../assets/images/my-pic.jpg')
+const BUSD = require('../assets/images/busd.png');
+const ETH = require('../assets/images/eth.png');
+
 
 export {
     HOMEICON,
@@ -15,4 +18,6 @@ export {
     HERO,
     APT,
     PROFILE,
+    BUSD,
+    ETH,
 }

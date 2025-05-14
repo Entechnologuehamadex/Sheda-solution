@@ -1,12 +1,13 @@
 export interface HouseCardProps{
     id: string;
     price: string;
+    damages?: string | null;
     type: string;
     location: string;
     bedrooms: number;
     bathrooms: number;
     description: string;
-    mode: 'rent' | 'buy';
+    mode?: 'rent' | 'buy';
     extras: string[];
     image?: string | {uri: string} | any;
     seller?: {
@@ -15,7 +16,7 @@ export interface HouseCardProps{
         photo: string | {uri: string} | any;
         isActive?: boolean;
         rating?: number | any;
-        reviews?: REVIEW[];
+        reviews?: REVIEW[] | null;
     },
     isFavorite?: boolean;
     isSold?: boolean;

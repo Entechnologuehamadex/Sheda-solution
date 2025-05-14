@@ -64,7 +64,7 @@ const HouseCard = ({ house }: { house: HouseCardProps }) => {
         </View>
 
         <View className="flex-row justify-between items-center">
-          <InterBold className="text-lg">{house.price}/yr</InterBold>
+          <InterBold className="text-lg">#{house.price}{house.mode==='rent'? '/yr' : ''}</InterBold>
 
           <View className="flex-row items-center justify-center gap">
             <Link

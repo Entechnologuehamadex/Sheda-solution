@@ -7,6 +7,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import InterBold from "../Text/InterBold";
 import Link from "expo-router/link";
 import { HouseCardProps } from "./types";
+import Button from "../common/Button";
+import { router } from "expo-router";
 
 const HouseCard = ({ house }: { house: HouseCardProps }) => {
   return (
@@ -66,7 +68,7 @@ const HouseCard = ({ house }: { house: HouseCardProps }) => {
         <View className="flex-row justify-between items-center">
           <InterBold className="text-lg">#{house.price}{house.mode==='rent'? '/yr' : ''}</InterBold>
 
-          <View className="flex-row items-center justify-center gap">
+          {/* <View className="flex-row items-center justify-center gap">
             <Link
               href={{
                 pathname: "/details/[id]",
@@ -82,7 +84,22 @@ const HouseCard = ({ house }: { house: HouseCardProps }) => {
               size={24}
               color="#C1272D"
             />
-          </View>
+          </View> */}
+
+         <Button 
+         isFull={false} 
+         color="" className="p-0 m-0 flex-row"
+         onPress={() => router.push({
+          pathname: "/details/[id]",
+          params: {id: house.id}
+        })}>
+            <InterRegular className="text-primary">View Details</InterRegular>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24}
+              color="#C1272D"
+            />
+         </Button>
         </View>
       </View>
     </View>

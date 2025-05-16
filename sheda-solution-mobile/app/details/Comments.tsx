@@ -3,8 +3,8 @@ import { TouchableOpacity, View } from "react-native";
 import InterRegular from "@/components/Text/InterRegular";
 import InterBold from "@/components/Text/InterBold";
 import { REVIEW } from "@/components/HouseCard/types";
-const Comments = ( {reviews } : {reviews: REVIEW[]}) => {
-  const [showMore, setShowMore] = useState(true);
+const Comments = ({ reviews }: { reviews: REVIEW[] }) => {
+  const [showMore, setShowMore] = useState(false);
 
   return (
     <View>
@@ -13,15 +13,18 @@ const Comments = ( {reviews } : {reviews: REVIEW[]}) => {
           <InterRegular className="text-xs/[150%]">
             {reviews[0].comment}
           </InterRegular>
-          <InterRegular className="text-right text-xs/[150%] text-secondaryText">
+          <InterRegular className="text-right text-sm/[150%] italic text-secondaryText">
             {reviews[0].date}
           </InterRegular>
         </View>
       ) : (
         <View className="gap-2">
           {reviews.map((review) => (
-            <View key={review.id} className="bg-[#00000008] rounded-lg p-2 gap-2">
-                <InterBold>{review.name}</InterBold>
+            <View
+              key={review.id}
+              className="bg-[#00000008] rounded-lg p-2 gap-2"
+            >
+              <InterBold>{review.name}</InterBold>
               <InterRegular className="text-sm/[150%] italic">
                 {review.comment}
               </InterRegular>
@@ -33,11 +36,13 @@ const Comments = ( {reviews } : {reviews: REVIEW[]}) => {
         </View>
       )}
 
-<View className="mt-2 items-end">
-      <TouchableOpacity onPress={()=>setShowMore(!showMore)}>
-        <InterRegular className="text-primary">{!showMore? "Show More" : "Show Less"}</InterRegular>
-      </TouchableOpacity>
-</View>
+      <View className="mt-2 items-end">
+        <TouchableOpacity onPress={() => setShowMore(!showMore)}>
+          <InterRegular className="text-primary">
+            {!showMore ? "Show More" : "Show Less"}
+          </InterRegular>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

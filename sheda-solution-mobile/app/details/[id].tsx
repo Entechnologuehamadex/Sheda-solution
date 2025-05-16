@@ -119,7 +119,7 @@ const Details = () => {
                 style={{
                   width: 35,
                   height: 35,
-                  borderRadius: "50%",
+                  borderRadius: 50,
                 }}
               />
               <View>

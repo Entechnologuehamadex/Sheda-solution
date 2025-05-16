@@ -8,8 +8,9 @@ import { LOCATION } from "@/assets/icons";
 import InterRegular from "@/components/Text/InterRegular";
 import InterMedium from "@/components/Text/InterMedium";
 import InterExtraLight from "@/components/Text/InterExtraLight";
-import totalPaymemt from "./totalPayment";
+import totalPaymemt from "../../utilities/totalPayment";
 import Button from "@/components/common/Button";
+import InterBold from "@/components/Text/InterBold";
 
 
 const PropertyAgreement = () => {
@@ -100,17 +101,23 @@ const PropertyAgreement = () => {
           </View>
         </View>
         
-        <View className="mt-24">
+       
+      </ScrollView>
+
+      <View className="absolute bottom-0 left-0 right-0 mx-auto max-w-2xl py-5 px-5">
           <Button 
-          onPress={()=> router.push('/select-currency')}
+          // onPress={()=> router.push('/select-currency')}
+          onPress={() => router.push({
+            pathname: '/select-currency',
+            params: {id: propertyId}
+          })} 
            className="rounded-lg">
-            <InterRegular className="text-base/5 text-white">Commit payment</InterRegular>
+            <InterSemiBold className="text-base/5 text-white">Commit payment</InterSemiBold>
           </Button>
           <Button color="white" className="border border-borderColor rounded-lg">
           <InterRegular className="text-base/5 text-secondaryText">Book an appointment</InterRegular>
           </Button>
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 };

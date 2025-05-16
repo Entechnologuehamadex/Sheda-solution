@@ -23,7 +23,6 @@ const PaymentPin = () => {
     setOtp("");
   };
 
-  console.log(amount, id)
 
   return (
     <SafeAreaView className="container max-w-2xl mx-auto" style={{ padding: 20 }}>

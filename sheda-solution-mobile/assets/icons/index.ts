@@ -19,6 +19,7 @@ import location from './location.svg';
 import bed from './bed.svg';
 import bath from './bath.svg';
 import phone from './phone.svg'
+import successful from './successful.svg';
 
 export { 
     GoogleIcon as GOOGLEICON,
@@ -42,4 +43,5 @@ export {
     bed as BED,
     bath as BATH,
     phone as PHONE,
+    successful as SUCCESSFUL
 };

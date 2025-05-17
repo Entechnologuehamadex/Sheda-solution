@@ -39,7 +39,7 @@ const Signup = () => {
       <View className="mt-8">
         {/* email input */}
         <View>
-          <InterRegular className="py-1 lg:text-2xl">Email</InterRegular>
+          <InterRegular className="py-1">Email</InterRegular>
           <StyledTextInput 
           placeholder="example@email.com"
           />
@@ -47,7 +47,7 @@ const Signup = () => {
 
         {/* Password input */}
         <View className="my-4">
-          <InterRegular className="py-1 lg:text-2xl">Create a password</InterRegular>
+          <InterRegular className="py-1">Create a password</InterRegular>
           <StyledTextInput 
           isPassword={true}
           placeholder="must be 8 characters"
@@ -56,7 +56,7 @@ const Signup = () => {
 
          {/* Confirm Password input */}
         <View className="my-4">
-          <InterRegular className="py-1 lg:text-2xl">Confirm Password</InterRegular>
+          <InterRegular className="py-1">Confirm Password</InterRegular>
           <StyledTextInput 
           isPassword={true}
           placeholder="repeat password"
@@ -64,7 +64,7 @@ const Signup = () => {
         </View>
 
         <Button className="rounded-lg">
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
            Sign up
           </InterSemiBold>
         </Button>
@@ -77,10 +77,10 @@ const Signup = () => {
         <Socials />
 
         <Link href={"/login"} className="text-center mt-4">
-          <InterRegular className="mr-1 lg:text-2xl">
+          <InterRegular className="mr-1">
             Already have an account?
           </InterRegular>
-          <InterBold className="lg:text-2xl"> Log in</InterBold>
+          <InterBold className=""> Log in</InterBold>
         </Link>
       </View>
     </View>

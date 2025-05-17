@@ -58,7 +58,7 @@ const Otp = () => {
         />
 
         <Button className="rounded-lg my-4" onPress={handleSubmiteOtp}>
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
             Verify
           </InterSemiBold>
         </Button>

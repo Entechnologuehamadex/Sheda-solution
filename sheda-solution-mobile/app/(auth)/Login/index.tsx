@@ -41,16 +41,16 @@ const Login = () => {
 
       <View className="mt-8">
         <View>
-          <InterRegular className="py-1 lg:text-2xl">Email address</InterRegular>
+          <InterRegular className="py-1">Email address</InterRegular>
           <StyledTextInput placeholder="useremail@email.com" />
         </View>
 
         <View className="my-4">
-          <InterRegular className="p-y1 lg:text-2xl">Password</InterRegular>
+          <InterRegular className="p-y1">Password</InterRegular>
           <StyledTextInput isPassword={true} placeholder="********" />
 
           <Link className="text-right my-1" href={"/(auth)/forget-pass"}>
-            <InterRegular className="text-sm lg:text-2xl">
+            <InterRegular className="text-sm">
               Forget password?
             </InterRegular>
           </Link>
@@ -59,7 +59,7 @@ const Login = () => {
         <Button className="rounded-lg"
         onPress={handleLogin}
         >
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
             Log in
           </InterSemiBold>
         </Button>
@@ -72,10 +72,10 @@ const Login = () => {
         <Socials />
 
         <Link href={"/signup"} className="text-center mt-4">
-          <InterRegular className="mr-1 lg:text-2xl">
+          <InterRegular className="mr-1">
             Don’t have an account?
           </InterRegular>
-          <InterBold className="lg:text-2xl"> Sign up</InterBold>
+          <InterBold className=""> Sign up</InterBold>
         </Link>
       </View>
     </View>

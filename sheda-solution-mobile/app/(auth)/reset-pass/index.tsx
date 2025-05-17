@@ -29,19 +29,19 @@ const ResetPass = () => {
 
       <View className="mt-8">
         {/* Password input */}
-        <InterRegular className="py-1 lg:text-2xl">New password</InterRegular>
+        <InterRegular className="py-1">New password</InterRegular>
         <StyledTextInput isPassword={true} placeholder="must be 8 characters" />
       </View>
 
       {/* Confirm Password input */}
       <View className="my-4">
-        <InterRegular className="py-1 lg:text-2xl">
+        <InterRegular className="py-1">
           Confirm new Password
         </InterRegular>
         <StyledTextInput isPassword={true} placeholder="repeat password" />
 
         <Button className="rounded-lg my-4" onPress={handlePassChanged}>
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
             Reset password
           </InterSemiBold>
         </Button>

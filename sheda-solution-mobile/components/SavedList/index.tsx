@@ -8,7 +8,7 @@ import InterSemiBold from "../Text/InterSemiBold";
 const SavedList = () => {
   return (
     <View className="flex-row flex-wrap gap-2">
-      {properties?.map((house: HouseCardProps) => (
+      {properties?.map((house: any) => (
         <View key={house.id} className="w-full lg:w-[49%]">
           <HouseCard house={house} />
         </View>
@@ -18,7 +18,7 @@ const SavedList = () => {
             className="rounded-lg"
             onPress={() => console.log("see more Clicked!!")}
           >
-            <InterSemiBold className="text-background text-base lg:text-2xl">
+            <InterSemiBold className="text-background text-base">
               See More
             </InterSemiBold>
           </Button>

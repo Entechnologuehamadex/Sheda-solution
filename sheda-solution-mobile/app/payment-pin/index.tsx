@@ -12,13 +12,14 @@ const PaymentPin = () => {
   const [otp, setOtp] = useState("");
 
   const { id, amount } = useLocalSearchParams();
+  const propertyId = id;
   
 
   //handle submit pin code
   const handleSubmitePin = () => {
     router.push({
-      pathname: "",
-      params: { otpCode: otp },
+      pathname: "/appointment-successful",
+      params: { otpCode: otp, id : propertyId },
     });
     setOtp("");
   };
@@ -57,7 +58,7 @@ const PaymentPin = () => {
         />
 
         <Button className="rounded-lg my-4" onPress={handleSubmitePin}>
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
             Confirm payment
           </InterSemiBold>
         </Button>

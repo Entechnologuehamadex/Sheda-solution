@@ -10,6 +10,7 @@ import { useLocalSearchParams, router } from "expo-router";
 const SelectCurrency = () => {
   const { id } = useLocalSearchParams();
   const propertyId = id; // Handle string | string[]
+  console.log(propertyId)
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

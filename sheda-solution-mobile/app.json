@@ -35,6 +35,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you post houses and profile photos"
+        }
+      ],
       "expo-font"
     ],
     "experiments": {

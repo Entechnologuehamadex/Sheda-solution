@@ -22,7 +22,7 @@ const Home = () => {
         <ScrollView
           horizontal={false}
           className="mt-2 flex-1"
-          contentContainerStyle={{ paddingBottom: 80 }}
+          contentContainerStyle={{ paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
         >
           <View className="mb-3">

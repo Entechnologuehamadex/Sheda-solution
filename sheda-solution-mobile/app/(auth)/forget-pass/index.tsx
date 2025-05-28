@@ -44,7 +44,7 @@ const Signup = () => {
         <Button 
         className="rounded-lg my-4"
         onPress={handleSendCode}>
-          <InterSemiBold className="text-background text-base lg:text-2xl">
+          <InterSemiBold className="text-background text-base">
             Send code
           </InterSemiBold>
         </Button>

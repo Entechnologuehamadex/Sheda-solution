@@ -1,7 +1,8 @@
-import { NoMessage } from "@/components/NoMessage";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InterSemiBold from "@/components/Text/InterSemiBold";
+import { NoMessage } from "@/components/inbox/NoMessage";
+import Messages from "@/components/inbox/Messages";
 
 const Inbox = () => {
   return (
@@ -13,7 +14,8 @@ const Inbox = () => {
            <View className="">
           <InterSemiBold className="text-lg/5">Messages</InterSemiBold>
         </View>
-          <NoMessage/>
+          {/* <NoMessage/> */}
+          <Messages />
 
           </View>
           </SafeAreaView>

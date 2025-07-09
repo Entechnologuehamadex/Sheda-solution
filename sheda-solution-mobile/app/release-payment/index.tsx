@@ -8,34 +8,35 @@ import { LOCATION } from "@/assets/icons";
 import InterRegular from "@/components/Text/InterRegular";
 import InterMedium from "@/components/Text/InterMedium";
 import InterExtraLight from "@/components/Text/InterExtraLight";
-import totalPaymemt from "@/utilities/totalPayment";
+import totalPaymemt from "../../utilities/totalPayment";
 import Button from "@/components/common/Button";
 
-const PropertySummary = () => {
+const ReleasePayment = () => {
   // Safely extract id from search params
   const { id } = useLocalSearchParams();
   const propertyId = id; // Handle string | string[]
-  let property = getDetails(propertyId as string); //grab the property from the backend
+  let property = getDetails(propertyId as string);
 
   const totalPay = totalPaymemt(property?.price, property?.damages);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1 }}
-      className="container flex-1 mx-auto max-w-2xl p-5"
-    >
-      {/* header */}
-      <View className="flex-row gap-4 items-center">
-        <BackBtn />
-        <InterSemiBold className="text-base/5">Property Summary</InterSemiBold>
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
+        className="container flex-1 mx-auto max-w-2xl p-5"
         contentContainerStyle={{
-          paddingBottom: 80,
+          paddingBottom: 60,
         }}
         showsVerticalScrollIndicator={false}
         // style={{ paddingVertical: 20 }}
       >
+        {/* header */}
+        <View className="flex-row gap-4 items-center">
+          <BackBtn />
+          <InterSemiBold className="text-base/5">
+            Property Agreement
+          </InterSemiBold>
+        </View>
+
         <View className="mt-7 border-b border-borderColor pb-4">
           <View className="h-[160] w-full rounded-lg overflow-hidden">
             <Image
@@ -92,51 +93,31 @@ const PropertySummary = () => {
           <InterRegular>Total</InterRegular>
           <View className="">
             <InterSemiBold className="text-right">N{totalPay}</InterSemiBold>
-            {/* <InterRegular className="text-xs/[150%] text-secondaryText">
-              Available: Act bal placeholder
-            </InterRegular> */}
           </View>
         </View>
-
-        <View className="border-t border-dotted mt-8">
-          <View className="flex-row justify-between mt-10">
-            <InterMedium className="text-xs/[150%]">Payment method</InterMedium>
-            <InterRegular className="text-xs/[150%]">
-              Selected method
-            </InterRegular>
-          </View>
-          <View className="flex-row justify-between my-3">
-            <InterMedium className="text-xs/[150%]">Charge</InterMedium>
-            <InterSemiBold className="text-xs/[150%]">
-              Amount in selected currency
-            </InterSemiBold>
-          </View>
-          <View className="flex-row justify-between">
-            <InterMedium className="text-xs/[150%]">Rate</InterMedium>
-            <InterRegular className="text-xs/[150%]">
-              Per/Selected rate
-            </InterRegular>
-          </View>
+        <View className="p-[10] bg-[#e1e1e1] mt-[86] rounded-lg">
+            <InterMedium className="text-xs/[150%]">By pressing “Release payment”, you confirm to be satisfied with the property and funds to be released to the seller. Do you still want to proceed?</InterMedium>
         </View>
       </ScrollView>
 
       <View className="absolute bottom-0 left-0 right-0 mx-auto max-w-2xl py-5 px-5">
         <Button
+          // onPress={()=> router.push('/select-currency')}
           onPress={() =>
             router.push({
-              pathname: "/payment-pin",
-              params: { id: propertyId, amount: totalPay },
+              pathname: "/select-currency",
+              params: { id: propertyId },
             })
           }
           className="rounded-lg"
         >
-          <InterRegular className="text-base/5 text-white">
-            Confirm payment
-          </InterRegular>
+          <InterSemiBold className="text-base/5 text-white">
+            Release payment
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
   );
 };
 
-export default PropertySummary;
+export default ReleasePayment;

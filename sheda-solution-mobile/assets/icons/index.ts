@@ -35,6 +35,7 @@ import inbox from './inbox.svg'
 import pencil from './pencil.svg';
 import eye from './eye.svg';
 import eyeSlash from './eye-slash.svg';
+import Wallet from './Wallet.svg'
 
 export { 
     GoogleIcon as GOOGLEICON,
@@ -73,5 +74,6 @@ export {
     call as CALL,
     pencil as PENCIL,
     eye as EYE,
-    eyeSlash as EYESLASH
+    eyeSlash as EYESLASH,
+    Wallet as WALLET,
 };

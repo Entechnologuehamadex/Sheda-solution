@@ -16,7 +16,7 @@ const Saved = () => {
         <ScrollView
           horizontal={false}
           className="mt-2 flex-1"
-          contentContainerStyle={{ paddingBottom: 80 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
           <SavedList />

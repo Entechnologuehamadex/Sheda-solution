@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import BackBtn from "@/components/common/BackBtn";
@@ -8,8 +8,7 @@ import Icon from "@/components/common/Icon";
 import { PROFILETICK, CHEVRONRIGHT } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import InterRegular from "@/components/Text/InterRegular";
-import profileList  from "./profileList";
-
+import profileList from "./profileList";
 
 const Profile = () => {
   return (
@@ -44,36 +43,38 @@ const Profile = () => {
 
             <View className="mt-3">
               <Button className="rounded-lg">
-                <InterMedium className="text-white"> Switch to seller accout </InterMedium>
+                <InterMedium className="text-white">
+                  {" "}
+                  Switch to seller accout{" "}
+                </InterMedium>
               </Button>
             </View>
           </View>
         </View>
 
-{/* profile list section */}
-        <View>  
-    {profileList.map((item) => (
-      <View
-        key={item.id}
-        className="flex-row items-center justify-between px-5 py-5 border-b border-[#0000001A]">
-        <View className="flex-row items-center gap-3">
-          <Icon icon={item.icon} width={20} height={20} />
-          <InterMedium className="text-base/[150%]">{item.title}</InterMedium>
-          </View>
-          {item.chevronRight && (
-            <Icon
-              icon={CHEVRONRIGHT}
-              width={10}
-              height={20}
-            />
-          )}
+        {/* profile list section */}
+        <View>
+          {profileList.map((item) => (
+            <TouchableOpacity
+            onPress={item.onClick}
+              key={item.id}
+              className="flex-row items-center justify-between px-5 py-5 border-b border-[#0000001A]"
+            >
+              <View className="flex-row items-center gap-3">
+                <Icon icon={item.icon} width={20} height={20} />
+                <InterMedium className="text-base/[150%]">
+                  {item.title}
+                </InterMedium>
+              </View>
+              {item.chevronRight && (
+                <Icon icon={CHEVRONRIGHT} width={10} height={20} />
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
-         ))}
-      </View>
       </View>
     </SafeAreaView>
   );
 };
-
 
 export default Profile;

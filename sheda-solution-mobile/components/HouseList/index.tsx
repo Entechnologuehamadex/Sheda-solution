@@ -13,7 +13,7 @@ const HouseList = () => {
           <HouseCard house={house} />
         </View>
       ))}
-      <View className="w-full mb-9">
+      {/* <View className="w-full">
                <Button
                  className="rounded-lg"
                  onPress={() => console.log("see more Clicked!!")}
@@ -22,7 +22,7 @@ const HouseList = () => {
                    See More
                  </InterSemiBold>
                </Button>
-             </View>
+             </View> */}
     </View>
   );
 };

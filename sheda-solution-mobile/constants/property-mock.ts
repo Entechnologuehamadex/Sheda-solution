@@ -11,7 +11,7 @@ const properties = [
     mode: 'buy',
     description:
       'This is a beautiful 4 bedroom bungalow located in Lekki, Lagos. It has a spacious living room, modern kitchen, and a large backyard.',
-      extras: ['Air Conditioning', 'POP Ceiling', 'Funiture', 'Floor Tiles'],
+    extras: ['Air Conditioning', 'POP Ceiling', 'Funiture', 'Floor Tiles'],
     image: require('../assets/images/apt-1.png'),
     seller: {
       name: 'Yusuf Adesina',
@@ -19,7 +19,7 @@ const properties = [
       photo: require('../assets/images/my-pic.jpg'),
       rating: 4,
       isActive: true,
-      reviews:[
+      reviews: [
         {
           id: '1',
           name: 'Jane Smith',
@@ -30,7 +30,7 @@ const properties = [
           id: '2',
           name: 'John Doe',
           comment: 'Very professional and reliable.',
-           date: '03/01/2025'
+          date: '03/01/2025'
         },
       ]
     },
@@ -56,7 +56,7 @@ const properties = [
       photo: require('../assets/images/sheda-logo.png'),
       isActive: true,
       rating: 3,
-      reviews:[
+      reviews: [
         {
           id: '1',
           name: 'Jane Smith',
@@ -91,7 +91,7 @@ const properties = [
       rating: 2,
       photo: require('../assets/images/my-pic.jpg'),
       isActive: true,
-      
+
     },
 
     isFavorite: true,

@@ -11,6 +11,7 @@ import Carousel, {
 import { properties } from "@/constants/property-mock";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import InterBold from "../Text/InterBold";
+import totalPayment from "@/utilities/totalPayment";
 
 const deviceWidth = Dimensions.get("window").width; // Get device width
 
@@ -65,7 +66,7 @@ export default function FeaturedCarousel() {
                   {/* Price Tag */}
                   <View className="flex items-end mt-3">
                     <InterBold className="bg-primary text-white text-center h-8 px-3 py-1 rounded-lg text-base">
-                      {item.price}
+                      {totalPayment(item.price)}
                     </InterBold>
                   </View>
 

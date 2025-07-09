@@ -1,4 +1,5 @@
 import { PROFILESETTING, HELP, MESSAGE, LOGOUT } from "@/assets/icons"
+import { router } from "expo-router";
 
 
 const profileList = [
@@ -7,8 +8,8 @@ const profileList = [
         icon: PROFILESETTING,
         title: "Settings",
         chevronRight: true,
-        onclick: () => {
-            console.log("Settings clicked");
+        onClick: () => {
+            router.push('/profile-setting')
         }
     },
     {
@@ -16,17 +17,17 @@ const profileList = [
         icon: HELP,
         title: "Help",
         chevronRight: true,
-        onPress: () => {
-            console.log('Help clicked')
+        onClick: () => {
+            router.push('/support')
         }
     },
     {
         id: 3,
         icon: MESSAGE,
-        title: "Message",
+        title: "Feedback",
         chevronRight: true,
-        onPress: () => {
-            console.log('Message clicked')
+        onClick: () => {
+            router.push('/support-feedback')
         }
     },
     {
@@ -34,7 +35,7 @@ const profileList = [
         icon: LOGOUT,
         title: "Logout",
         chevronRight: false,
-        onPress: () => {
+        onClick: () => {
             console.log('logout clicked')
         }
     },

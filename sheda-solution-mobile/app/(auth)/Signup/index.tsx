@@ -4,7 +4,7 @@ import { Text, View, TextInput } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
@@ -63,7 +63,7 @@ const Signup = () => {
           />
         </View>
 
-        <Button className="rounded-lg">
+        <Button className="rounded-lg" onPress={() => router.push('/(auth)/wallet-setup')}>
           <InterSemiBold className="text-background text-base">
            Sign up
           </InterSemiBold>

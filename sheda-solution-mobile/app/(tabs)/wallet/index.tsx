@@ -9,7 +9,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import InterExtraBold from "@/components/Text/InterExtraBold";
 import Icon from "@/components/common/Icon";
 import Button from "@/components/common/Button";
-import { DEPOSIT, WITHDRAW } from "@/assets/icons";
+import { DEPOSIT, EYE, EYESLASH, WITHDRAW } from "@/assets/icons";
 import wallet  from "../../../constants/walletHeader";
 
 const Wallet = () => {
@@ -40,12 +40,15 @@ const Wallet = () => {
         <View className="max-w-64 mx-auto my-9 items-center">
           <View className="flex-row items-center  gap-2">
             <InterRegular className="text-sm/5">Total balance</InterRegular>
-            <TouchableOpacity onPress={handleShowBal}>
+            <TouchableOpacity onPress={handleShowBal} className="">
+              <View pointerEvents="none">
               {showBal ? (
-                <FontAwesome name="eye" size={15} color="black" />
+                <Icon icon={EYE} width={15} height={15} color="black" />
               ) : (
-                <FontAwesome name="eye-slash" size={15} color="black" />
+                <Icon icon={EYESLASH} width={15} height={15} color="black" />
               )}
+
+              </View>
             </TouchableOpacity>
           </View>
 

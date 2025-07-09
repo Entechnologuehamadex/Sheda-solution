@@ -1,14 +1,13 @@
 import { View } from "react-native"
-import Icon from "./common/Icon"
+import Icon from "../common/Icon"
 import { NOPURCHASE } from "@/assets/icons"
-import InterSemiBold from "./Text/InterSemiBold"
-import InterRegular from "./Text/InterRegular"
-import Button from "./common/Button"
+import InterSemiBold from "../Text/InterSemiBold"
+import InterRegular from "../Text/InterRegular"
+import Button from "../common/Button"
 import { router } from "expo-router"
 export const NoHistory = ({headText}: {headText: any}) => {
     return(
-
-        <View className="flex-1 justify-center">
+        <View className="flex-1 justify-center mt-20">
           <View className="items-center">
             <Icon
               icon={NOPURCHASE}

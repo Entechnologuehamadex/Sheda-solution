@@ -2,10 +2,12 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyledTextInputProps } from "./types";
 import { useState } from "react";
+import InterRegular from "@/components/Text/InterRegular";
 
 const StyledTextInput: React.FC<StyledTextInputProps> = ({
   placeholder,
   isPassword = false,
+  // label,
   onPress,
   ...props
 }) => {
@@ -17,6 +19,7 @@ const StyledTextInput: React.FC<StyledTextInputProps> = ({
 
   return (
     <View className="w-full relative">
+      {/* {label? <InterRegular className="mb-1 text-xs/[150%]">{label}</InterRegular> : ''} */}
       <TextInput
         className="w-full border py-4 border-borderColor rounded-lg text-primaryText px-4"
         style={{ fontFamily: "Inter-Regular", fontSize: 12 }}

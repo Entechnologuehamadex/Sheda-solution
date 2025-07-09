@@ -21,7 +21,7 @@ import StyledTextInput from "@/components/input/textInput";
 import Button from "@/components/common/Button";
 import HouseList from "@/components/HouseList";
 import InterBold from "@/components/Text/InterBold";
-import { Path } from "react-native-svg";
+import { deviceHeight } from "@/constants/values";
 
 const Details = () => {
   // Safely extract id from search params
@@ -53,7 +53,7 @@ const Details = () => {
 
   console.log(property.seller);
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, height: deviceHeight }}>
       <ScrollView
         className="container flex-1 mx-auto max-w-2xl"
         contentContainerStyle={{
@@ -154,6 +154,7 @@ const Details = () => {
             </View>
           </View>
         </View>
+        
         <View className="px-5 py-3 border-t border-borderColor">
           <InterRegular className="text-base/5">Description</InterRegular>
           <InterRegular className="text-secondaryText text-sm/[150%] mt-2">
@@ -222,7 +223,7 @@ const Details = () => {
                 {property.mode === "rent" ? "Rent" : "Buy" }
               </InterMedium>
               <InterBold className="text-lg text-primaryText">
-              {property.mode === "rent" ? `#${property.price}/yr` : `#${property.price}`}
+              {property.mode === "rent" ? `N${property.price}/yr` : `N${property.price}`}
               </InterBold>
             </View>
             <Button

@@ -1,12 +1,15 @@
-// app/_layout.tsx
-import { Stack } from "expo-router";
-import "../global.css";
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+"use client"
 
-SplashScreen.preventAutoHideAsync();
+// app/_layout.tsx
+import { Stack } from "expo-router"
+import "../global.css"
+import { useFonts } from "expo-font"
+import * as SplashScreen from "expo-splash-screen"
+import { useEffect } from "react"
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context"
+import { ModeProvider } from "@/contexts/ModeContext"
+
+SplashScreen.preventAutoHideAsync()
 
 const RootLayout = () => {
   const [loaded, error] = useFonts({
@@ -22,31 +25,31 @@ const RootLayout = () => {
     "Sora-Bold": require("../assets/fonts/Sora-Bold.ttf"),
     "Sora-Medium": require("../assets/fonts/Sora-Medium.ttf"),
     "Manrope-Medium": require("../assets/fonts/Manrope-Medium.ttf"),
-  });
+  })
 
   useEffect(() => {
     if (loaded || error) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync()
     }
-  }, [loaded, error]);
+  }, [loaded, error])
 
   if (!loaded && !error) {
-    return null;
+    return null
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="profile" options={{ headerShown: false }} />
-          <Stack.Screen name="filter" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
-};
+    <ModeProvider>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </ModeProvider>
+  )
+}
 
-export default RootLayout;
+export default RootLayout

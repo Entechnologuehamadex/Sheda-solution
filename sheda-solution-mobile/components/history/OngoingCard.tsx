@@ -1,20 +1,18 @@
-import React from "react";
-import { View, Text, ImageBackground, TouchableOpacity } from "react-native";
-import InterRegular from "@/components/Text/InterRegular";
-import InterMedium from "@/components/Text/InterMedium";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import InterBold from "@/components/Text/InterBold";
-import Link from "expo-router/link";
-import HouseCard from "@/components/HouseCard";
-import { HouseProps } from "@/types";
-import Button from "@/components/common/Button";
-import { router } from "expo-router";
-import Icon from "@/components/common/Icon";
-import { MESSAGE, LOCATION, BATH, BED } from "@/assets/icons";
-import totalPayment from "@/utilities/totalPayment";
+import { View, ImageBackground } from "react-native"
+import InterRegular from "@/components/Text/InterRegular"
+import InterMedium from "@/components/Text/InterMedium"
+import EvilIcons from "@expo/vector-icons/EvilIcons"
+import InterBold from "@/components/Text/InterBold"
+import type { HouseProps } from "@/types"
+import Button from "@/components/common/Button"
+import { router } from "expo-router"
+import Icon from "@/components/common/Icon"
+import { MESSAGE, LOCATION, BATH, BED } from "@/assets/icons"
+import totalPayment from "@/utilities/totalPayment"
+import { useMode } from "@/contexts/ModeContext"
 
 const OngoingCard = ({ house }: { house: HouseProps }) => {
+  const { isSeller } = useMode()
   return (
     <View className="w-full rounded-lg bg-background">
       <View className=" rounded-t-lg overflow-hidden">
@@ -41,22 +39,16 @@ const OngoingCard = ({ house }: { house: HouseProps }) => {
           <View className="flex-row w-1/2 gap-2">
             <View className="flex-row items-center gap-1">
               <Icon icon={LOCATION} width={10} height={20} />
-              <InterMedium className="text-[#878787BF] text-xs/[150%]">
-                {house.location}
-              </InterMedium>
+              <InterMedium className="text-[#878787BF] text-xs/[150%]">{house.location}</InterMedium>
             </View>
 
             <View className="flex-row items-center gap-1">
               <Icon icon={BED} width={20} height={20} />
-              <InterMedium className="text-[#878787BF] text-xs/[150%]">
-                {house.bedrooms} Bed
-              </InterMedium>
+              <InterMedium className="text-[#878787BF] text-xs/[150%]">{house.bedrooms} Bed</InterMedium>
             </View>
             <View className="flex-row items-cend gap-1">
               <Icon icon={BATH} width={15} height={15} />
-              <InterMedium className="text-[#878787BF] text-xs/[150%]">
-                {house.bathrooms} Bath
-              </InterMedium>
+              <InterMedium className="text-[#878787BF] text-xs/[150%]">{house.bathrooms} Bath</InterMedium>
             </View>
           </View>
         </View>
@@ -93,21 +85,26 @@ const OngoingCard = ({ house }: { house: HouseProps }) => {
           <Button
             color=""
             isFull
-            onPress={() =>
-              router.push({
-                pathname: "/release-payment",
-                params: { id: house.id },
-              })
-            }
+            onPress={() => {
+              if (isSeller) {
+                router.push({
+                  pathname: "/release-document",
+                  params: { id: house.id },
+                })
+              } else {
+                router.push({
+                  pathname: "/release-payment",
+                  params: { id: house.id },
+                })
+              }
+            }}
           >
-            <InterRegular className="text-primary">
-              Release payment
-            </InterRegular>
+            <InterRegular className="text-primary">{isSeller ? "Release document" : "Release payment"}</InterRegular>
           </Button>
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default OngoingCard;
+export default OngoingCard

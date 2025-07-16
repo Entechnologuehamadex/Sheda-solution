@@ -1,23 +1,23 @@
 "use client"
 
-import { Text, View, SafeAreaView, ScrollView, TouchableOpacity } from "react-native"
+import { View, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Image } from "react-native"
 import InterSemiBold from "@/components/Text/InterSemiBold"
-import Button from "@/components/common/Button"
-import historyHeader from "../../../constants/historyHeader"
 import InterRegular from "@/components/Text/InterRegular"
+import Button from "@/components/common/Button"
+import BackBtn from "@/components/common/BackBtn"
+import SelectInput from "@/components/input/selectInput"
+import Checkbox from "@/components/input/checkbox"
+import historyHeader from "../../../constants/historyHeader"
 import { useEffect, useState } from "react"
 import { NoHistory } from "@/components/history/NoHistory"
 import { historyData } from "../../../constants/history-data"
 import type { HouseProps, CancelledHistory } from "@/types"
 import HistoryList from "../../../components/history/HistoryList"
 import { useMode } from "@/contexts/ModeContext"
-import BackBtn from "@/components/common/BackBtn"
-import Icon from "@/components/common/Icon"
-import { HISTORYICON } from "@/assets/icons"
 import { router } from "expo-router"
 
 const History = () => {
-  const { isSeller, toggleMode } = useMode()
+  const { isSeller } = useMode()
   const [activeIndex, setIsActiveIndex] = useState<null | number>(0)
   const [activeItem, setActiveItem] = useState<null | any>("Ongoing")
   const [history, setHistory] = useState<(HouseProps | CancelledHistory)[] | null>(null)
@@ -32,9 +32,8 @@ const History = () => {
     bedrooms: "1",
     bathrooms: "1",
     extras: [] as string[],
-    photos: [] as string[],
     description: "",
-    price: "",
+    price: "500,000",
     isNegotiable: false,
     documentsUploaded: false,
   })
@@ -45,27 +44,22 @@ const History = () => {
   }
 
   const handleHistoryPress = () => {
+    console.log("History button pressed, setting showHistory to true")
     setShowHistory(true)
+    setCurrentStep(0) // Reset to overview when going to history
   }
 
   const handleBackFromHistory = () => {
     setShowHistory(false)
+    setCurrentStep(0) // Reset to overview when coming back
   }
 
   const handleNextStep = () => {
-    if (currentStep < 6) {
-      setCurrentStep(currentStep + 1)
-    }
+    setCurrentStep(currentStep + 1)
   }
 
   const handlePrevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleFormDataUpdate = (data: any) => {
-    setFormData({ ...formData, ...data })
+    setCurrentStep(currentStep - 1)
   }
 
   const handleGetStarted = () => {
@@ -76,13 +70,26 @@ const History = () => {
     setCurrentStep(5)
   }
 
-  const handleAuthorize = () => {
+  const handleDocumentUploaded = () => {
+    setFormData({ ...formData, documentsUploaded: true })
     setCurrentStep(6)
+  }
+
+  const handleAuthorize = () => {
+    setCurrentStep(7)
   }
 
   const handleGoToHomepage = () => {
     router.push("/(tabs)/home")
     setCurrentStep(0)
+  }
+
+  const handleExtraToggle = (extra: string) => {
+    const currentExtras = formData.extras || []
+    const updatedExtras = currentExtras.includes(extra)
+      ? currentExtras.filter((item: string) => item !== extra)
+      : [...currentExtras, extra]
+    setFormData({ ...formData, extras: updatedExtras })
   }
 
   useEffect(() => {
@@ -99,32 +106,14 @@ const History = () => {
       }
     }
 
-    if (!isSeller) {
+    if (!isSeller || showHistory) {
       fetchHistory()
     }
-  }, [activeItem, isSeller])
-
-  // Render History Button for Seller Mode
-  const renderHistoryButton = () => (
-    <TouchableOpacity
-      onPress={handleHistoryPress}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        backgroundColor: "#FFF5F5",
-      }}
-    >
-      <Icon icon={HISTORYICON} width={16} height={16} />
-      <InterRegular style={{ marginLeft: 8, color: "#C1272D", fontSize: 14 }}>History</InterRegular>
-    </TouchableOpacity>
-  )
+  }, [activeItem, isSeller, showHistory])
 
   // Progress Indicator Component
   const ProgressIndicator = ({ currentStep }: { currentStep: number }) => (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 20 }}>
+    <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 8, marginVertical: 20, width: "100%" }}>
       {[1, 2, 3, 4].map((step) => (
         <View
           key={step}
@@ -132,7 +121,6 @@ const History = () => {
             flex: 1,
             height: 4,
             backgroundColor: step <= currentStep ? "#C1272D" : "#E5E5E5",
-            marginHorizontal: 2,
             borderRadius: 2,
           }}
         />
@@ -140,221 +128,195 @@ const History = () => {
     </View>
   )
 
-  // Property Listing Overview
+  // Screen 0: Property Listing Overview
+  const steps = [
+    {
+      step: 1,
+      title: "Describe your property",
+      description: "Fill in the necessary information that best describes your property",
+    },
+    {
+      step: 2,
+      title: "Add extras",
+      description: "Tick the amenities that make your property standout amidst others",
+    },
+    {
+      step: 3,
+      title: "Upload quality photos",
+      description:
+        "Add photos/videos of your properties,showing the selling point, and include a short concise description.",
+    },
+    {
+      step: 4,
+      title: "Set your price and list",
+      description: "Here, you set the cost price of your property and you proceed to approve your listing request.",
+    },
+  ]
+
   const PropertyListingOverview = () => (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <InterSemiBold style={{ fontSize: 18, color: "#000" }}>List a property</InterSemiBold>
-        {renderHistoryButton()}
-      </View>
-
-      <ProgressIndicator currentStep={0} />
-
-      <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 30 }}>
-        Property listing made easy in 4 easy steps.
-      </InterRegular>
-
-      <View style={{ marginBottom: 40 }}>
-        {[
-          {
-            step: 1,
-            title: "Describe your property",
-            description: "Fill in the necessary information that best describes your property",
-          },
-          {
-            step: 2,
-            title: "Add extras",
-            description: "Tick the amenities that make your property standout amidst others",
-          },
-          {
-            step: 3,
-            title: "Upload quality photos",
-            description:
-              "Add photos/videos of your properties,showing the selling point, and include a short concise description.",
-          },
-          {
-            step: 4,
-            title: "Set your price and list",
-            description:
-              "Here, you set the cost price of your property and you proceed to approve your listing request.",
-          },
-        ].map((item) => (
-          <View key={item.step} style={{ flexDirection: "row", marginBottom: 30 }}>
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 px-5 pt-5">
+        {/* Header */}
+        <View className="flex-row justify-between items-center mb-5">
+          <InterSemiBold className="text-[20px] text-black">List a property</InterSemiBold>
+          <TouchableOpacity onPress={handleHistoryPress} className="flex-row items-center px-3 py-1.5 gap-2">
             <View
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 12,
-                backgroundColor: "#C1272D",
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 15,
-                marginTop: 2,
-              }}
+              className="w-5 h-5 rounded-full border-2 justify-center items-center"
+              style={{ borderColor: "#C1272D" }}
             >
-              <InterRegular style={{ color: "#FFF", fontSize: 12, fontWeight: "600" }}>{item.step}</InterRegular>
+              <View className="w-3 h-3 rounded-full border" style={{ borderColor: "#C1272D" }} />
             </View>
-            <View style={{ flex: 1 }}>
-              <InterSemiBold style={{ fontSize: 16, color: "#000", marginBottom: 8 }}>{item.title}</InterSemiBold>
-              <InterRegular style={{ fontSize: 14, color: "#666", lineHeight: 20 }}>{item.description}</InterRegular>
+            <InterRegular className="text-[16px]" style={{ color: "#C1272D" }}>
+              History
+            </InterRegular>
+          </TouchableOpacity>
+        </View>
+
+        {/* Progress bars */}
+        <View className="flex-row space-x-2 mb-7">
+          {[1, 2, 3, 4].map((step) => (
+            <View key={step} className="flex-1 h-1 rounded" style={{ backgroundColor: "#E5E5E5" }} />
+          ))}
+        </View>
+
+        <InterRegular className="text-[16px] text-black mb-10">
+          Property listing made easy in 4 easy steps.
+        </InterRegular>
+
+        <View className="mb-15">
+          {steps.map((item) => (
+            <View key={item.step} className="flex-row items-start mb-7">
+              <View
+                className="w-8 h-8 rounded-full justify-center items-center mr-4"
+                style={{ backgroundColor: "#C1272D" }}
+              >
+                <InterSemiBold className="text-white text-[16px]">{item.step}</InterSemiBold>
+              </View>
+              <View className="flex-1">
+                <InterSemiBold className="text-[16px] text-black mb-2">{item.title}</InterSemiBold>
+                <InterRegular className="text-[14px] text-gray-500 leading-5">{item.description}</InterRegular>
+              </View>
             </View>
+          ))}
+        </View>
+
+        <Button onPress={handleNextStep} isFull={true} className="rounded-lg mb-10">
+          <InterSemiBold className="text-white text-[16px]">Get started</InterSemiBold>
+        </Button>
+      </ScrollView>
+    </SafeAreaView>
+  )
+  // Screen 1: Property Description Form
+  const PropertyDescriptionForm = () => {
+    const propertyTypes = [
+      { label: "Apartment", value: "Apartment" },
+      { label: "House", value: "House" },
+      { label: "Office", value: "Office" },
+    ]
+
+    const statusOptions = [
+      { label: "For rent", value: "For rent" },
+      { label: "For sale", value: "For sale" },
+    ]
+
+    const locations = [
+      { label: "Lekki, Lagos", value: "Lekki, Lagos" },
+      { label: "Victoria Island, Lagos", value: "Victoria Island, Lagos" },
+      { label: "Ikeja, Lagos", value: "Ikeja, Lagos" },
+    ]
+
+    const furnishingOptions = [
+      { label: "Unfurnished", value: "Unfurnished" },
+      { label: "Semi-furnished", value: "Semi-furnished" },
+      { label: "Fully furnished", value: "Fully furnished" },
+    ]
+
+    const bedroomOptions = [
+      { label: "1", value: "1" },
+      { label: "2", value: "2" },
+      { label: "3", value: "3" },
+      { label: "4", value: "4" },
+    ]
+
+    const bathroomOptions = [
+      { label: "1", value: "1" },
+      { label: "2", value: "2" },
+      { label: "3", value: "3" },
+      { label: "4", value: "4" },
+    ]
+
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="px-5 pt-5">
+          <View className="flex flex-row items-center mb-8">
+            <BackBtn onPress={handlePrevStep} />
+            <InterSemiBold className="text-[18px] text-black ml-5">List a property</InterSemiBold>
           </View>
-        ))}
-      </View>
 
-      <Button
-        onPress={handleGetStarted}
-        style={{
-          backgroundColor: "#C1272D",
-          paddingVertical: 16,
-          borderRadius: 8,
-          marginBottom: 40,
-        }}
-      >
-        <InterSemiBold style={{ color: "#FFF", fontSize: 16, textAlign: "center" }}>Get started</InterSemiBold>
-      </Button>
-    </ScrollView>
-  )
-
-  // Property Description Form (Step 1)
-  const PropertyDescriptionForm = () => (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-        <BackBtn onPress={handlePrevStep} />
-        <InterSemiBold style={{ fontSize: 18, color: "#000", marginLeft: 15 }}>List a property</InterSemiBold>
-      </View>
-
-      <ProgressIndicator currentStep={1} />
-
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Property type</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.propertyType}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
+          <ProgressIndicator currentStep={1} />
         </View>
-      </View>
 
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Status</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.status}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
+        <ScrollView className="flex-1 px-5">
+          <SelectInput
+            label="Property type"
+            options={propertyTypes}
+            value={formData.propertyType}
+            onValueChange={(value) => setFormData({ ...formData, propertyType: value as string })}
+            inputStyle={{ paddingRight: 20 }}
+          />
+
+          <SelectInput
+            label="Status"
+            options={statusOptions}
+            value={formData.status}
+            onValueChange={(value) => setFormData({ ...formData, status: value as string })}
+            inputStyle={{ paddingRight: 20 }}
+          />
+
+          <SelectInput
+            label="Location"
+            options={locations}
+            value={formData.location}
+            onValueChange={(value) => setFormData({ ...formData, location: value as string })}
+            inputStyle={{ paddingRight: 20 }}
+          />
+
+          <SelectInput
+            label="Furnishing"
+            options={furnishingOptions}
+            value={formData.furnishing}
+            onValueChange={(value) => setFormData({ ...formData, furnishing: value as string })}
+            inputStyle={{ paddingRight: 20 }}
+          />
+
+          <SelectInput
+            label="Bedrooms"
+            options={bedroomOptions}
+            value={formData.bedrooms}
+            onValueChange={(value) => setFormData({ ...formData, bedrooms: value as string })}
+            inputStyle={{ paddingRight: 20 }}
+          />
+
+          <SelectInput
+            label="Bathrooms"
+            options={bathroomOptions}
+            value={formData.bathrooms}
+            onValueChange={(value) => setFormData({ ...formData, bathrooms: value as string })}
+            containerStyle={{ marginBottom: 40 }}
+            inputStyle={{ paddingRight: 20 }}
+          />
+        </ScrollView>
+
+        <View className="px-5 pb-8">
+          <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
+            <InterSemiBold className="text-white text-base">Next</InterSemiBold>
+          </Button>
         </View>
-      </View>
+      </SafeAreaView>
+    )
+  }
 
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Location</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.location}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
-        </View>
-      </View>
-
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Furnishing</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.furnishing}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
-        </View>
-      </View>
-
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Bedrooms</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.bedrooms}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
-        </View>
-      </View>
-
-      <View style={{ marginBottom: 40 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Bathrooms</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>{formData.bathrooms}</InterRegular>
-          <Text style={{ fontSize: 16, color: "#666" }}>▼</Text>
-        </View>
-      </View>
-
-      <Button
-        onPress={handleNextStep}
-        style={{
-          backgroundColor: "#C1272D",
-          paddingVertical: 16,
-          borderRadius: 8,
-          marginBottom: 40,
-        }}
-      >
-        <InterSemiBold style={{ color: "#FFF", fontSize: 16, textAlign: "center" }}>Next</InterSemiBold>
-      </Button>
-    </ScrollView>
-  )
-
-  // Property Extras Form (Step 2)
+  // Screen 2: Property Extras Form
   const PropertyExtrasForm = () => {
     const extras = [
       "Air conditioner",
@@ -367,298 +329,304 @@ const History = () => {
     ]
 
     return (
-      <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-          <BackBtn onPress={handlePrevStep} />
-          <InterSemiBold style={{ fontSize: 18, color: "#000", marginLeft: 15 }}>List a property</InterSemiBold>
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="px-5 pt-5">
+          <View className="flex-row items-center mb-8">
+            <BackBtn onPress={handlePrevStep} />
+            <InterSemiBold className="text-lg text-black ml-5">List a property</InterSemiBold>
+          </View>
+
+          <ProgressIndicator currentStep={2} />
         </View>
 
-        <ProgressIndicator currentStep={2} />
+        <ScrollView className="flex-1 px-5">
+          <InterSemiBold className="text-lg text-black mb-8">Property extras</InterSemiBold>
 
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 30 }}>Property extras</InterRegular>
-
-        <View style={{ marginBottom: 40 }}>
-          {extras.map((extra, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                paddingVertical: 15,
-                borderBottomWidth: index < extras.length - 1 ? 1 : 0,
-                borderBottomColor: "#F0F0F0",
-              }}
-            >
-              <InterRegular style={{ fontSize: 16, color: "#000" }}>{extra}</InterRegular>
-              <View
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderWidth: 1,
-                  borderColor: "#E5E5E5",
-                  borderRadius: 4,
-                  backgroundColor: formData.extras.includes(extra) ? "#C1272D" : "#FFF",
-                }}
+          <View className="mb-10">
+            {extras.map((extra, index) => (
+              <Checkbox
+                key={index}
+                label={extra}
+                value={formData.extras.includes(extra)}
+                onChange={() => handleExtraToggle(extra)}
               />
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        </ScrollView>
 
-        <Button
-          onPress={handleNextStep}
-          style={{
-            backgroundColor: "#C1272D",
-            paddingVertical: 16,
-            borderRadius: 8,
-            marginBottom: 40,
-          }}
-        >
-          <InterSemiBold style={{ color: "#FFF", fontSize: 16, textAlign: "center" }}>Next</InterSemiBold>
-        </Button>
-      </ScrollView>
+        <View className="px-5 pb-8">
+          <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
+            <InterSemiBold className="text-white text-base">Next</InterSemiBold>
+          </Button>
+        </View>
+      </SafeAreaView>
     )
   }
 
-  // Photo Upload Form (Step 3)
+  // Screen 3: Photo Upload Form
   const PhotoUploadForm = () => (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-        <BackBtn onPress={handlePrevStep} />
-        <InterSemiBold style={{ fontSize: 18, color: "#000", marginLeft: 15 }}>List a property</InterSemiBold>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="px-5 pt-5">
+        <View className="flex-row items-center mb-8">
+          <BackBtn onPress={handlePrevStep} />
+          <InterSemiBold className="text-lg text-black ml-5">List a property</InterSemiBold>
+        </View>
+
+        <ProgressIndicator currentStep={3} />
       </View>
 
-      <ProgressIndicator currentStep={3} />
+      <ScrollView className="flex-1 px-5">
+        <InterSemiBold className="text-lg text-black mb-8">Add at least 4 photos</InterSemiBold>
 
-      <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 30 }}>Add at least 4 photos</InterRegular>
+        <View className="flex-row flex-wrap justify-between mb-10">
+          {[1, 2, 3, 4].map((item) => (
+            <TouchableOpacity
+              key={item}
+              className="w-[48%] aspect-square bg-[#F5F5F5] rounded-lg justify-center items-center mb-4"
+            >
+              <View className="w-6 h-6 justify-center items-center">
+                <View className="w-4 h-0.5 bg-primary rounded-sm" />
+                <View className="w-0.5 h-4 bg-primary rounded-sm absolute" />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 30 }}>
-        {[1, 2, 3, 4].map((item) => (
-          <View
-            key={item}
-            style={{
-              width: "48%",
-              aspectRatio: 1,
-              backgroundColor: "#F8F8F8",
-              borderRadius: 8,
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 15,
-            }}
-          >
-            <Text style={{ fontSize: 24, color: "#C1272D" }}>+</Text>
+        <TouchableOpacity className="flex-row items-center justify-between py-4 px-4 bg-[#F5F5F5] rounded-lg mb-10">
+          <InterRegular className="text-base text-black">Add more</InterRegular>
+          <View className="w-5 h-5 justify-center items-center">
+            <View className="w-3 h-0.5 bg-primary rounded-sm" />
+            <View className="w-0.5 h-3 bg-primary rounded-sm absolute" />
           </View>
-        ))}
+        </TouchableOpacity>
+      </ScrollView>
+
+      <View className="px-5 pb-8">
+        <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
+          <InterSemiBold className="text-white text-base">Next</InterSemiBold>
+        </Button>
       </View>
-
-      <TouchableOpacity
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingVertical: 15,
-          marginBottom: 40,
-        }}
-      >
-        <InterRegular style={{ fontSize: 16, color: "#000" }}>Add more</InterRegular>
-        <Text style={{ fontSize: 20, color: "#C1272D" }}>+</Text>
-      </TouchableOpacity>
-
-      <Button
-        onPress={handleNextStep}
-        style={{
-          backgroundColor: "#C1272D",
-          paddingVertical: 16,
-          borderRadius: 8,
-          marginBottom: 40,
-        }}
-      >
-        <InterSemiBold style={{ color: "#FFF", fontSize: 16, textAlign: "center" }}>Next</InterSemiBold>
-      </Button>
-    </ScrollView>
+    </SafeAreaView>
   )
 
-  // Price Description Form (Step 4)
+  // Screen 4: Price Description Form
   const PriceDescriptionForm = () => (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-        <BackBtn onPress={handlePrevStep} />
-        <InterSemiBold style={{ fontSize: 18, color: "#000", marginLeft: 15 }}>List a property</InterSemiBold>
-      </View>
-
-      <ProgressIndicator currentStep={4} />
-
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Add a description</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-            height: 120,
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#999" }}>Your description goes here...</InterRegular>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="px-5 pt-5">
+        <View className="flex-row items-center mb-7">
+          <BackBtn onPress={handlePrevStep} />
+          <InterSemiBold className="text-[18px] text-black ml-5">List a property</InterSemiBold>
         </View>
+
+        <ProgressIndicator currentStep={4} />
       </View>
 
-      <View style={{ marginBottom: 30 }}>
-        <InterRegular style={{ fontSize: 16, color: "#000", marginBottom: 15 }}>Set Price</InterRegular>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 8,
-            paddingHorizontal: 15,
-            paddingVertical: 12,
-          }}
-        >
-          <InterRegular style={{ fontSize: 16, color: "#000" }}>500,000</InterRegular>
+      <ScrollView className="flex-1 px-5">
+        <View className="mb-7">
+          <InterSemiBold className="text-[18px] text-black mb-4">Add a description</InterSemiBold>
+          <TextInput
+            className="border border-[#E5E5E5] rounded-lg p-4 h-[120px] text-black text-[16px] font-['Inter-Regular'] mb-5"
+            placeholder="Your description goes here..."
+            placeholderTextColor="#999"
+            multiline
+            textAlignVertical="top"
+            value={formData.description}
+            onChangeText={(text) => setFormData({ ...formData, description: text })}
+          />
         </View>
-      </View>
 
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 40 }}>
-        <View
-          style={{
-            width: 20,
-            height: 20,
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            borderRadius: 4,
-            marginRight: 12,
-          }}
-        />
-        <InterRegular style={{ fontSize: 16, color: "#000" }}>Is this price negotiable?</InterRegular>
-      </View>
+        <View className="mb-0">
+          <InterSemiBold className="text-[18px] text-black mb-4">Set Price</InterSemiBold>
+          <TextInput
+            className="border border-[#E5E5E5] rounded-lg p-4 text-black text-[16px] font-['Inter-Regular'] mb-3"
+            placeholder="500,000"
+            placeholderTextColor="#999"
+            keyboardType="numeric"
+            value={formData.price}
+            onChangeText={(text) => setFormData({ ...formData, price: text })}
+          />
+        </View>
 
-      <Button
-        onPress={handleConfirmListing}
-        style={{
-          backgroundColor: "#C1272D",
-          paddingVertical: 16,
-          borderRadius: 8,
-          marginBottom: 40,
-        }}
-      >
-        <InterSemiBold style={{ color: "#FFF", fontSize: 16, textAlign: "center" }}>Confirm and list</InterSemiBold>
-      </Button>
-    </ScrollView>
+        <View className="mb-10">
+          <Checkbox
+            label="Is this price negotiable?"
+            value={formData.isNegotiable}
+            onChange={(value) => setFormData({ ...formData, isNegotiable: value })}
+          />
+        </View>
+      </ScrollView>
+
+      <View className="px-5 pb-8">
+        <Button onPress={handleConfirmListing} isFull={true} className="rounded-lg bg-[#C1272D]">
+          <InterSemiBold className="text-white text-[16px]">Confirm and list</InterSemiBold>
+        </Button>
+      </View>
+    </SafeAreaView>
   )
 
-  // Authorize Listing Form (Step 5)
+  // Screen 5: Property Summary Screen
+  const PropertySummaryScreen = () => (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 px-6 pt-5">
+        <InterSemiBold className="text-[18px] text-black mb-8">Authorize listing</InterSemiBold>
+
+        <View className="w-full h-[200px] bg-[#F5F5F5] rounded-xl mb-5 overflow-hidden">
+          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+        </View>
+
+        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
+
+        <View className="flex-row items-center mb-8">
+          <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
+          <InterRegular className="text-[14px] text-[#666666]">Lekki, Lagos</InterRegular>
+        </View>
+
+        <View className="mb-8">
+          <InterSemiBold className="text-[16px] text-black mb-2">Description</InterSemiBold>
+          <InterRegular className="text-[14px] text-[#666666] leading-5">
+            This tastefully furnished modern self-contained apartment is located at km 20, lekki-ajah expressway, 5
+            minutes drive from moobil filling station.
+          </InterRegular>
+        </View>
+
+        <View className="flex-row justify-between items-center py-[15px] border-b border-[#E5E5E5]">
+          <InterSemiBold className="text-[16px] text-black">Rent/yr</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">N320,000.00</InterSemiBold>
+        </View>
+
+        <View className="flex-row justify-between items-center py-[15px] mb-[60px]">
+          <InterSemiBold className="text-[16px] text-black">Damages</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">N30,000.00</InterSemiBold>
+        </View>
+      </ScrollView>
+
+      <View className="flex-row px-6 pb-[30px] space-x-[15px]">
+        <Button onPress={handlePrevStep} className="flex-1 bg-none border border-[#E5E5E5] py-4 rounded-lg">
+          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
+        </Button>
+        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
+          <InterSemiBold className="text-white text-[16px]">Upload documents</InterSemiBold>
+        </Button>
+      </View>
+    </SafeAreaView>
+  )
+
+  // Screen 6: Document Upload Screen
+  const DocumentUploadScreen = () => (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 px-5 pt-5">
+        <InterSemiBold className="text-[20px] text-black mb-8">Authorize listing</InterSemiBold>
+
+        <View className="w-full h-[200px] bg-[#F5F5F5] rounded-[12px] mb-5 overflow-hidden">
+          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+        </View>
+
+        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
+
+        <View className="flex-row items-center mb-10">
+          <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
+          <InterRegular className="text-[14px] text-[#666]">Lekki, Lagos</InterRegular>
+        </View>
+
+        <InterSemiBold className="text-[16px] text-black mb-2">Upload document</InterSemiBold>
+        <InterRegular className="text-[14px] text-[#666] mb-10">Upload property documents here; C of O...</InterRegular>
+
+        <TouchableOpacity
+          onPress={handleDocumentUploaded}
+          className="h-[200px] bg-[#F5F5F5] rounded-lg border-2 border-[#E5E5E5] border-dashed justify-center items-center mb-15"
+        >
+          <View className="w-6 h-6 justify-center items-center relative">
+            <View className="w-4 h-0.5 bg-[#C1272D] rounded-sm" />
+            <View className="w-0.5 h-4 bg-[#C1272D] rounded-sm absolute" />
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+
+      <View className="flex-row px-5 pb-[30px] space-x-[15px]">
+        <Button onPress={handlePrevStep} className="flex-1 bg-none border border-[#E5E5E5] py-4 rounded-lg">
+          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
+        </Button>
+        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
+          <InterSemiBold className="text-white text-[16px]">Upload documents</InterSemiBold>
+        </Button>
+      </View>
+    </SafeAreaView>
+  )
+
+  // Screen 7: Authorize Listing Form (with uploaded status)
   const AuthorizeListingForm = () => (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-      <InterSemiBold style={{ fontSize: 18, color: "#000", marginBottom: 30 }}>Authorize listing</InterSemiBold>
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 px-5 pt-5">
+        <InterSemiBold className="text-[20px] text-black mb-8">Authorize listing</InterSemiBold>
 
-      <View
-        style={{
-          backgroundColor: "#F8F8F8",
-          borderRadius: 8,
-          marginBottom: 20,
-          overflow: "hidden",
-        }}
-      >
-        <View style={{ height: 150, backgroundColor: "#E5E5E5" }} />
-      </View>
+        <View className="w-full h-[200px] bg-[#F5F5F5] rounded-[12px] mb-5 overflow-hidden">
+          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+        </View>
 
-      <InterSemiBold style={{ fontSize: 16, color: "#000", marginBottom: 8 }}>
-        Modern Self-contained apartment
-      </InterSemiBold>
-      <InterRegular style={{ fontSize: 14, color: "#666", marginBottom: 20 }}>📍 Lekki, Lagos</InterRegular>
+        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
 
-      <InterSemiBold style={{ fontSize: 16, color: "#000", marginBottom: 8 }}>Description</InterSemiBold>
-      <InterRegular style={{ fontSize: 14, color: "#666", marginBottom: 20, lineHeight: 20 }}>
-        This tastefully furnished modern self-contained apartment is located at km 20, lekki-ajah expressway, 5 minutes
-        drive from moobil filling station.
-      </InterRegular>
+        <View className="flex-row items-center mb-5">
+          <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
+          <InterRegular className="text-[14px] text-[#666]">Lekki, Lagos</InterRegular>
+        </View>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-        <InterSemiBold style={{ fontSize: 16, color: "#000" }}>Rent/yr</InterSemiBold>
-        <InterSemiBold style={{ fontSize: 16, color: "#000" }}>N320,000.00</InterSemiBold>
-      </View>
+        <InterSemiBold className="text-[16px] text-black mb-2">Description</InterSemiBold>
+        <InterRegular className="text-[14px] text-[#666] leading-[20px] mb-5">
+          This tastefully furnished modern self-contained apartment is located at km 20, lekki-ajah expressway, 5
+          minutes drive from moobil filling station.
+        </InterRegular>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 20 }}>
-        <InterSemiBold style={{ fontSize: 16, color: "#000" }}>Damages</InterSemiBold>
-        <InterSemiBold style={{ fontSize: 16, color: "#000" }}>N30,000.00</InterSemiBold>
-      </View>
+        <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5]">
+          <InterSemiBold className="text-[16px] text-black">Rent/yr</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">N320,000.00</InterSemiBold>
+        </View>
 
-      <View style={{ height: 1, backgroundColor: "#E5E5E5", marginBottom: 20 }} />
+        <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5] mb-7">
+          <InterSemiBold className="text-[16px] text-black">Damages</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">N30,000.00</InterSemiBold>
+        </View>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 30 }}>
-        <InterSemiBold style={{ fontSize: 16, color: "#000" }}>Document upload status</InterSemiBold>
-        <InterSemiBold style={{ fontSize: 16, color: "#C1272D" }}>Uploaded</InterSemiBold>
-      </View>
+        <View className="flex-row justify-between items-center mb-15">
+          <InterSemiBold className="text-[16px] text-black">Document upload status</InterSemiBold>
+          <InterRegular className="text-[14px] text-[#C1272D]">Uploaded</InterRegular>
+        </View>
+      </ScrollView>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 40 }}>
+      <View className="flex-row px-5 pb-[30px] space-x-[15px]">
         <Button
           onPress={handlePrevStep}
-          style={{
-            backgroundColor: "#FFF",
-            borderWidth: 1,
-            borderColor: "#E5E5E5",
-            paddingVertical: 12,
-            paddingHorizontal: 30,
-            borderRadius: 8,
-          }}
+          className="flex-1 bg-transparent border border-[#E5E5E5] py-3 rounded-lg items-center"
         >
-          <InterSemiBold style={{ color: "#000", fontSize: 16 }}>Cancel</InterSemiBold>
+          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
         </Button>
 
-        <Button
-          onPress={handleAuthorize}
-          style={{
-            backgroundColor: "#C1272D",
-            paddingVertical: 12,
-            paddingHorizontal: 30,
-            borderRadius: 8,
-          }}
-        >
-          <InterSemiBold style={{ color: "#FFF", fontSize: 16 }}>Authorize</InterSemiBold>
+        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-3 rounded-lg items-center">
+          <InterSemiBold className="text-white text-[16px]">Authorize</InterSemiBold>
         </Button>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   )
 
-  // Listing Success Screen (Step 6)
+  // Screen 8: Listing Success Screen
   const ListingSuccessScreen = () => (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 20 }}>
-      <View
-        style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          backgroundColor: "#4CAF50",
-          justifyContent: "center",
-          alignItems: "center",
-          marginBottom: 30,
-        }}
-      >
-        <Text style={{ color: "#FFF", fontSize: 24 }}>✓</Text>
+    <SafeAreaView className="flex-1 bg-white justify-center items-center px-5">
+      <View className="w-20 h-20 rounded-full bg-[#E8F5E8] justify-center items-center mb-7">
+        <View className="w-10 h-10 rounded-full border-[3px] border-[#4CAF50] justify-center items-center">
+          <View className="w-4 h-3 border-l-[3px] border-b-[3px] border-[#4CAF50] -rotate-45 mt-[-3px] ml-[2px]" />
+        </View>
       </View>
 
-      <InterSemiBold style={{ fontSize: 20, color: "#000", marginBottom: 15, textAlign: "center" }}>
-        Listing successful
-      </InterSemiBold>
+      <InterSemiBold className="text-[20px] text-black mb-4 text-center">Listing successful</InterSemiBold>
 
-      <InterRegular style={{ fontSize: 16, color: "#666", textAlign: "center", marginBottom: 40, lineHeight: 22 }}>
+      <InterRegular className="text-[16px] text-[#666] text-center leading-[24px] mb-10 px-5">
         Your property has been successfully listed on our marketplace, you will get notified whenever you have a
         potential buyer. Cheers!
       </InterRegular>
 
-      <Button
-        onPress={handleGoToHomepage}
-        style={{
-          backgroundColor: "#C1272D",
-          paddingVertical: 16,
-          paddingHorizontal: 40,
-          borderRadius: 8,
-        }}
-      >
-        <InterSemiBold style={{ color: "#FFF", fontSize: 16 }}>Got to homepage</InterSemiBold>
+      <Button onPress={handleGoToHomepage} className="bg-[#C1272D] py-4 px-10 rounded-lg min-w-[200px] items-center">
+        <InterSemiBold className="text-white text-base">Go to homepage</InterSemiBold>
       </Button>
-    </View>
+    </SafeAreaView>
   )
 
   // Render current step for seller mode
@@ -675,22 +643,26 @@ const History = () => {
       case 4:
         return <PriceDescriptionForm />
       case 5:
-        return <AuthorizeListingForm />
+        return <PropertySummaryScreen />
       case 6:
+        return <DocumentUploadScreen />
+      case 7:
+        return <AuthorizeListingForm />
+      case 8:
         return <ListingSuccessScreen />
       default:
         return <PropertyListingOverview />
     }
   }
 
-  // If seller is viewing history
-  if (isSeller && showHistory) {
+  // If showing history (both seller and buyer)
+  if (showHistory || !isSeller) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView className="container flex-1 mx-auto max-w-2xl" style={{ padding: 20 }}>
           <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-            <BackBtn onPress={handleBackFromHistory} />
-            <InterSemiBold className="text-lg/5" style={{ marginLeft: 15 }}>
+            {isSeller && <BackBtn onPress={handleBackFromHistory} />}
+            <InterSemiBold className="text-lg/5" style={{ marginLeft: isSeller ? 15 : 0 }}>
               History
             </InterSemiBold>
           </View>
@@ -728,50 +700,13 @@ const History = () => {
     )
   }
 
-  // If seller mode, render listing form
+  // If seller mode and not viewing history, render listing form
   if (isSeller) {
-    return <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>{renderSellerStep()}</SafeAreaView>
+    return renderSellerStep()
   }
 
-  // If buyer mode, render history
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView className="container flex-1 mx-auto max-w-2xl" style={{ padding: 20 }}>
-        <View className="">
-          <InterSemiBold className="text-lg/5">History</InterSemiBold>
-        </View>
-
-        {/* Headlist */}
-        <View className="flex-row justify-between mt-4">
-          {historyHeader.map((item, index) => (
-            <Button
-              key={index}
-              color={activeIndex === index ? "#C1272D" : "#C1272D0A"}
-              onPress={() => handleHistoryClick(index, item)}
-              className="text-white rounded-lg"
-            >
-              <InterRegular className={activeIndex === index ? "text-white" : "text-secondaryText"}>
-                {item}
-              </InterRegular>
-            </Button>
-          ))}
-        </View>
-
-        {/* History List */}
-        <View className="mt-4">
-          {isLoading ? (
-            <View className="flex-1 justify-center items-center">
-              <InterRegular className="text-secondaryText">Loading...</InterRegular>
-            </View>
-          ) : !history || history.length === 0 ? (
-            <NoHistory headText={activeItem} />
-          ) : (
-            <HistoryList histories={history} historyType={activeItem} />
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  )
+  // This should never be reached now, but keeping as fallback
+  return null
 }
 
 export default History

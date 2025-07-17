@@ -4,17 +4,16 @@ import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import { HERO } from "@/constants/images-icons";
 import InterRegular from "@/components/Text/InterRegular";
-import { deviceHeight } from "@/constants/values";
 
 export default function Onboarding() {
   
   return (
-    <View style={{ flex: 1, height: deviceHeight }}>
+    <View className="flex-1">
       <View className="h-[60%] w-full">
         <ImageBackground
           resizeMode="cover"
           source={HERO}
-          style={{ width: "100%", height: "100%" }}
+          className="w-full h-full"
         ></ImageBackground>
       </View>
 

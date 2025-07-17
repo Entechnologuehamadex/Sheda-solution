@@ -2,8 +2,8 @@ import { Tabs } from "expo-router"
 import AntDesign from "@expo/vector-icons/AntDesign"
 import Octicons from "@expo/vector-icons/Octicons"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
-import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import { useMode } from "@/contexts/ModeContext"
+import { Image } from "react-native"
 
 export default function TabLayout() {
   const { isSeller } = useMode()
@@ -46,7 +46,15 @@ export default function TabLayout() {
           title: isSeller ? "Activity" : "Saved",
           tabBarIcon: ({ color, size, focused }) =>
             isSeller ? (
-              <MaterialIcons name="analytics" size={24} color={focused ? "#C1272D" : "black"} />
+              <Image
+                source={require("@/assets/images/activity-icon.png")}
+                style={{
+                  width: 35,
+                  height: 35,
+                  tintColor: focused ? "#C1272D" : "black",
+                }}
+                resizeMode="contain"
+              />
             ) : (
               <AntDesign name="hearto" size={24} color={focused ? "#C1272D" : "black"} />
             ),
@@ -58,7 +66,15 @@ export default function TabLayout() {
           title: isSeller ? "List" : "History",
           tabBarIcon: ({ color, size, focused }) =>
             isSeller ? (
-              <MaterialIcons name="add-circle-outline" size={24} color={focused ? "#C1272D" : "black"} />
+              <Image
+                source={require("@/assets/images/list-icon.png")}
+                style={{
+                  width: 35,
+                  height: 35,
+                  tintColor: focused ? "#C1272D" : "black",
+                }}
+                resizeMode="contain"
+              />
             ) : (
               <Octicons name="history" size={24} color={focused ? "#C1272D" : "black"} />
             ),

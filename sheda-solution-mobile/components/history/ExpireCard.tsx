@@ -94,3 +94,4 @@ const ExpireCard = ({ house }: { house: HouseProps }) => {
 }
 
 export default ExpireCard
+

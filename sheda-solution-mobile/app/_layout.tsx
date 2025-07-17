@@ -5,6 +5,7 @@ import { useFonts } from "expo-font"
 import { useEffect } from "react"
 import { SplashScreen } from "expo-router"
 import { ModeProvider } from "@/contexts/ModeContext"
+import "./../global.css"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()

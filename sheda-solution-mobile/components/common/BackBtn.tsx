@@ -5,14 +5,15 @@ import Icon from "./Icon";
 
 interface BackBtnProps{
     className?: string;
+    onPress?: () => void;
 }
 
-const BackBtn = ({className}: BackBtnProps) => {
+const BackBtn = ({className, onPress}: BackBtnProps) => {
      
     const router = useRouter()
 
     return(
-        <TouchableOpacity onPress={() => router.back()} className={`border w-12 h-12 items-center justify-center border-borderColor rounded-xl ${className}`}>
+        <TouchableOpacity onPress={onPress || (() => router.back())} className={`border w-12 h-12 items-center justify-center border-borderColor rounded-xl ${className}`}>
          <View pointerEvents="none">
           <Icon
           icon={ARROWBACK}

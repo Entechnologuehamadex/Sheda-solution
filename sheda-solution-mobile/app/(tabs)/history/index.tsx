@@ -1,6 +1,6 @@
 "use client"
 
-import { View, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Image } from "react-native"
+import { View, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Image, Alert } from "react-native"
 import InterSemiBold from "@/components/Text/InterSemiBold"
 import InterRegular from "@/components/Text/InterRegular"
 import Button from "@/components/common/Button"
@@ -44,14 +44,16 @@ const History = () => {
   }
 
   const handleHistoryPress = () => {
-    console.log("History button pressed, setting showHistory to true")
+    // Alert.alert("Debug", "History button pressed!")
+    console.log("History button pressed, current showHistory:", showHistory)
     setShowHistory(true)
-    setCurrentStep(0) // Reset to overview when going to history
+    console.log("showHistory set to true")
   }
 
   const handleBackFromHistory = () => {
+    console.log("Back from history pressed")
     setShowHistory(false)
-    setCurrentStep(0) // Reset to overview when coming back
+    setCurrentStep(0)
   }
 
   const handleNextStep = () => {
@@ -111,6 +113,11 @@ const History = () => {
     }
   }, [activeItem, isSeller, showHistory])
 
+  // Debug useEffect to track state changes
+  useEffect(() => {
+    console.log("State changed - isSeller:", isSeller, "showHistory:", showHistory, "currentStep:", currentStep)
+  }, [isSeller, showHistory, currentStep])
+
   // Progress Indicator Component
   const ProgressIndicator = ({ currentStep }: { currentStep: number }) => (
     <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 8, marginVertical: 20, width: "100%" }}>
@@ -126,6 +133,49 @@ const History = () => {
         />
       ))}
     </View>
+  )
+
+  // History View Component
+  const HistoryView = () => (
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView className="container flex-1 mx-auto max-w-2xl" style={{ padding: 20 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
+          {isSeller && <BackBtn onPress={handleBackFromHistory} />}
+          <InterSemiBold className={`text-lg leading-5 ${isSeller ? 'ml-[15px]' : 'ml-0'}`}>
+            History
+          </InterSemiBold>
+        </View>
+
+        {/* Headlist */}
+        <View className="flex-row justify-between mt-4">
+          {historyHeader.map((item, index) => (
+            <Button
+              key={index}
+              color={activeIndex === index ? "#C1272D" : "#C1272D0A"}
+              onPress={() => handleHistoryClick(index, item)}
+              className="text-white rounded-lg"
+            >
+              <InterRegular className={activeIndex === index ? "text-white" : "text-secondaryText"}>
+                {item}
+              </InterRegular>
+            </Button>
+          ))}
+        </View>
+
+        {/* History List */}
+        <View className="mt-4">
+          {isLoading ? (
+            <View className="flex-1 justify-center items-center">
+              <InterRegular className="text-secondaryText">Loading...</InterRegular>
+            </View>
+          ) : !history || history.length === 0 ? (
+            <NoHistory headText={activeItem} />
+          ) : (
+            <HistoryList histories={history} historyType={activeItem} />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 
   // Screen 0: Property Listing Overview
@@ -159,16 +209,28 @@ const History = () => {
         {/* Header */}
         <View className="flex-row justify-between items-center mb-5">
           <InterSemiBold className="text-[20px] text-black">List a property</InterSemiBold>
-          <TouchableOpacity onPress={handleHistoryPress} className="flex-row items-center px-3 py-1.5 gap-2">
-            <View
-              className="w-5 h-5 rounded-full border-2 justify-center items-center"
-              style={{ borderColor: "#C1272D" }}
-            >
-              <View className="w-3 h-3 rounded-full border" style={{ borderColor: "#C1272D" }} />
-            </View>
-            <InterRegular className="text-[16px]" style={{ color: "#C1272D" }}>
-              History
-            </InterRegular>
+          <TouchableOpacity
+            onPress={handleHistoryPress}
+            className="flex-row items-center px-3 py-1.5 gap-2"
+            activeOpacity={0.7}
+            style={{
+              backgroundColor: "transparent",
+              borderRadius: 8,
+              minHeight: 44,
+              minWidth: 44,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            accessibilityLabel="View history"
+          >
+            <Image
+              source={require("@/assets/images/history-button.png")}
+              style={{
+                width: 100,
+                height: 60,
+              }}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
         </View>
 
@@ -206,6 +268,7 @@ const History = () => {
       </ScrollView>
     </SafeAreaView>
   )
+
   // Screen 1: Property Description Form
   const PropertyDescriptionForm = () => {
     const propertyTypes = [
@@ -501,11 +564,15 @@ const History = () => {
       </ScrollView>
 
       <View className="flex-row px-6 pb-[30px] space-x-[15px]">
-        <Button onPress={handlePrevStep} className="flex-1 bg-none border border-[#E5E5E5] py-4 rounded-lg">
-          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
+      <Button
+          onPress={handlePrevStep}
+          className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
+          style={{ backgroundColor: "white" }}
+        >
+          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
         </Button>
         <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
-          <InterSemiBold className="text-white text-[16px]">Upload documents</InterSemiBold>
+          <InterSemiBold className="text-white text-[15px]">Upload documents</InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
@@ -543,11 +610,15 @@ const History = () => {
       </ScrollView>
 
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
-        <Button onPress={handlePrevStep} className="flex-1 bg-none border border-[#E5E5E5] py-4 rounded-lg">
-          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
+      <Button
+          onPress={handlePrevStep}
+          className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
+          style={{ backgroundColor: "white" }}
+        >
+          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
         </Button>
         <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
-          <InterSemiBold className="text-white text-[16px]">Upload documents</InterSemiBold>
+          <InterSemiBold className="text-white text-[15px]">Upload documents</InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
@@ -593,15 +664,16 @@ const History = () => {
       </ScrollView>
 
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
-        <Button
+      <Button
           onPress={handlePrevStep}
-          className="flex-1 bg-transparent border border-[#E5E5E5] py-3 rounded-lg items-center"
+          className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
+          style={{ backgroundColor: "white" }}
         >
-          <InterSemiBold className="text-black text-[16px]">Cancel</InterSemiBold>
+          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
         </Button>
 
         <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-3 rounded-lg items-center">
-          <InterSemiBold className="text-white text-[16px]">Authorize</InterSemiBold>
+          <InterSemiBold className="text-white text-[15px]">Authorize</InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
@@ -655,57 +727,17 @@ const History = () => {
     }
   }
 
-  // If showing history (both seller and buyer)
+  console.log("Rendering - isSeller:", isSeller, "showHistory:", showHistory, "currentStep:", currentStep)
+
+  // Main render logic
   if (showHistory || !isSeller) {
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView className="container flex-1 mx-auto max-w-2xl" style={{ padding: 20 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-            {isSeller && <BackBtn onPress={handleBackFromHistory} />}
-            <InterSemiBold className="text-lg/5" style={{ marginLeft: isSeller ? 15 : 0 }}>
-              History
-            </InterSemiBold>
-          </View>
-
-          {/* Headlist */}
-          <View className="flex-row justify-between mt-4">
-            {historyHeader.map((item, index) => (
-              <Button
-                key={index}
-                color={activeIndex === index ? "#C1272D" : "#C1272D0A"}
-                onPress={() => handleHistoryClick(index, item)}
-                className="text-white rounded-lg"
-              >
-                <InterRegular className={activeIndex === index ? "text-white" : "text-secondaryText"}>
-                  {item}
-                </InterRegular>
-              </Button>
-            ))}
-          </View>
-
-          {/* History List */}
-          <View className="mt-4">
-            {isLoading ? (
-              <View className="flex-1 justify-center items-center">
-                <InterRegular className="text-secondaryText">Loading...</InterRegular>
-              </View>
-            ) : !history || history.length === 0 ? (
-              <NoHistory headText={activeItem} />
-            ) : (
-              <HistoryList histories={history} historyType={activeItem} />
-            )}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    )
+    return <HistoryView />
   }
 
-  // If seller mode and not viewing history, render listing form
   if (isSeller) {
     return renderSellerStep()
   }
 
-  // This should never be reached now, but keeping as fallback
   return null
 }
 

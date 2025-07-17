@@ -17,7 +17,10 @@
         "foregroundImage": "./assets/images/sheda-logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.shedasolutionmobile"
+      "package": "com.anonymous.shedasolutionmobile",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -45,6 +48,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1fb297b1-d2da-4ae9-a356-024ad093a2a7"
+      }
     }
   }
 }

@@ -9,7 +9,7 @@ const DocumentReleaseSuccessful = () => {
   return (
     <SafeAreaView className="flex-1 justify-center items-center px-5">
       <View className="items-center">
-        <View className="w-[100px] h-[100px] rounded-full bg-[#878787] justify-center items-center mb-6">
+        <View className="w-[100px] h-[100px] rounded-full bg-none justify-center items-center mb-2">
           <SUCCESSFUL className="w-[50px] h-[50px]" />
         </View>
         <InterBold className="text-2xl/[130%] text-center mb-2">Documents released</InterBold>

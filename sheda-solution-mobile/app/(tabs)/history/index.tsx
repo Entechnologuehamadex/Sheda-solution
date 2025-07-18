@@ -1,29 +1,39 @@
-"use client"
+"use client";
 
-import { View, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Image, Alert } from "react-native"
-import InterSemiBold from "@/components/Text/InterSemiBold"
-import InterRegular from "@/components/Text/InterRegular"
-import Button from "@/components/common/Button"
-import BackBtn from "@/components/common/BackBtn"
-import SelectInput from "@/components/input/selectInput"
-import Checkbox from "@/components/input/checkbox"
-import historyHeader from "../../../constants/historyHeader"
-import { useEffect, useState } from "react"
-import { NoHistory } from "@/components/history/NoHistory"
-import { historyData } from "../../../constants/history-data"
-import type { HouseProps, CancelledHistory } from "@/types"
-import HistoryList from "../../../components/history/HistoryList"
-import { useMode } from "@/contexts/ModeContext"
-import { router } from "expo-router"
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  Alert,
+} from "react-native";
+import InterSemiBold from "@/components/Text/InterSemiBold";
+import InterRegular from "@/components/Text/InterRegular";
+import Button from "@/components/common/Button";
+import BackBtn from "@/components/common/BackBtn";
+import SelectInput from "@/components/input/selectInput";
+import Checkbox from "@/components/input/checkbox";
+import historyHeader from "../../../constants/historyHeader";
+import { useEffect, useState } from "react";
+import { NoHistory } from "@/components/history/NoHistory";
+import { historyData } from "../../../constants/history-data";
+import type { HouseProps, CancelledHistory } from "@/types";
+import HistoryList from "../../../components/history/HistoryList";
+import { useMode } from "@/contexts/ModeContext";
+import { router } from "expo-router";
 
 const History = () => {
-  const { isSeller } = useMode()
-  const [activeIndex, setIsActiveIndex] = useState<null | number>(0)
-  const [activeItem, setActiveItem] = useState<null | any>("Ongoing")
-  const [history, setHistory] = useState<(HouseProps | CancelledHistory)[] | null>(null)
-  const [isLoading, setLoading] = useState(false)
-  const [showHistory, setShowHistory] = useState(false)
-  const [currentStep, setCurrentStep] = useState(0)
+  const { isSeller } = useMode();
+  const [activeIndex, setIsActiveIndex] = useState<null | number>(0);
+  const [activeItem, setActiveItem] = useState<null | any>("Ongoing");
+  const [history, setHistory] = useState<
+    (HouseProps | CancelledHistory)[] | null
+  >(null);
+  const [isLoading, setLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     propertyType: "Apartment",
     status: "For rent",
@@ -36,91 +46,106 @@ const History = () => {
     price: "500,000",
     isNegotiable: false,
     documentsUploaded: false,
-  })
+  });
 
   const handleHistoryClick = (index: number, item: string) => {
-    setIsActiveIndex(index)
-    setActiveItem(item)
-  }
+    setIsActiveIndex(index);
+    setActiveItem(item);
+  };
 
   const handleHistoryPress = () => {
     // Alert.alert("Debug", "History button pressed!")
-    console.log("History button pressed, current showHistory:", showHistory)
-    setShowHistory(true)
-    console.log("showHistory set to true")
-  }
+    console.log("History button pressed, current showHistory:", showHistory);
+    setShowHistory(true);
+    console.log("showHistory set to true");
+  };
 
   const handleBackFromHistory = () => {
-    console.log("Back from history pressed")
-    setShowHistory(false)
-    setCurrentStep(0)
-  }
+    console.log("Back from history pressed");
+    setShowHistory(false);
+    setCurrentStep(0);
+  };
 
   const handleNextStep = () => {
-    setCurrentStep(currentStep + 1)
-  }
+    setCurrentStep(currentStep + 1);
+  };
 
   const handlePrevStep = () => {
-    setCurrentStep(currentStep - 1)
-  }
+    setCurrentStep(currentStep - 1);
+  };
 
   const handleGetStarted = () => {
-    setCurrentStep(1)
-  }
+    setCurrentStep(1);
+  };
 
   const handleConfirmListing = () => {
-    setCurrentStep(5)
-  }
+    setCurrentStep(5);
+  };
 
   const handleDocumentUploaded = () => {
-    setFormData({ ...formData, documentsUploaded: true })
-    setCurrentStep(6)
-  }
+    setFormData({ ...formData, documentsUploaded: true });
+    setCurrentStep(6);
+  };
 
   const handleAuthorize = () => {
-    setCurrentStep(7)
-  }
+    setCurrentStep(7);
+  };
 
   const handleGoToHomepage = () => {
-    router.push("/(tabs)/home")
-    setCurrentStep(0)
-  }
+    router.push("/(tabs)/home");
+    setCurrentStep(0);
+  };
 
   const handleExtraToggle = (extra: string) => {
-    const currentExtras = formData.extras || []
+    const currentExtras = formData.extras || [];
     const updatedExtras = currentExtras.includes(extra)
       ? currentExtras.filter((item: string) => item !== extra)
-      : [...currentExtras, extra]
-    setFormData({ ...formData, extras: updatedExtras })
-  }
+      : [...currentExtras, extra];
+    setFormData({ ...formData, extras: updatedExtras });
+  };
 
   useEffect(() => {
     const fetchHistory = () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const data = historyData[activeItem]
-        setHistory(data)
+        const data = historyData[activeItem];
+        setHistory(data);
       } catch (error) {
-        console.error("Error fetching history:", error)
-        setHistory(null)
+        console.error("Error fetching history:", error);
+        setHistory(null);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (!isSeller || showHistory) {
-      fetchHistory()
+      fetchHistory();
     }
-  }, [activeItem, isSeller, showHistory])
+  }, [activeItem, isSeller, showHistory]);
 
   // Debug useEffect to track state changes
   useEffect(() => {
-    console.log("State changed - isSeller:", isSeller, "showHistory:", showHistory, "currentStep:", currentStep)
-  }, [isSeller, showHistory, currentStep])
+    console.log(
+      "State changed - isSeller:",
+      isSeller,
+      "showHistory:",
+      showHistory,
+      "currentStep:",
+      currentStep
+    );
+  }, [isSeller, showHistory, currentStep]);
 
   // Progress Indicator Component
   const ProgressIndicator = ({ currentStep }: { currentStep: number }) => (
-    <View style={{ flexDirection: "row", justifyContent: "flex-start", gap: 8, marginVertical: 20, width: "100%" }}>
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        gap: 8,
+        marginVertical: 20,
+        width: "100%",
+      }}
+    >
       {[1, 2, 3, 4].map((step) => (
         <View
           key={step}
@@ -133,15 +158,26 @@ const History = () => {
         />
       ))}
     </View>
-  )
+  );
 
   // History View Component
   const HistoryView = () => (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView className="container flex-1 mx-auto max-w-2xl" style={{ padding: 20 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
+      <ScrollView
+        className="container flex-1 mx-auto max-w-2xl"
+        style={{ padding: 20 }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 20,
+          }}
+        >
           {isSeller && <BackBtn onPress={handleBackFromHistory} />}
-          <InterSemiBold className={`text-lg leading-5 ${isSeller ? 'ml-[15px]' : 'ml-0'}`}>
+          <InterSemiBold
+            className={`text-lg leading-5 ${isSeller ? "ml-[15px]" : "ml-0"}`}
+          >
             History
           </InterSemiBold>
         </View>
@@ -155,7 +191,11 @@ const History = () => {
               onPress={() => handleHistoryClick(index, item)}
               className="text-white rounded-lg"
             >
-              <InterRegular className={activeIndex === index ? "text-white" : "text-secondaryText"}>
+              <InterRegular
+                className={
+                  activeIndex === index ? "text-white" : "text-secondaryText"
+                }
+              >
                 {item}
               </InterRegular>
             </Button>
@@ -166,7 +206,9 @@ const History = () => {
         <View className="mt-4">
           {isLoading ? (
             <View className="flex-1 justify-center items-center">
-              <InterRegular className="text-secondaryText">Loading...</InterRegular>
+              <InterRegular className="text-secondaryText">
+                Loading...
+              </InterRegular>
             </View>
           ) : !history || history.length === 0 ? (
             <NoHistory headText={activeItem} />
@@ -176,19 +218,21 @@ const History = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 
   // Screen 0: Property Listing Overview
   const steps = [
     {
       step: 1,
       title: "Describe your property",
-      description: "Fill in the necessary information that best describes your property",
+      description:
+        "Fill in the necessary information that best describes your property",
     },
     {
       step: 2,
       title: "Add extras",
-      description: "Tick the amenities that make your property standout amidst others",
+      description:
+        "Tick the amenities that make your property standout amidst others",
     },
     {
       step: 3,
@@ -199,16 +243,19 @@ const History = () => {
     {
       step: 4,
       title: "Set your price and list",
-      description: "Here, you set the cost price of your property and you proceed to approve your listing request.",
+      description:
+        "Here, you set the cost price of your property and you proceed to approve your listing request.",
     },
-  ]
+  ];
 
   const PropertyListingOverview = () => (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pt-5">
         {/* Header */}
         <View className="flex-row justify-between items-center mb-5">
-          <InterSemiBold className="text-[20px] text-black">List a property</InterSemiBold>
+          <InterSemiBold className="text-[20px] text-black">
+            List a property
+          </InterSemiBold>
           <TouchableOpacity
             onPress={handleHistoryPress}
             className="flex-row items-center px-3 py-1.5 gap-2"
@@ -237,7 +284,11 @@ const History = () => {
         {/* Progress bars */}
         <View className="flex-row space-x-2 mb-7">
           {[1, 2, 3, 4].map((step) => (
-            <View key={step} className="flex-1 h-1 rounded" style={{ backgroundColor: "#E5E5E5" }} />
+            <View
+              key={step}
+              className="flex-1 h-1 rounded"
+              style={{ backgroundColor: "#E5E5E5" }}
+            />
           ))}
         </View>
 
@@ -252,22 +303,34 @@ const History = () => {
                 className="w-8 h-8 rounded-full justify-center items-center mr-4"
                 style={{ backgroundColor: "#C1272D" }}
               >
-                <InterSemiBold className="text-white text-[16px]">{item.step}</InterSemiBold>
+                <InterSemiBold className="text-white text-[16px]">
+                  {item.step}
+                </InterSemiBold>
               </View>
               <View className="flex-1">
-                <InterSemiBold className="text-[16px] text-black mb-2">{item.title}</InterSemiBold>
-                <InterRegular className="text-[14px] text-gray-500 leading-5">{item.description}</InterRegular>
+                <InterSemiBold className="text-[16px] text-black mb-2">
+                  {item.title}
+                </InterSemiBold>
+                <InterRegular className="text-[14px] text-gray-500 leading-5">
+                  {item.description}
+                </InterRegular>
               </View>
             </View>
           ))}
         </View>
 
-        <Button onPress={handleNextStep} isFull={true} className="rounded-lg mb-10">
-          <InterSemiBold className="text-white text-[16px]">Get started</InterSemiBold>
+        <Button
+          onPress={handleNextStep}
+          isFull={true}
+          className="rounded-lg mb-10"
+        >
+          <InterSemiBold className="text-white text-[16px]">
+            Get started
+          </InterSemiBold>
         </Button>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 
   // Screen 1: Property Description Form
   const PropertyDescriptionForm = () => {
@@ -275,45 +338,47 @@ const History = () => {
       { label: "Apartment", value: "Apartment" },
       { label: "House", value: "House" },
       { label: "Office", value: "Office" },
-    ]
+    ];
 
     const statusOptions = [
       { label: "For rent", value: "For rent" },
       { label: "For sale", value: "For sale" },
-    ]
+    ];
 
     const locations = [
       { label: "Lekki, Lagos", value: "Lekki, Lagos" },
       { label: "Victoria Island, Lagos", value: "Victoria Island, Lagos" },
       { label: "Ikeja, Lagos", value: "Ikeja, Lagos" },
-    ]
+    ];
 
     const furnishingOptions = [
       { label: "Unfurnished", value: "Unfurnished" },
       { label: "Semi-furnished", value: "Semi-furnished" },
       { label: "Fully furnished", value: "Fully furnished" },
-    ]
+    ];
 
     const bedroomOptions = [
       { label: "1", value: "1" },
       { label: "2", value: "2" },
       { label: "3", value: "3" },
       { label: "4", value: "4" },
-    ]
+    ];
 
     const bathroomOptions = [
       { label: "1", value: "1" },
       { label: "2", value: "2" },
       { label: "3", value: "3" },
       { label: "4", value: "4" },
-    ]
+    ];
 
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="px-5 pt-5">
           <View className="flex flex-row items-center mb-8">
             <BackBtn onPress={handlePrevStep} />
-            <InterSemiBold className="text-[18px] text-black ml-5">List a property</InterSemiBold>
+            <InterSemiBold className="text-[18px] text-black ml-5">
+              List a property
+            </InterSemiBold>
           </View>
 
           <ProgressIndicator currentStep={1} />
@@ -324,7 +389,9 @@ const History = () => {
             label="Property type"
             options={propertyTypes}
             value={formData.propertyType}
-            onValueChange={(value) => setFormData({ ...formData, propertyType: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, propertyType: value as string })
+            }
             inputStyle={{ paddingRight: 20 }}
           />
 
@@ -332,7 +399,9 @@ const History = () => {
             label="Status"
             options={statusOptions}
             value={formData.status}
-            onValueChange={(value) => setFormData({ ...formData, status: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, status: value as string })
+            }
             inputStyle={{ paddingRight: 20 }}
           />
 
@@ -340,7 +409,9 @@ const History = () => {
             label="Location"
             options={locations}
             value={formData.location}
-            onValueChange={(value) => setFormData({ ...formData, location: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, location: value as string })
+            }
             inputStyle={{ paddingRight: 20 }}
           />
 
@@ -348,7 +419,9 @@ const History = () => {
             label="Furnishing"
             options={furnishingOptions}
             value={formData.furnishing}
-            onValueChange={(value) => setFormData({ ...formData, furnishing: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, furnishing: value as string })
+            }
             inputStyle={{ paddingRight: 20 }}
           />
 
@@ -356,7 +429,9 @@ const History = () => {
             label="Bedrooms"
             options={bedroomOptions}
             value={formData.bedrooms}
-            onValueChange={(value) => setFormData({ ...formData, bedrooms: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, bedrooms: value as string })
+            }
             inputStyle={{ paddingRight: 20 }}
           />
 
@@ -364,20 +439,26 @@ const History = () => {
             label="Bathrooms"
             options={bathroomOptions}
             value={formData.bathrooms}
-            onValueChange={(value) => setFormData({ ...formData, bathrooms: value as string })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, bathrooms: value as string })
+            }
             containerStyle={{ marginBottom: 40 }}
             inputStyle={{ paddingRight: 20 }}
           />
         </ScrollView>
 
         <View className="px-5 pb-8">
-          <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
+          <Button
+            onPress={handleNextStep}
+            isFull={true}
+            className="rounded-lg bg-primary"
+          >
             <InterSemiBold className="text-white text-base">Next</InterSemiBold>
           </Button>
         </View>
       </SafeAreaView>
-    )
-  }
+    );
+  };
 
   // Screen 2: Property Extras Form
   const PropertyExtrasForm = () => {
@@ -389,21 +470,25 @@ const History = () => {
       "Furniture",
       "Prepaid meter",
       "Wi-Fi",
-    ]
+    ];
 
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="px-5 pt-5">
           <View className="flex-row items-center mb-8">
             <BackBtn onPress={handlePrevStep} />
-            <InterSemiBold className="text-lg text-black ml-5">List a property</InterSemiBold>
+            <InterSemiBold className="text-lg text-black ml-5">
+              List a property
+            </InterSemiBold>
           </View>
 
           <ProgressIndicator currentStep={2} />
         </View>
 
         <ScrollView className="flex-1 px-5">
-          <InterSemiBold className="text-lg text-black mb-8">Property extras</InterSemiBold>
+          <InterSemiBold className="text-lg text-black mb-8">
+            Property extras
+          </InterSemiBold>
 
           <View className="mb-10">
             {extras.map((extra, index) => (
@@ -418,59 +503,80 @@ const History = () => {
         </ScrollView>
 
         <View className="px-5 pb-8">
-          <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
+          <Button
+            onPress={handleNextStep}
+            isFull={true}
+            className="rounded-lg bg-primary"
+          >
             <InterSemiBold className="text-white text-base">Next</InterSemiBold>
           </Button>
         </View>
       </SafeAreaView>
-    )
-  }
+    );
+  };
 
   // Screen 3: Photo Upload Form
   const PhotoUploadForm = () => (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="px-5 pt-5">
-        <View className="flex-row items-center mb-8">
+      {/* Header & Progress */}
+      <View className="px-3 sm:px-4 md:px-6 pt-5">
+        <View className="flex-row items-center mb-6">
           <BackBtn onPress={handlePrevStep} />
-          <InterSemiBold className="text-lg text-black ml-5">List a property</InterSemiBold>
+          <InterSemiBold className="text-base sm:text-lg text-black ml-3 sm:ml-5">
+            List a property
+          </InterSemiBold>
         </View>
 
         <ProgressIndicator currentStep={3} />
       </View>
 
-      <ScrollView className="flex-1 px-5">
-        <InterSemiBold className="text-lg text-black mb-8">Add at least 4 photos</InterSemiBold>
+      {/* Scrollable Content */}
+      <ScrollView className="flex-1 px-3 sm:px-4 md:px-6">
+        <InterSemiBold className="text-base sm:text-lg text-black mb-6">
+          Add at least 4 photos
+        </InterSemiBold>
 
-        <View className="flex-row flex-wrap justify-between mb-10">
+        {/* Photo Grid */}
+        <View className="flex-row flex-wrap justify-between mb-8">
           {[1, 2, 3, 4].map((item) => (
             <TouchableOpacity
               key={item}
-              className="w-[48%] aspect-square bg-[#F5F5F5] rounded-lg justify-center items-center mb-4"
+              className="w-[47%] sm:w-[30%] aspect-square bg-[#F5F5F5] rounded-lg justify-center items-center mb-4"
             >
-              <View className="w-6 h-6 justify-center items-center">
-                <View className="w-4 h-0.5 bg-primary rounded-sm" />
-                <View className="w-0.5 h-4 bg-primary rounded-sm absolute" />
+              <View className="w-5 h-5 justify-center items-center">
+                <View className="w-3.5 h-0.5 bg-primary rounded-sm" />
+                <View className="w-0.5 h-3.5 bg-primary rounded-sm absolute" />
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 px-4 bg-[#F5F5F5] rounded-lg mb-10">
-          <InterRegular className="text-base text-black">Add more</InterRegular>
-          <View className="w-5 h-5 justify-center items-center">
-            <View className="w-3 h-0.5 bg-primary rounded-sm" />
-            <View className="w-0.5 h-3 bg-primary rounded-sm absolute" />
+        {/* Add More Button */}
+        <TouchableOpacity className="flex-row items-center justify-between py-3 px-3 bg-[#F5F5F5] rounded-lg mb-10">
+          <InterRegular className="text-sm sm:text-base text-black">
+            Add more
+          </InterRegular>
+          <View className="w-4 h-4 justify-center items-center">
+            <View className="w-2.5 h-0.5 bg-primary rounded-sm" />
+            <View className="w-0.5 h-2.5 bg-primary rounded-sm absolute" />
           </View>
         </TouchableOpacity>
       </ScrollView>
 
-      <View className="px-5 pb-8">
-        <Button onPress={handleNextStep} isFull={true} className="rounded-lg bg-primary">
-          <InterSemiBold className="text-white text-base">Next</InterSemiBold>
+      {/* Bottom CTA */}
+      <View className="px-3 sm:px-4 md:px-6 pb-8">
+        <Button
+          onPress={handleNextStep}
+          isFull={true}
+          className="rounded-lg bg-primary"
+        >
+          <InterSemiBold className="text-sm sm:text-base text-white">
+            Next
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
+  );
 
   // Screen 4: Price Description Form
   const PriceDescriptionForm = () => (
@@ -478,7 +584,9 @@ const History = () => {
       <View className="px-5 pt-5">
         <View className="flex-row items-center mb-7">
           <BackBtn onPress={handlePrevStep} />
-          <InterSemiBold className="text-[18px] text-black ml-5">List a property</InterSemiBold>
+          <InterSemiBold className="text-[18px] text-black ml-5">
+            List a property
+          </InterSemiBold>
         </View>
 
         <ProgressIndicator currentStep={4} />
@@ -486,7 +594,9 @@ const History = () => {
 
       <ScrollView className="flex-1 px-5">
         <View className="mb-7">
-          <InterSemiBold className="text-[18px] text-black mb-4">Add a description</InterSemiBold>
+          <InterSemiBold className="text-[18px] text-black mb-4">
+            Add a description
+          </InterSemiBold>
           <TextInput
             className="border border-[#E5E5E5] rounded-lg p-4 h-[120px] text-black text-[16px] font-['Inter-Regular'] mb-5"
             placeholder="Your description goes here..."
@@ -494,12 +604,16 @@ const History = () => {
             multiline
             textAlignVertical="top"
             value={formData.description}
-            onChangeText={(text) => setFormData({ ...formData, description: text })}
+            onChangeText={(text) =>
+              setFormData({ ...formData, description: text })
+            }
           />
         </View>
 
         <View className="mb-0">
-          <InterSemiBold className="text-[18px] text-black mb-4">Set Price</InterSemiBold>
+          <InterSemiBold className="text-[18px] text-black mb-4">
+            Set Price
+          </InterSemiBold>
           <TextInput
             className="border border-[#E5E5E5] rounded-lg p-4 text-black text-[16px] font-['Inter-Regular'] mb-3"
             placeholder="500,000"
@@ -514,89 +628,140 @@ const History = () => {
           <Checkbox
             label="Is this price negotiable?"
             value={formData.isNegotiable}
-            onChange={(value) => setFormData({ ...formData, isNegotiable: value })}
+            onChange={(value) =>
+              setFormData({ ...formData, isNegotiable: value })
+            }
           />
         </View>
       </ScrollView>
 
       <View className="px-5 pb-8">
-        <Button onPress={handleConfirmListing} isFull={true} className="rounded-lg bg-[#C1272D]">
-          <InterSemiBold className="text-white text-[16px]">Confirm and list</InterSemiBold>
+        <Button
+          onPress={handleConfirmListing}
+          isFull={true}
+          className="rounded-lg bg-[#C1272D]"
+        >
+          <InterSemiBold className="text-white text-[16px]">
+            Confirm and list
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
+  );
 
   // Screen 5: Property Summary Screen
   const PropertySummaryScreen = () => (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-6 pt-5">
-        <InterSemiBold className="text-[18px] text-black mb-8">Authorize listing</InterSemiBold>
+        <InterSemiBold className="text-[18px] text-black mb-8">
+          Authorize listing
+        </InterSemiBold>
 
         <View className="w-full h-[200px] bg-[#F5F5F5] rounded-xl mb-5 overflow-hidden">
-          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+          <Image
+            source={require("../../../assets/images/apt-1.png")}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
         </View>
 
-        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
+        <InterSemiBold className="text-[18px] text-black mb-2">
+          Modern Self-contained apartment
+        </InterSemiBold>
 
         <View className="flex-row items-center mb-8">
           <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
-          <InterRegular className="text-[14px] text-[#666666]">Lekki, Lagos</InterRegular>
+          <InterRegular className="text-[14px] text-[#666666]">
+            Lekki, Lagos
+          </InterRegular>
         </View>
 
         <View className="mb-8">
-          <InterSemiBold className="text-[16px] text-black mb-2">Description</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black mb-2">
+            Description
+          </InterSemiBold>
           <InterRegular className="text-[14px] text-[#666666] leading-5">
-            This tastefully furnished modern self-contained apartment is located at km 20, lekki-ajah expressway, 5
-            minutes drive from moobil filling station.
+            This tastefully furnished modern self-contained apartment is located
+            at km 20, lekki-ajah expressway, 5 minutes drive from moobil filling
+            station.
           </InterRegular>
         </View>
 
         <View className="flex-row justify-between items-center py-[15px] border-b border-[#E5E5E5]">
-          <InterSemiBold className="text-[16px] text-black">Rent/yr</InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">N320,000.00</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            Rent/yr
+          </InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            N320,000.00
+          </InterSemiBold>
         </View>
 
         <View className="flex-row justify-between items-center py-[15px] mb-[60px]">
-          <InterSemiBold className="text-[16px] text-black">Damages</InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">N30,000.00</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            Damages
+          </InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            N30,000.00
+          </InterSemiBold>
         </View>
       </ScrollView>
 
       <View className="flex-row px-6 pb-[30px] space-x-[15px]">
-      <Button
+        <Button
           onPress={handlePrevStep}
-          className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
+          className="flex-1 flex-shrink-0 border border-[#E5E5E5] py-3 sm:py-4 rounded-lg"
           style={{ backgroundColor: "white" }}
         >
-          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
+          <InterSemiBold className="text-black text-sm sm:text-base">
+            Cancel
+          </InterSemiBold>
         </Button>
-        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
-          <InterSemiBold className="text-white text-[15px]">Upload documents</InterSemiBold>
+
+        <Button
+          onPress={handleNextStep}
+          className="flex-1 flex-shrink-0 bg-[#C1272D] py-3 sm:py-4 rounded-lg"
+        >
+          <InterSemiBold className="text-white text-sm sm:text-base whitespace-nowrap">
+            Upload documents
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
+  );
 
   // Screen 6: Document Upload Screen
   const DocumentUploadScreen = () => (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pt-5">
-        <InterSemiBold className="text-[20px] text-black mb-8">Authorize listing</InterSemiBold>
+        <InterSemiBold className="text-[20px] text-black mb-8">
+          Authorize listing
+        </InterSemiBold>
 
         <View className="w-full h-[200px] bg-[#F5F5F5] rounded-[12px] mb-5 overflow-hidden">
-          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+          <Image
+            source={require("../../../assets/images/apt-1.png")}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
         </View>
 
-        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
+        <InterSemiBold className="text-[18px] text-black mb-2">
+          Modern Self-contained apartment
+        </InterSemiBold>
 
         <View className="flex-row items-center mb-10">
           <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
-          <InterRegular className="text-[14px] text-[#666]">Lekki, Lagos</InterRegular>
+          <InterRegular className="text-[14px] text-[#666]">
+            Lekki, Lagos
+          </InterRegular>
         </View>
 
-        <InterSemiBold className="text-[16px] text-black mb-2">Upload document</InterSemiBold>
-        <InterRegular className="text-[14px] text-[#666] mb-10">Upload property documents here; C of O...</InterRegular>
+        <InterSemiBold className="text-[16px] text-black mb-2">
+          Upload document
+        </InterSemiBold>
+        <InterRegular className="text-[14px] text-[#666] mb-10">
+          Upload property documents here; C of O...
+        </InterRegular>
 
         <TouchableOpacity
           onPress={handleDocumentUploaded}
@@ -612,72 +777,113 @@ const History = () => {
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
       <Button
           onPress={handlePrevStep}
-          className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
+          className="flex-1 flex-shrink-0 border border-[#E5E5E5] py-3 sm:py-4 rounded-lg"
           style={{ backgroundColor: "white" }}
         >
-          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
+          <InterSemiBold className="text-black text-sm sm:text-base">
+            Cancel
+          </InterSemiBold>
         </Button>
-        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-4 rounded-lg">
-          <InterSemiBold className="text-white text-[15px]">Upload documents</InterSemiBold>
+
+        <Button
+          onPress={handleNextStep}
+          className="flex-1 flex-shrink-0 bg-[#C1272D] py-3 sm:py-4 rounded-lg"
+        >
+          <InterSemiBold className="text-white text-sm sm:text-base whitespace-nowrap">
+            Upload documents
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
+  );
 
   // Screen 7: Authorize Listing Form (with uploaded status)
   const AuthorizeListingForm = () => (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pt-5">
-        <InterSemiBold className="text-[20px] text-black mb-8">Authorize listing</InterSemiBold>
+        <InterSemiBold className="text-[20px] text-black mb-8">
+          Authorize listing
+        </InterSemiBold>
 
         <View className="w-full h-[200px] bg-[#F5F5F5] rounded-[12px] mb-5 overflow-hidden">
-          <Image source={require("../../../assets/images/apt-1.png")} className="w-full h-full" resizeMode="cover" />
+          <Image
+            source={require("../../../assets/images/apt-1.png")}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
         </View>
 
-        <InterSemiBold className="text-[18px] text-black mb-2">Modern Self-contained apartment</InterSemiBold>
+        <InterSemiBold className="text-[18px] text-black mb-2">
+          Modern Self-contained apartment
+        </InterSemiBold>
 
         <View className="flex-row items-center mb-5">
           <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
-          <InterRegular className="text-[14px] text-[#666]">Lekki, Lagos</InterRegular>
+          <InterRegular className="text-[14px] text-[#666]">
+            Lekki, Lagos
+          </InterRegular>
         </View>
 
-        <InterSemiBold className="text-[16px] text-black mb-2">Description</InterSemiBold>
+        <InterSemiBold className="text-[16px] text-black mb-2">
+          Description
+        </InterSemiBold>
         <InterRegular className="text-[14px] text-[#666] leading-[20px] mb-5">
-          This tastefully furnished modern self-contained apartment is located at km 20, lekki-ajah expressway, 5
-          minutes drive from moobil filling station.
+          This tastefully furnished modern self-contained apartment is located
+          at km 20, lekki-ajah expressway, 5 minutes drive from moobil filling
+          station.
         </InterRegular>
 
         <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5]">
-          <InterSemiBold className="text-[16px] text-black">Rent/yr</InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">N320,000.00</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            Rent/yr
+          </InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            N320,000.00
+          </InterSemiBold>
         </View>
 
         <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5] mb-7">
-          <InterSemiBold className="text-[16px] text-black">Damages</InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">N30,000.00</InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            Damages
+          </InterSemiBold>
+          <InterSemiBold className="text-[16px] text-black">
+            N30,000.00
+          </InterSemiBold>
         </View>
 
         <View className="flex-row justify-between items-center mb-15">
-          <InterSemiBold className="text-[16px] text-black">Document upload status</InterSemiBold>
-          <InterRegular className="text-[14px] text-[#C1272D]">Uploaded</InterRegular>
+          <InterSemiBold className="text-[16px] text-black">
+            Document upload status
+          </InterSemiBold>
+          <InterRegular className="text-[14px] text-[#C1272D]">
+            Uploaded
+          </InterRegular>
         </View>
       </ScrollView>
 
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
-      <Button
+        <Button
           onPress={handlePrevStep}
           className="flex-1 border border-[#E5E5E5] py-4 rounded-lg"
           style={{ backgroundColor: "white" }}
         >
-          <InterSemiBold className="text-black text-[15px]">Cancel</InterSemiBold>
+          <InterSemiBold className="text-black text-[15px]">
+            Cancel
+          </InterSemiBold>
         </Button>
 
-        <Button onPress={handleNextStep} className="flex-1 bg-[#C1272D] py-3 rounded-lg items-center">
-          <InterSemiBold className="text-white text-[15px]">Authorize</InterSemiBold>
+        <Button
+        
+          onPress={handleNextStep}
+          className="flex-1 flex-shrink-0 bg-[#C1272D] py-3 sm:py-4 rounded-lg"
+        >
+          <InterSemiBold className="text-white text-sm sm:text-base whitespace-nowrap">
+            Authorize
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
+  );
 
   // Screen 8: Listing Success Screen
   const ListingSuccessScreen = () => (
@@ -688,57 +894,71 @@ const History = () => {
         </View>
       </View>
 
-      <InterSemiBold className="text-[20px] text-black mb-4 text-center">Listing successful</InterSemiBold>
+      <InterSemiBold className="text-[20px] text-black mb-4 text-center">
+        Listing successful
+      </InterSemiBold>
 
       <InterRegular className="text-[16px] text-[#666] text-center leading-[24px] mb-10 px-5">
-        Your property has been successfully listed on our marketplace, you will get notified whenever you have a
-        potential buyer. Cheers!
+        Your property has been successfully listed on our marketplace, you will
+        get notified whenever you have a potential buyer. Cheers!
       </InterRegular>
 
-      <Button onPress={handleGoToHomepage} className="bg-[#C1272D] py-4 px-10 rounded-lg min-w-[200px] items-center">
-        <InterSemiBold className="text-white text-base">Go to homepage</InterSemiBold>
+      <Button
+        onPress={handleGoToHomepage}
+        className="bg-[#C1272D] py-4 px-10 rounded-lg min-w-[200px] items-center"
+      >
+        <InterSemiBold className="text-white text-base">
+          Go to homepage
+        </InterSemiBold>
       </Button>
     </SafeAreaView>
-  )
+  );
 
   // Render current step for seller mode
   const renderSellerStep = () => {
     switch (currentStep) {
       case 0:
-        return <PropertyListingOverview />
+        return <PropertyListingOverview />;
       case 1:
-        return <PropertyDescriptionForm />
+        return <PropertyDescriptionForm />;
       case 2:
-        return <PropertyExtrasForm />
+        return <PropertyExtrasForm />;
       case 3:
-        return <PhotoUploadForm />
+        return <PhotoUploadForm />;
       case 4:
-        return <PriceDescriptionForm />
+        return <PriceDescriptionForm />;
       case 5:
-        return <PropertySummaryScreen />
+        return <PropertySummaryScreen />;
       case 6:
-        return <DocumentUploadScreen />
+        return <DocumentUploadScreen />;
       case 7:
-        return <AuthorizeListingForm />
+        return <AuthorizeListingForm />;
       case 8:
-        return <ListingSuccessScreen />
+        return <ListingSuccessScreen />;
       default:
-        return <PropertyListingOverview />
+        return <PropertyListingOverview />;
     }
-  }
+  };
 
-  console.log("Rendering - isSeller:", isSeller, "showHistory:", showHistory, "currentStep:", currentStep)
+  console.log(
+    "Rendering - isSeller:",
+    isSeller,
+    "showHistory:",
+    showHistory,
+    "currentStep:",
+    currentStep
+  );
 
   // Main render logic
   if (showHistory || !isSeller) {
-    return <HistoryView />
+    return <HistoryView />;
   }
 
   if (isSeller) {
-    return renderSellerStep()
+    return renderSellerStep();
   }
 
-  return null
-}
+  return null;
+};
 
-export default History
+export default History;

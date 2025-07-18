@@ -17,16 +17,22 @@ const PaymentPin = () => {
   const propertyId = id
   const paymentSource = source // 'history' or 'home'
 
+  console.log("Payment source:", paymentSource) // Debug log
+
   //handle submit pin code
   const handleSubmitePin = () => {
+    console.log("Handling submit with source:", paymentSource) // Debug log
+
     if (paymentSource === "history") {
       // From history tab - go to payment successful
-      router.replace({
-        pathname: "/payment-successful" as any,
+      console.log("Navigating to payment-successful") // Debug log
+      router.push({
+        pathname: "/payment-successful",
         params: { otpCode: otp, id: propertyId },
       })
     } else {
       // From home tab - go to appointment successful (existing flow)
+      console.log("Navigating to appointment-successful") // Debug log
       router.push({
         pathname: "/appointment-successful",
         params: { otpCode: otp, id: propertyId },

@@ -13,6 +13,26 @@ import { useMode } from "@/contexts/ModeContext"
 
 const OngoingCard = ({ house }: { house: HouseProps }) => {
   const { isSeller } = useMode()
+
+  const handleReleasePayment = () => {
+    console.log("OngoingCard - Release payment clicked, navigating with source: history") // Debug log
+    // Navigate to property summary with source parameter to indicate it's from history
+    router.push({
+      pathname: "/property-summary",
+      params: {
+        id: house.id,
+        source: "history", // This will be passed through the payment flow
+      },
+    })
+  }
+
+  const handleReleaseDocument = () => {
+    router.push({
+      pathname: "/release-document",
+      params: { id: house.id },
+    })
+  }
+
   return (
     <View className="w-full rounded-lg bg-background">
       <View className=" rounded-t-lg overflow-hidden">
@@ -87,15 +107,9 @@ const OngoingCard = ({ house }: { house: HouseProps }) => {
             isFull
             onPress={() => {
               if (isSeller) {
-                router.push({
-                  pathname: "/release-document",
-                  params: { id: house.id },
-                })
+                handleReleaseDocument()
               } else {
-                router.push({
-                  pathname: "/release-payment",
-                  params: { id: house.id },
-                })
+                handleReleasePayment()
               }
             }}
           >

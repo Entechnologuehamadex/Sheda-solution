@@ -1,57 +1,61 @@
-import { SafeAreaView, View } from "react-native"
-import { router, useLocalSearchParams } from "expo-router"
-import InterSemiBold from "@/components/Text/InterSemiBold"
-import InterRegular from "@/components/Text/InterRegular"
-import Button from "@/components/common/Button"
+import { SafeAreaView, View } from "react-native";
+import { router } from "expo-router";
+import InterSemiBold from "@/components/Text/InterSemiBold";
+import InterRegular from "@/components/Text/InterRegular";
+import Button from "@/components/common/Button";
+import { SUCCESSFUL } from "@/assets/icons";
+import Icon from "@/components/common/Icon";
 
 const PaymentSuccessful = () => {
-  const { id } = useLocalSearchParams()
-  const propertyId = id
-
   const handleViewTransaction = () => {
-    // Navigate to transaction details or wallet
-    router.push("/(tabs)/wallet")
-  }
+    router.push("/(tabs)/wallet");
+  };
 
   const handleBackToHomepage = () => {
-    router.push("/(tabs)/home")
-  }
+    router.push("/(tabs)/home");
+  };
 
   return (
-    <SafeAreaView className="container flex-1 max-w-2xl mx-auto" style={{ padding: 20 }}>
-      <View className="flex-1 justify-center items-center">
-        <View className="w-24 h-24 bg-[#E8F5E8] rounded-full justify-center items-center mb-8">
-          <View className="w-12 h-12 rounded-full border-[3px] border-[#4CAF50] justify-center items-center">
-            <View className="w-5 h-4 border-l-[3px] border-b-[3px] border-[#4CAF50] -rotate-45 mt-[-2px] ml-[1px]" />
-          </View>
-        </View>
+    <SafeAreaView className="flex-1 bg-[#F8F8F8]">
+      <View className="flex-1 justify-center items-center px-6">
+        {/* Success Icon */}
+        <Icon icon={SUCCESSFUL} width={35} height={35} />
 
-        <InterSemiBold className="text-xl text-black mb-4 text-center">Payment successful</InterSemiBold>
+        {/* Title */}
+        <InterSemiBold className="text-xl mt-4 text-black mb-6 text-center">
+          Payment successful
+        </InterSemiBold>
 
-        <InterRegular className="text-sm text-center text-secondaryText mb-12 px-4 leading-6">
-          Your funds will be held with us as an escrow and released to the seller once documents are released to you.
+        {/* Description */}
+        <InterRegular className="text-sm text-[#666666] text-center mb-12 leading-5 px-4">
+          Your funds will be held with us as an escrow and released to the
+          seller once documents are released to you.
         </InterRegular>
 
-        <View className="w-full space-y-4">
+        {/* Buttons */}
+        <View className="flex-row px-3 pb-[30px] space-x-[15px]">
           <Button
             onPress={handleViewTransaction}
-            className="w-full py-4 rounded-lg border border-[#E5E5E5]"
+            className="flex-1 border border-[#E5E5E5] py-4 rounded-lg self-start"
             style={{ backgroundColor: "white" }}
           >
-            <InterSemiBold className="text-black text-base">View transaction</InterSemiBold>
+            <InterSemiBold className="text-black text-l whitespace-nowrap">
+              View transaction
+            </InterSemiBold>
           </Button>
 
           <Button
             onPress={handleBackToHomepage}
-            className="w-full py-4 rounded-lg"
-            style={{ backgroundColor: "#C1272D" }}
+            className="bg-[#C1272D] px-4 py-4 rounded-lg self-start"
           >
-            <InterSemiBold className="text-white text-base">Back to homepage</InterSemiBold>
+            <InterSemiBold className="text-white text-l whitespace-nowrap">
+              Back to homepage
+            </InterSemiBold>
           </Button>
         </View>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default PaymentSuccessful
+export default PaymentSuccessful;

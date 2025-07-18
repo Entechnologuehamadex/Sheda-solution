@@ -8,16 +8,17 @@ import InterRegular from "@/components/Text/InterRegular";
 export default function Onboarding() {
   
   return (
-    <View className="flex-1">
-      <View className="h-[60%] w-full">
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 6, width: '100%' }}>
         <ImageBackground
           resizeMode="cover"
           source={HERO}
-          className="w-full h-full"
-        ></ImageBackground>
+          style={{ width: '100%', height: '100%' }}
+        />
       </View>
 
-      <View className="flex-1 bg-background rounded-t-2xl lg:rounded-t-none -mt-5 lg:mt-none p-5">
+      <View style={{ flex: 4, backgroundColor: '#F9FAFB', borderTopLeftRadius: 24, borderTopRightRadius: 24, marginTop: -20, padding: 20 }}>
+
         <View className="mt-5 flex items-center">
           <InterSemiBold className="text-xl mb-2">Welcome to advanced real estate</InterSemiBold>
           <InterRegular className="text-secondaryText text-base">Sheda solutions makes your real</InterRegular>

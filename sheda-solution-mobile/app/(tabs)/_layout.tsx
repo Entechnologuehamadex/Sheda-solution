@@ -1,13 +1,13 @@
-import { Tabs } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Octicons from "@expo/vector-icons/Octicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { View } from "react-native";
-import Icon from "@/components/common/Icon";
-import { HOMEICON } from "@/constants/images-icons";
-import { INBOX } from "@/assets/icons";
+import { Tabs } from "expo-router"
+import AntDesign from "@expo/vector-icons/AntDesign"
+import Octicons from "@expo/vector-icons/Octicons"
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
+import { useMode } from "@/contexts/ModeContext"
+import { Image } from "react-native"
 
 export default function TabLayout() {
+  const { isSeller } = useMode()
+
   return (
     <Tabs
       screenOptions={{
@@ -20,15 +20,14 @@ export default function TabLayout() {
           borderTopWidth: 3,
           borderTopColor: "#e0e0e0",
           height: 60,
-          justifyContent: 'center'
+          justifyContent: "center",
         },
         tabBarLabelStyle: {
           fontFamily: "Manrope-Medium",
           fontSize: 12,
           marginBottom: 5,
           alignItems: "center",
-          justifyContent: 'center',
-          
+          justifyContent: "center",
         },
       }}
     >
@@ -37,38 +36,48 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, size, focused }) => (
-            <AntDesign
-              name="home"
-              size={24}
-              color={focused ? "#C1272D" : "black"}
-            />
+            <AntDesign name="home" size={24} color={focused ? "#C1272D" : "black"} />
           ),
         }}
       />
       <Tabs.Screen
         name="saved/index"
         options={{
-          title: "Saved",
-          tabBarIcon: ({ color, size, focused }) => (
-            <AntDesign
-              name="hearto"
-              size={24}
-              color={focused ? "#C1272D" : "black"}
-            />
-          ),
+          title: isSeller ? "Activity" : "Saved",
+          tabBarIcon: ({ color, size, focused }) =>
+            isSeller ? (
+              <Image
+                source={require("@/assets/images/activity-icon.png")}
+                style={{
+                  width: 35,
+                  height: 35,
+                  tintColor: focused ? "#C1272D" : "black",
+                }}
+                resizeMode="contain"
+              />
+            ) : (
+              <AntDesign name="hearto" size={24} color={focused ? "#C1272D" : "black"} />
+            ),
         }}
       />
       <Tabs.Screen
         name="history/index"
         options={{
-          title: "History",
-          tabBarIcon: ({ color, size, focused }) => (
-            <Octicons
-              name="history"
-              size={24}
-              color={focused ? "#C1272D" : "black"}
-            />
-          ),
+          title: isSeller ? "List" : "History",
+          tabBarIcon: ({ color, size, focused }) =>
+            isSeller ? (
+              <Image
+                source={require("@/assets/images/list-icon.png")}
+                style={{
+                  width: 35,
+                  height: 35,
+                  tintColor: focused ? "#C1272D" : "black",
+                }}
+                resizeMode="contain"
+              />
+            ) : (
+              <Octicons name="history" size={24} color={focused ? "#C1272D" : "black"} />
+            ),
         }}
       />
       <Tabs.Screen
@@ -76,11 +85,7 @@ export default function TabLayout() {
         options={{
           title: "Inbox",
           tabBarIcon: ({ color, size, focused }) => (
-            <MaterialCommunityIcons
-              name="comment-text-outline"
-              size={24}
-              color={focused ? "#C1272D" : "black"}
-            />
+            <MaterialCommunityIcons name="comment-text-outline" size={24} color={focused ? "#C1272D" : "black"} />
           ),
         }}
       />
@@ -89,15 +94,10 @@ export default function TabLayout() {
         options={{
           title: "Portfolio",
           tabBarIcon: ({ color, size, focused }) => (
-            <MaterialCommunityIcons
-              name="wallet-outline"
-              size={24}
-              color={focused ? "#C1272D" : "black"}
-            />
+            <MaterialCommunityIcons name="wallet-outline" size={24} color={focused ? "#C1272D" : "black"} />
           ),
         }}
       />
-     
     </Tabs>
-  );
+  )
 }

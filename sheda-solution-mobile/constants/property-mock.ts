@@ -1,6 +1,6 @@
 
 
-const properties = [
+export const properties = [
   {
     id: '1',
     price: '75000000',
@@ -115,5 +115,4 @@ const properties = [
     image: require('../assets/images/apt-2.png'),
   },
 ];
-
-export { properties }
+

@@ -4,21 +4,21 @@ import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import { HERO } from "@/constants/images-icons";
 import InterRegular from "@/components/Text/InterRegular";
-import { deviceHeight } from "@/constants/values";
 
 export default function Onboarding() {
   
   return (
-    <View style={{ flex: 1, height: deviceHeight }}>
-      <View className="h-[60%] w-full">
+    <View style={{ flex: 1 }}>
+      <View style={{ flex: 6, width: '100%' }}>
         <ImageBackground
           resizeMode="cover"
           source={HERO}
-          style={{ width: "100%", height: "100%" }}
-        ></ImageBackground>
+          style={{ width: '100%', height: '100%' }}
+        />
       </View>
 
-      <View className="flex-1 bg-background rounded-t-2xl lg:rounded-t-none -mt-5 lg:mt-none p-5">
+      <View style={{ flex: 4, backgroundColor: '#F9FAFB', borderTopLeftRadius: 24, borderTopRightRadius: 24, marginTop: -20, padding: 20 }}>
+
         <View className="mt-5 flex items-center">
           <InterSemiBold className="text-xl mb-2">Welcome to advanced real estate</InterSemiBold>
           <InterRegular className="text-secondaryText text-base">Sheda solutions makes your real</InterRegular>

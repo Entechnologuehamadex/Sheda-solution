@@ -1,22 +1,22 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import InterSemiBold from "@/components/Text/InterSemiBold";
-import BackBtn from "@/components/common/BackBtn";
-import { PROFILE } from "@/constants/images-icons";
-import InterMedium from "@/components/Text/InterMedium";
-import Icon from "@/components/common/Icon";
-import { PROFILETICK, CHEVRONRIGHT } from "@/assets/icons";
-import Button from "@/components/common/Button";
-import InterRegular from "@/components/Text/InterRegular";
-import profileList from "./profileList";
+import { View, Image, TouchableOpacity } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+import InterSemiBold from "@/components/Text/InterSemiBold"
+import BackBtn from "@/components/common/BackBtn"
+import { PROFILE } from "@/constants/images-icons"
+import InterMedium from "@/components/Text/InterMedium"
+import Icon from "@/components/common/Icon"
+import { PROFILETICK, CHEVRONRIGHT } from "@/assets/icons"
+import Button from "@/components/common/Button"
+import InterRegular from "@/components/Text/InterRegular"
+import profileList from "./profileList"
+import { useMode } from "@/contexts/ModeContext"
 
 const Profile = () => {
+  const { mode, toggleMode, isSeller } = useMode()
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View
-        className="container flex-1 mx-auto max-w-2xl"
-        style={{ paddingVertical: 20 }}
-      >
+      <View className="container flex-1 mx-auto max-w-2xl" style={{ paddingVertical: 20 }}>
         <View className="flex-row items-center gap-4 ml-5">
           <BackBtn />
           <InterSemiBold className="text-lg/5">My Profile</InterSemiBold>
@@ -31,21 +31,16 @@ const Profile = () => {
             {/* profile name section */}
             <View className="mt-3 items-center">
               <View className="flex-row items-center justify-center gap-2">
-                <InterMedium className="text-lg/[150%]">
-                  Amazing homes
-                </InterMedium>
+                <InterMedium className="text-lg/[150%]">Amazing homes</InterMedium>
                 <Icon icon={PROFILETICK} width={15} height={15} />
               </View>
-              <InterRegular className="text-xs/[150%] text-secondaryText">
-                Edit Profile
-              </InterRegular>
+              <InterRegular className="text-xs/[150%] text-secondaryText">Edit Profile</InterRegular>
             </View>
 
             <View className="mt-3">
-              <Button className="rounded-lg">
+              <Button className="rounded-lg" onPress={toggleMode}>
                 <InterMedium className="text-white">
-                  {" "}
-                  Switch to seller accout{" "}
+                  {isSeller ? "Switch to buyer account" : "Switch to seller account"}
                 </InterMedium>
               </Button>
             </View>
@@ -56,25 +51,21 @@ const Profile = () => {
         <View>
           {profileList.map((item) => (
             <TouchableOpacity
-            onPress={item.onClick}
+              onPress={item.onClick}
               key={item.id}
               className="flex-row items-center justify-between px-5 py-5 border-b border-[#0000001A]"
             >
               <View className="flex-row items-center gap-3">
                 <Icon icon={item.icon} width={20} height={20} />
-                <InterMedium className="text-base/[150%]">
-                  {item.title}
-                </InterMedium>
+                <InterMedium className="text-base/[150%]">{item.title}</InterMedium>
               </View>
-              {item.chevronRight && (
-                <Icon icon={CHEVRONRIGHT} width={10} height={20} />
-              )}
+              {item.chevronRight && <Icon icon={CHEVRONRIGHT} width={10} height={20} />}
             </TouchableOpacity>
           ))}
         </View>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

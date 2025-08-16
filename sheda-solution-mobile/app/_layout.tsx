@@ -1,14 +1,30 @@
-"use client"
+"use client";
 
-import { Stack } from "expo-router"
-import { useFonts } from "expo-font"
-import { useEffect } from "react"
-import { SplashScreen } from "expo-router"
-import { ModeProvider } from "@/contexts/ModeContext"
-import "./../global.css"
+// Buffer polyfill for React Native compatibility with crypto libraries
+import { Buffer } from "buffer";
+global.Buffer = Buffer;
+
+// Process polyfill for React Native compatibility
+global.process = global.process || { env: {} };
+
+// Random values polyfill for crypto libraries
+import "react-native-get-random-values";
+
+// Additional Node.js polyfills for crypto libraries
+global.global = global;
+global.process = global.process || { env: {} };
+
+import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+import { SplashScreen } from "expo-router";
+import { ModeProvider } from "@/contexts/ModeContext";
+import { WalletProvider } from "@/contexts/WalletContext";
+import { ApiProvider } from "@/contexts/ApiContext";
+import "./../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
@@ -25,50 +41,120 @@ export default function RootLayout() {
     "Sora-Bold": require("../assets/fonts/Sora-Bold.ttf"),
     "Sora-Medium": require("../assets/fonts/Sora-Medium.ttf"),
     "SpaceMono-Regular": require("../assets/fonts/SpaceMono-Regular.ttf"),
-  })
+  });
 
   useEffect(() => {
-    if (error) throw error
+    if (error) throw error;
     if (fontsLoaded) {
-      SplashScreen.hideAsync()
+      SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error])
+  }, [fontsLoaded, error]);
 
   if (!fontsLoaded && !error) {
-    return null
+    return null;
   }
 
   return (
     <ModeProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="appointment-booked/index" options={{ headerShown: false }} />
-        <Stack.Screen name="appointment-successful/index" options={{ headerShown: false }} />
-        <Stack.Screen name="book-appointment/index" options={{ headerShown: false }} />
-        <Stack.Screen name="change-password/index" options={{ headerShown: false }} />
-        <Stack.Screen name="chat/index" options={{ headerShown: false }} />
-        <Stack.Screen name="delete-account/index" options={{ headerShown: false }} />
-        <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="filter/index" options={{ headerShown: false }} />
-        <Stack.Screen name="notification-setting/index" options={{ headerShown: false }} />
-        <Stack.Screen name="payment-pin/index" options={{ headerShown: false }} />
-        <Stack.Screen name="personal-info/index" options={{ headerShown: false }} />
-        <Stack.Screen name="profile/index" options={{ headerShown: false }} />
-        <Stack.Screen name="profile-setting/index" options={{ headerShown: false }} />
-        <Stack.Screen name="property-agreement/index" options={{ headerShown: false }} />
-        <Stack.Screen name="property-summary/index" options={{ headerShown: false }} />
-        <Stack.Screen name="release-payment/index" options={{ headerShown: false }} />
-        <Stack.Screen name="select-currency/index" options={{ headerShown: false }} />
-        <Stack.Screen name="support/index" options={{ headerShown: false }} />
-        <Stack.Screen name="support-feedback/index" options={{ headerShown: false }} />
-        <Stack.Screen name="wallet-recovery/index" options={{ headerShown: false }} />
-        {/* New routes for seller document release flow */}
-        <Stack.Screen name="release-document/index" options={{ headerShown: false }} />
-        <Stack.Screen name="release-document-pin" options={{ headerShown: false }} />
-        <Stack.Screen name="dcoument-release-succesful" options={{ headerShown: false }} />
-      </Stack>
+      <WalletProvider>
+        <ApiProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="appointment-booked/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="appointment-successful/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="book-appointment/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="change-password/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="chat/index" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="delete-account/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="details/[id]"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="filter/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="notification-setting/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="payment-pin/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="personal-info/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="profile/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="profile-setting/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="property-agreement/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="property-summary/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="release-payment/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="select-currency/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="support/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="support-feedback/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="wallet-recovery/index"
+              options={{ headerShown: false }}
+            />
+            {/* New routes for seller document release flow */}
+            <Stack.Screen
+              name="release-document/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="release-document-pin"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="dcoument-release-succesful"
+              options={{ headerShown: false }}
+            />
+          </Stack>
+        </ApiProvider>
+      </WalletProvider>
     </ModeProvider>
-  )
+  );
 }

@@ -1,0 +1,543 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Base API configuration
+const API_BASE_URL = "https://sheda-backend-production.up.railway.app";
+const LOCAL_API_URL = "http://localhost:8000";
+
+// Types based on OpenAPI specification
+export interface UserCreate {
+  username?: string;
+  email?: string;
+  password: string;
+}
+
+export interface UserUpdate {
+  profile_pic?: string;
+  username?: string;
+  email?: string;
+  phone_number?: string;
+  account_type?: "client" | "agent";
+  fullname?: string;
+  location?: string;
+  kyc_status?: "pending" | "verified" | "rejected";
+  rating?: number;
+}
+
+export interface UserShow {
+  profile_pic?: string;
+  username?: string;
+  email?: string;
+  phone_number?: string;
+  account_type?: "client" | "agent";
+  fullname?: string;
+  location?: string;
+  agency_name?: string;
+  is_active: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  updated_at: string;
+  verified: boolean;
+  kyc_status: "pending" | "verified" | "rejected";
+  listing?: PropertyShow[];
+  appointments?: AppointmentShow[];
+  account_info?: AccountInfoShow[];
+  availabilities?: AvailabilityShow[];
+}
+
+export interface Token {
+  access_token: string;
+  token_type?: string;
+}
+
+export interface OtpSend {
+  email: string;
+}
+
+export interface OtpSchema {
+  email: string;
+  otp: string | number;
+}
+
+export interface PasswordReset {
+  password: string;
+}
+
+export interface SwitchAccountType {
+  switch_to: "client" | "agent";
+}
+
+export interface PropertyBase {
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  property_type: "apartment" | "land" | "shortlet" | "shared apartment";
+  listing_type: "rent" | "sale";
+  status: "sold" | "rented" | "available";
+  furnished: boolean;
+  is_active: boolean;
+  bathroom: number;
+  bedroom: number;
+  air_condition: boolean;
+  pop_ceiling: boolean;
+  floor_tiles: boolean;
+  running_water: boolean;
+  furniture: boolean;
+  prepaid_meter: boolean;
+  wifi: boolean;
+  is_negotiable: boolean;
+  images: PropertyImage[];
+}
+
+export interface PropertyUpdate {
+  title?: string;
+  description?: string;
+  location?: string;
+  price?: number;
+  property_type?: "apartment" | "land" | "shortlet" | "shared apartment";
+  listing_type?: "rent" | "sale";
+  status?: "sold" | "rented" | "available";
+  furnished?: boolean;
+  is_active?: boolean;
+  bathroom?: number;
+  bedroom?: number;
+  air_condition?: boolean;
+  pop_ceiling?: boolean;
+  floor_tiles?: boolean;
+  running_water?: boolean;
+  furniture?: boolean;
+  prepaid_meter?: boolean;
+  wifi?: boolean;
+  is_negotiable?: boolean;
+  images?: PropertyImage[];
+}
+
+export interface PropertyShow extends PropertyBase {
+  id: number;
+  agent_id: number;
+}
+
+export interface PropertyImage {
+  image_url: string;
+  is_primary?: boolean;
+}
+
+export interface PropertyFeed {
+  data: PropertyShow[];
+  next_coursor?: number;
+}
+
+export interface AgentFeed {
+  profile_pic?: string;
+  username: string;
+  email: string;
+  phone_number: string;
+  agency_name: string;
+  location: string;
+  kyc_status: "pending" | "verified" | "rejected";
+  last_seen: string;
+  rating: number;
+  listing: PropertyShow[];
+  availbilities: AvailabilityShow[];
+}
+
+export interface AppointmentSchema {
+  agent_id: number;
+  property_id: number;
+  requested_time: string;
+}
+
+export interface AppointmentShow {
+  id: number;
+  client_id: number;
+  agent_id: number;
+  property_id: number;
+  scheduled_at: string;
+  status: "pending" | "confirmed" | "canceled";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AccountInfoBase {
+  account_name?: string;
+  bank_name?: string;
+  acount_number?: string;
+}
+
+export interface AccountInfoShow extends AccountInfoBase {
+  id: number;
+  user_id: number;
+}
+
+export interface AgentAvailabilitySchema {
+  weekday: string;
+  start_time: string;
+  end_time: string;
+}
+
+export interface AvailabilityShow extends AgentAvailabilitySchema {
+  id: number;
+  agent_id: number;
+  is_booked: boolean;
+}
+
+export interface ContractCreate {
+  property_id: number;
+  amount: number;
+  rental_period_months?: number;
+  is_payment_made: boolean;
+}
+
+export interface ContractResponse {
+  contract_id: number;
+  property_id: number;
+  contract_type: "rent" | "sale";
+  amount: number;
+  start_date: string;
+  end_date?: string;
+  is_active: boolean;
+}
+
+export interface ChatMessageSchema {
+  sender_id: number;
+  receiver_id: number;
+  message: string;
+  timestamp?: string;
+  property_id?: number;
+}
+
+export interface FileShow {
+  file_url: string;
+}
+
+export interface DeleteProperty {
+  message: string;
+}
+
+export interface ValidationError {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+}
+
+export interface HTTPValidationError {
+  detail: ValidationError[];
+}
+
+// API Service Class
+class ApiService {
+  private baseURL: string;
+  private token: string | null = null;
+
+  constructor(baseURL: string = API_BASE_URL) {
+    this.baseURL = baseURL;
+  }
+
+  // Token management
+  async setToken(token: string) {
+    this.token = token;
+    await AsyncStorage.setItem("auth_token", token);
+  }
+
+  async getToken(): Promise<string | null> {
+    if (!this.token) {
+      this.token = await AsyncStorage.getItem("auth_token");
+    }
+    return this.token;
+  }
+
+  async clearToken() {
+    this.token = null;
+    await AsyncStorage.removeItem("auth_token");
+  }
+
+  // Request helper
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const token = await this.getToken();
+    const url = `${this.baseURL}${endpoint}`;
+
+    const config: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
+      ...options,
+    };
+
+    try {
+      const response = await fetch(url, config);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("API Request failed:", error);
+      throw error;
+    }
+  }
+
+  // Auth endpoints
+  async signup(userData: UserCreate): Promise<UserShow> {
+    return this.request<UserShow>("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async verifyAccount(): Promise<Token> {
+    return this.request<Token>("/api/auth/verify-account", {
+      method: "POST",
+    });
+  }
+
+  async login(username: string, password: string): Promise<Token> {
+    const formData = new URLSearchParams();
+    formData.append("username", username);
+    formData.append("password", password);
+
+    return this.request<Token>("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+    });
+  }
+
+  async logout(): Promise<void> {
+    await this.request("/api/auth/logout", {
+      method: "POST",
+    });
+    await this.clearToken();
+  }
+
+  async resetPassword(password: string): Promise<Token> {
+    return this.request<Token>("/api/auth/reset-password", {
+      method: "PUT",
+      body: JSON.stringify({ password }),
+    });
+  }
+
+  async sendOtp(email: string): Promise<void> {
+    return this.request("/api/auth/send-otp", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async verifyOtp(email: string, otp: string | number): Promise<Token> {
+    return this.request<Token>("/api/auth/verify-otp", {
+      method: "POST",
+      body: JSON.stringify({ email, otp }),
+    });
+  }
+
+  async refreshToken(): Promise<Token> {
+    return this.request<Token>("/api/auth/refresh-token", {
+      method: "PUT",
+    });
+  }
+
+  async switchAccount(accountType: "client" | "agent"): Promise<Token> {
+    return this.request<Token>("/api/auth/switch-account", {
+      method: "POST",
+      body: JSON.stringify({ switch_to: accountType }),
+    });
+  }
+
+  // User endpoints
+  async getMe(): Promise<UserShow> {
+    return this.request<UserShow>("/api/user/me");
+  }
+
+  async updateMe(userData: UserUpdate): Promise<UserUpdate> {
+    return this.request<UserUpdate>("/api/user/update/me", {
+      method: "PUT",
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async deleteAccount(): Promise<void> {
+    return this.request("/api/user/delete-accnt", {
+      method: "DELETE",
+    });
+  }
+
+  async bookAppointment(
+    appointmentData: AppointmentSchema
+  ): Promise<AppointmentShow> {
+    return this.request<AppointmentShow>("/api/user/book-appointment", {
+      method: "GET",
+      body: JSON.stringify(appointmentData),
+    });
+  }
+
+  async cancelAppointment(appointmentId: number): Promise<void> {
+    return this.request(`/api/user/cancel-appointment/${appointmentId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async createPaymentInfo(
+    accountInfo: AccountInfoBase
+  ): Promise<AccountInfoShow> {
+    return this.request<AccountInfoShow>("/api/user/create-payment-info", {
+      method: "POST",
+      body: JSON.stringify(accountInfo),
+    });
+  }
+
+  async getPaymentInfo(userId?: number): Promise<AccountInfoShow[]> {
+    const params = userId ? `?user_id=${userId}` : "";
+    return this.request<AccountInfoShow[]>(`/api/user/payment-info${params}`);
+  }
+
+  async updatePaymentInfo(
+    accountInfoId: number,
+    accountInfo: AccountInfoBase
+  ): Promise<AccountInfoShow> {
+    return this.request<AccountInfoShow>(
+      `/api/user/update-account-info/${accountInfoId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(accountInfo),
+      }
+    );
+  }
+
+  async deleteAccountInfo(accountInfoId: number): Promise<void> {
+    return this.request(`/api/user/delete-accnt-info/${accountInfoId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async getPaymentInfoByContract(contractId: number): Promise<AccountInfoBase> {
+    return this.request<AccountInfoBase>(
+      `/api/user/payment-info/${contractId}`
+    );
+  }
+
+  async createAvailableTime(
+    availability: AgentAvailabilitySchema
+  ): Promise<AvailabilityShow> {
+    return this.request<AvailabilityShow>("/api/user/create-available-time", {
+      method: "POST",
+      body: JSON.stringify(availability),
+    });
+  }
+
+  async getSchedule(): Promise<AvailabilityShow[]> {
+    return this.request<AvailabilityShow[]>("/api/user/get-schedule/me");
+  }
+
+  async updateSchedule(
+    scheduleId: number,
+    availability: AgentAvailabilitySchema
+  ): Promise<AvailabilityShow> {
+    return this.request<AvailabilityShow>(
+      `/api/user/update-schedule/${scheduleId}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(availability),
+      }
+    );
+  }
+
+  async confirmPayment(contractId: number): Promise<void> {
+    return this.request(`/api/user/confirm-payment/${contractId}`, {
+      method: "POST",
+    });
+  }
+
+  async approvePayment(contractId: number): Promise<void> {
+    return this.request(`/api/user/approve-payment/${contractId}`, {
+      method: "POST",
+    });
+  }
+
+  async createContract(
+    contractData: ContractCreate
+  ): Promise<ContractResponse> {
+    return this.request<ContractResponse>("/api/user/contracts/", {
+      method: "POST",
+      body: JSON.stringify(contractData),
+    });
+  }
+
+  // Property endpoints
+  async listProperty(propertyData: PropertyBase): Promise<PropertyShow> {
+    return this.request<PropertyShow>("/api/property/list-property", {
+      method: "POST",
+      body: JSON.stringify(propertyData),
+    });
+  }
+
+  async getMyListings(): Promise<PropertyShow[]> {
+    return this.request<PropertyShow[]>("/api/property/me");
+  }
+
+  async updateProperty(
+    propertyId: number,
+    propertyData: PropertyUpdate
+  ): Promise<PropertyShow> {
+    return this.request<PropertyShow>(`/api/property/update/${propertyId}`, {
+      method: "PUT",
+      body: JSON.stringify(propertyData),
+    });
+  }
+
+  async getProperties(
+    limit: number = 20,
+    cursor: number = 1
+  ): Promise<PropertyFeed> {
+    return this.request<PropertyFeed>(
+      `/api/property/get-properties?limit=${limit}&cursor=${cursor}`
+    );
+  }
+
+  async getAgentProfile(agentId: number): Promise<AgentFeed> {
+    return this.request<AgentFeed>(`/api/property/agent-profile${agentId}`);
+  }
+
+  async deleteProperty(propertyId: number): Promise<DeleteProperty> {
+    return this.request<DeleteProperty>(`/api/property/delete/${propertyId}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Chat endpoints
+  async getChatHistory(): Promise<ChatMessageSchema[]> {
+    return this.request<ChatMessageSchema[]>("/api/chat/chat-history");
+  }
+
+  // Media endpoints
+  async uploadFile(type: "profile" | "property", file: any): Promise<FileShow> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return this.request<FileShow>(`/api/media/file-upload/${type}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+    });
+  }
+
+  async getFiles(type: "profile" | "property"): Promise<FileShow[]> {
+    return this.request<FileShow[]>(`/api/media/file-upload/${type}`);
+  }
+}
+
+// Export singleton instance
+export const apiService = new ApiService();
+export default apiService;

@@ -1,6 +1,6 @@
 import InterBold from "@/components/Text/InterBold";
 import InterRegular from "@/components/Text/InterRegular";
-import { Text, View, TextInput } from "react-native";
+import { Text, View, TextInput, Alert } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,13 +10,20 @@ import InterSemiBold from "@/components/Text/InterSemiBold";
 import Breaker from "@/components/Breaker";
 import Socials from "@/components/Socials";
 import StyledTextInput from "@/components/input/textInput";
-
-
+import { useAuth } from "@/hooks/useShedaApi";
+import { useState, useEffect } from "react";
 
 const Signup = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { signup, isLoading, error, clearError, isAuthenticated } = useAuth();
+
   const signupSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
-    password: z.string().min(5, { message: "Invalid Pasword" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
   });
 
   type UserFormType = z.infer<typeof signupSchema>;
@@ -27,8 +34,46 @@ const Signup = () => {
     formState: { errors },
   } = useForm<UserFormType>({ resolver: zodResolver(signupSchema) });
 
-  const onSubmit: SubmitHandler<UserFormType> = (data: UserFormType) => {
-    console.log(data);
+  // Handle authentication success
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/(auth)/wallet-setup");
+    }
+  }, [isAuthenticated]);
+
+  // Handle error display
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Signup Error", error);
+      clearError();
+    }
+  }, [error, clearError]);
+
+  const handleSignup = async () => {
+    if (!email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert("Error", "Password must be at least 8 characters long");
+      return;
+    }
+
+    try {
+      await signup({
+        email,
+        password,
+        username: email, // Using email as username for now
+      });
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
   };
   return (
     <View className="container max-w-2xl mx-auto" style={{ padding: 20 }}>
@@ -40,32 +85,42 @@ const Signup = () => {
         {/* email input */}
         <View>
           <InterRegular className="py-1">Email</InterRegular>
-          <StyledTextInput 
-          placeholder="example@email.com"
+          <StyledTextInput
+            placeholder="example@email.com"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
 
         {/* Password input */}
         <View className="my-4">
           <InterRegular className="py-1">Create a password</InterRegular>
-          <StyledTextInput 
-          isPassword={true}
-          placeholder="must be 8 characters"
+          <StyledTextInput
+            isPassword={true}
+            placeholder="must be 8 characters"
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
 
-         {/* Confirm Password input */}
+        {/* Confirm Password input */}
         <View className="my-4">
           <InterRegular className="py-1">Confirm Password</InterRegular>
-          <StyledTextInput 
-          isPassword={true}
-          placeholder="repeat password"
+          <StyledTextInput
+            isPassword={true}
+            placeholder="repeat password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
           />
         </View>
 
-        <Button className="rounded-lg" onPress={() => router.push('/(auth)/wallet-setup')}>
+        <Button
+          className="rounded-lg"
+          onPress={handleSignup}
+          disabled={isLoading}
+        >
           <InterSemiBold className="text-background text-base">
-           Sign up
+            {isLoading ? "Signing up..." : "Sign up"}
           </InterSemiBold>
         </Button>
       </View>
@@ -76,10 +131,8 @@ const Signup = () => {
         </View>
         <Socials />
 
-        <Link href={"/login"} className="text-center mt-4">
-          <InterRegular className="mr-1">
-            Already have an account?
-          </InterRegular>
+        <Link href={"/Login"} className="text-center mt-4">
+          <InterRegular className="mr-1">Already have an account?</InterRegular>
           <InterBold className=""> Log in</InterBold>
         </Link>
       </View>

@@ -16,6 +16,14 @@ module.exports = async () => {
   );
   config.resolver.sourceExts.push("svg");
 
+  // Add Node.js polyfills for crypto libraries
+  config.resolver.alias = {
+    ...config.resolver.alias,
+    crypto: "react-native-get-random-values",
+    stream: "readable-stream",
+    buffer: "buffer",
+  };
+
   // Apply reanimatedMetroConfiq and NativeWind
   return wrapWithReanimatedMetroConfig(
     withNativeWind(config, { input: "./global.css" })

@@ -22,10 +22,12 @@ import { historyData } from "../../../constants/history-data";
 import type { HouseProps, CancelledHistory } from "@/types";
 import HistoryList from "../../../components/history/HistoryList";
 import { useMode } from "@/contexts/ModeContext";
+import { useApi } from "@/contexts/ApiContext";
 import { router } from "expo-router";
 
 const History = () => {
   const { isSeller } = useMode();
+  const { appointments, getMyListings } = useApi();
   const [activeIndex, setIsActiveIndex] = useState<null | number>(0);
   const [activeItem, setActiveItem] = useState<null | any>("Ongoing");
   const [history, setHistory] = useState<
@@ -105,11 +107,20 @@ const History = () => {
   };
 
   useEffect(() => {
-    const fetchHistory = () => {
+    const fetchHistory = async () => {
       setLoading(true);
       try {
-        const data = historyData[activeItem];
-        setHistory(data);
+        if (isSeller) {
+          // For sellers, fetch their property listings
+          await getMyListings();
+          // Transform listings to history format
+          const listingsData = historyData[activeItem] || [];
+          setHistory(listingsData);
+        } else {
+          // For buyers, use appointment history or mock data
+          const data = historyData[activeItem];
+          setHistory(data);
+        }
       } catch (error) {
         console.error("Error fetching history:", error);
         setHistory(null);
@@ -121,7 +132,7 @@ const History = () => {
     if (!isSeller || showHistory) {
       fetchHistory();
     }
-  }, [activeItem, isSeller, showHistory]);
+  }, [activeItem, isSeller, showHistory, getMyListings]);
 
   // Debug useEffect to track state changes
   useEffect(() => {
@@ -775,7 +786,7 @@ const History = () => {
       </ScrollView>
 
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
-      <Button
+        <Button
           onPress={handlePrevStep}
           className="flex-1 flex-shrink-0 border border-[#E5E5E5] py-3 sm:py-4 rounded-lg"
           style={{ backgroundColor: "white" }}
@@ -873,7 +884,6 @@ const History = () => {
         </Button>
 
         <Button
-        
           onPress={handleNextStep}
           className="flex-1 flex-shrink-0 bg-[#C1272D] py-3 sm:py-4 rounded-lg"
         >

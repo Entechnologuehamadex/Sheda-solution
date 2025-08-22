@@ -23,6 +23,7 @@ interface UseAuthReturn {
   isAuthenticated: boolean;
   user: any;
   isLoading: boolean;
+  isInitializing: boolean;
   error: string | null;
   signup: (userData: UserCreate) => Promise<void>;
   login: (username: string, password: string) => Promise<void>;
@@ -126,6 +127,7 @@ export function useAuth(): UseAuthReturn {
     isAuthenticated: api.isAuthenticated,
     user: api.user,
     isLoading: api.isLoading,
+    isInitializing: api.isInitializing,
     error: api.error,
     signup: api.signup,
     login: api.login,
@@ -609,15 +611,3 @@ export function useFileUpload(
     reset,
   };
 }
-
-// Export all hooks
-export {
-  useAuth,
-  useProperties,
-  useAppointments,
-  usePayment,
-  useSchedule,
-  useContracts,
-  useMedia,
-  useChat,
-};

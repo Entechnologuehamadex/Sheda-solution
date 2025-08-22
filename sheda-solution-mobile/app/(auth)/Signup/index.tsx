@@ -17,13 +17,14 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { signup, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { signup, isLoading, error, clearError, isAuthenticated, user } =
+    useAuth();
 
   const signupSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
     password: z
       .string()
-      .min(8, { message: "Password must be at least 8 characters" }),
+      .min(5, { message: "Password must be at least 8 characters" }),
   });
 
   type UserFormType = z.infer<typeof signupSchema>;
@@ -41,13 +42,29 @@ const Signup = () => {
     }
   }, [isAuthenticated]);
 
-  // Handle error display
+  // Handle error and success display
   useEffect(() => {
     if (error) {
       Alert.alert("Signup Error", error);
       clearError();
     }
   }, [error, clearError]);
+
+  // Handle successful signup
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      Alert.alert("Success", "Account created successfully!", [
+        {
+          text: "OK",
+          onPress: () =>
+            router.push({
+              pathname: "/(auth)/wallet-setup",
+              params: { email: email },
+            }),
+        },
+      ]);
+    }
+  }, [isAuthenticated, user, email]);
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
@@ -60,7 +77,7 @@ const Signup = () => {
       return;
     }
 
-    if (password.length < 8) {
+    if (password.length < 5) {
       Alert.alert("Error", "Password must be at least 8 characters long");
       return;
     }
@@ -120,7 +137,7 @@ const Signup = () => {
           disabled={isLoading}
         >
           <InterSemiBold className="text-background text-base">
-            {isLoading ? "Signing up..." : "Sign up"}
+            {isLoading ? "Creating account..." : "Sign up"}
           </InterSemiBold>
         </Button>
       </View>

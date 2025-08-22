@@ -28,7 +28,7 @@ interface WalletContextType {
   getCurrentNetwork: () => NetworkType;
 
   // Wallet operations
-  createWallet: () => Promise<CreateWalletResult>;
+  createWallet: (email?: string) => Promise<CreateWalletResult>;
   createSubAccount: (
     mainAccountId: string,
     subAccountName: string,
@@ -222,7 +222,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
   };
 
   // Wallet operations
-  const createWallet = async (): Promise<CreateWalletResult> => {
+  const createWallet = async (email?: string): Promise<CreateWalletResult> => {
     try {
       setLoading(true);
       setError(null);
@@ -235,7 +235,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
         );
       }
 
-      const result = await nearWalletService.createWallet();
+      const result = await nearWalletService.createWallet(email);
 
       // Save the wallet state if creation was successful
       if (result.accountId && result.seedPhrase) {

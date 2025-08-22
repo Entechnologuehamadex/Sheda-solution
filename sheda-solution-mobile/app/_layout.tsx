@@ -21,6 +21,7 @@ import { SplashScreen } from "expo-router";
 import { ModeProvider } from "@/contexts/ModeContext";
 import { WalletProvider } from "@/contexts/WalletContext";
 import { ApiProvider } from "@/contexts/ApiContext";
+import InitialRouter from "@/components/InitialRouter";
 import "./../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -58,6 +59,7 @@ export default function RootLayout() {
     <ModeProvider>
       <WalletProvider>
         <ApiProvider>
+          <InitialRouter />
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />

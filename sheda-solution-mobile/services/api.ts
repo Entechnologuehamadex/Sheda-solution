@@ -268,87 +268,193 @@ class ApiService {
       ...options,
     };
 
+    console.log(`🌐 API Request: ${options.method || "GET"} ${url}`);
+    console.log("📤 Request config:", config);
+
     try {
       const response = await fetch(url, config);
 
+      console.log(
+        `📥 Response status: ${response.status} ${response.statusText}`
+      );
+      console.log(
+        "📥 Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error("❌ API Error Response:", errorData);
         throw new Error(
           errorData.detail?.[0]?.msg || `HTTP ${response.status}`
         );
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log("✅ API Success Response:", data);
+      return data;
     } catch (error) {
-      console.error("API Request failed:", error);
+      console.error("❌ API Request failed:", error);
       throw error;
+    }
+  }
+
+  // Test API connectivity
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log("🔍 Testing API connection...");
+      const response = await fetch(`${this.baseURL}/api/v1/health`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log(
+        "🔍 Health check response:",
+        response.status,
+        response.statusText
+      );
+      return response.ok;
+    } catch (error) {
+      console.error("🔍 API connection test failed:", error);
+      return false;
     }
   }
 
   // Auth endpoints
   async signup(userData: UserCreate): Promise<UserShow> {
-    return this.request<UserShow>("/api/auth/signup", {
+    // For signup, we don't need Authorization header since user isn't authenticated yet
+    const url = `${this.baseURL}/api/v1/auth/signup`;
+
+    console.log(`🌐 Signup Request: POST ${url}`);
+    console.log("📤 Signup data:", userData);
+
+    const config: RequestInit = {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(userData),
-    });
+    };
+
+    try {
+      const response = await fetch(url, config);
+
+      console.log(
+        `📥 Signup Response status: ${response.status} ${response.statusText}`
+      );
+      console.log(
+        "📥 Signup Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Signup Error Response:", errorData);
+        throw new Error(
+          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("✅ Signup Success Response:", data);
+      return data;
+    } catch (error) {
+      console.error("❌ Signup Request failed:", error);
+      throw error;
+    }
   }
 
   async verifyAccount(): Promise<Token> {
-    return this.request<Token>("/api/auth/verify-account", {
+    return this.request<Token>("/api/v1/auth/verify-account", {
       method: "POST",
     });
   }
 
   async login(username: string, password: string): Promise<Token> {
+    // For login, we don't need Authorization header since user isn't authenticated yet
+    const url = `${this.baseURL}/api/v1/auth/login`;
+
+    console.log(`🌐 Login Request: POST ${url}`);
+    console.log("📤 Login data:", { username });
+
     const formData = new URLSearchParams();
     formData.append("username", username);
     formData.append("password", password);
 
-    return this.request<Token>("/api/auth/login", {
+    const config: RequestInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: formData.toString(),
-    });
+    };
+
+    try {
+      const response = await fetch(url, config);
+
+      console.log(
+        `📥 Login Response status: ${response.status} ${response.statusText}`
+      );
+      console.log(
+        "📥 Login Response headers:",
+        Object.fromEntries(response.headers.entries())
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Login Error Response:", errorData);
+        throw new Error(
+          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("✅ Login Success Response:", data);
+      return data;
+    } catch (error) {
+      console.error("❌ Login Request failed:", error);
+      throw error;
+    }
   }
 
   async logout(): Promise<void> {
-    await this.request("/api/auth/logout", {
+    await this.request("/api/v1/auth/logout", {
       method: "POST",
     });
     await this.clearToken();
   }
 
   async resetPassword(password: string): Promise<Token> {
-    return this.request<Token>("/api/auth/reset-password", {
+    return this.request<Token>("/api/v1/auth/reset-password", {
       method: "PUT",
       body: JSON.stringify({ password }),
     });
   }
 
   async sendOtp(email: string): Promise<void> {
-    return this.request("/api/auth/send-otp", {
+    return this.request("/api/v1/auth/send-otp", {
       method: "POST",
       body: JSON.stringify({ email }),
     });
   }
 
   async verifyOtp(email: string, otp: string | number): Promise<Token> {
-    return this.request<Token>("/api/auth/verify-otp", {
+    return this.request<Token>("/api/v1/auth/verify-otp", {
       method: "POST",
       body: JSON.stringify({ email, otp }),
     });
   }
 
   async refreshToken(): Promise<Token> {
-    return this.request<Token>("/api/auth/refresh-token", {
+    return this.request<Token>("/api/v1/auth/refresh-token", {
       method: "PUT",
     });
   }
 
   async switchAccount(accountType: "client" | "agent"): Promise<Token> {
-    return this.request<Token>("/api/auth/switch-account", {
+    return this.request<Token>("/api/v1/auth/switch-account", {
       method: "POST",
       body: JSON.stringify({ switch_to: accountType }),
     });
@@ -356,18 +462,18 @@ class ApiService {
 
   // User endpoints
   async getMe(): Promise<UserShow> {
-    return this.request<UserShow>("/api/user/me");
+    return this.request<UserShow>("/api/v1/user/me");
   }
 
   async updateMe(userData: UserUpdate): Promise<UserUpdate> {
-    return this.request<UserUpdate>("/api/user/update/me", {
+    return this.request<UserUpdate>("/api/v1/user/update/me", {
       method: "PUT",
       body: JSON.stringify(userData),
     });
   }
 
   async deleteAccount(): Promise<void> {
-    return this.request("/api/user/delete-accnt", {
+    return this.request("/api/v1/user/delete-accnt", {
       method: "DELETE",
     });
   }
@@ -375,14 +481,14 @@ class ApiService {
   async bookAppointment(
     appointmentData: AppointmentSchema
   ): Promise<AppointmentShow> {
-    return this.request<AppointmentShow>("/api/user/book-appointment", {
-      method: "GET",
+    return this.request<AppointmentShow>("/api/v1/user/book-appointment", {
+      method: "POST",
       body: JSON.stringify(appointmentData),
     });
   }
 
   async cancelAppointment(appointmentId: number): Promise<void> {
-    return this.request(`/api/user/cancel-appointment/${appointmentId}`, {
+    return this.request(`/api/v1/user/cancel-appointment/${appointmentId}`, {
       method: "DELETE",
     });
   }
@@ -390,7 +496,7 @@ class ApiService {
   async createPaymentInfo(
     accountInfo: AccountInfoBase
   ): Promise<AccountInfoShow> {
-    return this.request<AccountInfoShow>("/api/user/create-payment-info", {
+    return this.request<AccountInfoShow>("/api/v1/user/create-payment-info", {
       method: "POST",
       body: JSON.stringify(accountInfo),
     });
@@ -398,7 +504,9 @@ class ApiService {
 
   async getPaymentInfo(userId?: number): Promise<AccountInfoShow[]> {
     const params = userId ? `?user_id=${userId}` : "";
-    return this.request<AccountInfoShow[]>(`/api/user/payment-info${params}`);
+    return this.request<AccountInfoShow[]>(
+      `/api/v1/user/payment-info${params}`
+    );
   }
 
   async updatePaymentInfo(
@@ -406,7 +514,7 @@ class ApiService {
     accountInfo: AccountInfoBase
   ): Promise<AccountInfoShow> {
     return this.request<AccountInfoShow>(
-      `/api/user/update-account-info/${accountInfoId}`,
+      `/api/v1/user/update-account-info/${accountInfoId}`,
       {
         method: "PUT",
         body: JSON.stringify(accountInfo),
@@ -415,28 +523,31 @@ class ApiService {
   }
 
   async deleteAccountInfo(accountInfoId: number): Promise<void> {
-    return this.request(`/api/user/delete-accnt-info/${accountInfoId}`, {
+    return this.request(`/api/v1/user/delete-accnt-info/${accountInfoId}`, {
       method: "DELETE",
     });
   }
 
   async getPaymentInfoByContract(contractId: number): Promise<AccountInfoBase> {
     return this.request<AccountInfoBase>(
-      `/api/user/payment-info/${contractId}`
+      `/api/v1/user/payment-info/${contractId}`
     );
   }
 
   async createAvailableTime(
     availability: AgentAvailabilitySchema
   ): Promise<AvailabilityShow> {
-    return this.request<AvailabilityShow>("/api/user/create-available-time", {
-      method: "POST",
-      body: JSON.stringify(availability),
-    });
+    return this.request<AvailabilityShow>(
+      "/api/v1/user/create-available-time",
+      {
+        method: "POST",
+        body: JSON.stringify(availability),
+      }
+    );
   }
 
   async getSchedule(): Promise<AvailabilityShow[]> {
-    return this.request<AvailabilityShow[]>("/api/user/get-schedule/me");
+    return this.request<AvailabilityShow[]>("/api/v1/user/get-schedule/me");
   }
 
   async updateSchedule(
@@ -444,7 +555,7 @@ class ApiService {
     availability: AgentAvailabilitySchema
   ): Promise<AvailabilityShow> {
     return this.request<AvailabilityShow>(
-      `/api/user/update-schedule/${scheduleId}`,
+      `/api/v1/user/update-schedule/${scheduleId}`,
       {
         method: "PUT",
         body: JSON.stringify(availability),
@@ -453,13 +564,13 @@ class ApiService {
   }
 
   async confirmPayment(contractId: number): Promise<void> {
-    return this.request(`/api/user/confirm-payment/${contractId}`, {
+    return this.request(`/api/v1/user/confirm-payment/${contractId}`, {
       method: "POST",
     });
   }
 
   async approvePayment(contractId: number): Promise<void> {
-    return this.request(`/api/user/approve-payment/${contractId}`, {
+    return this.request(`/api/v1/user/approve-payment/${contractId}`, {
       method: "POST",
     });
   }
@@ -467,7 +578,7 @@ class ApiService {
   async createContract(
     contractData: ContractCreate
   ): Promise<ContractResponse> {
-    return this.request<ContractResponse>("/api/user/contracts/", {
+    return this.request<ContractResponse>("/api/v1/user/contracts/", {
       method: "POST",
       body: JSON.stringify(contractData),
     });
@@ -475,21 +586,21 @@ class ApiService {
 
   // Property endpoints
   async listProperty(propertyData: PropertyBase): Promise<PropertyShow> {
-    return this.request<PropertyShow>("/api/property/list-property", {
+    return this.request<PropertyShow>("/api/v1/property/list-property", {
       method: "POST",
       body: JSON.stringify(propertyData),
     });
   }
 
   async getMyListings(): Promise<PropertyShow[]> {
-    return this.request<PropertyShow[]>("/api/property/me");
+    return this.request<PropertyShow[]>("/api/v1/property/me");
   }
 
   async updateProperty(
     propertyId: number,
     propertyData: PropertyUpdate
   ): Promise<PropertyShow> {
-    return this.request<PropertyShow>(`/api/property/update/${propertyId}`, {
+    return this.request<PropertyShow>(`/api/v1/property/update/${propertyId}`, {
       method: "PUT",
       body: JSON.stringify(propertyData),
     });
@@ -500,23 +611,30 @@ class ApiService {
     cursor: number = 1
   ): Promise<PropertyFeed> {
     return this.request<PropertyFeed>(
-      `/api/property/get-properties?limit=${limit}&cursor=${cursor}`
+      `/api/v1/property/get-properties?limit=${limit}&cursor=${cursor}`
     );
   }
 
   async getAgentProfile(agentId: number): Promise<AgentFeed> {
-    return this.request<AgentFeed>(`/api/property/agent-profile${agentId}`);
+    return this.request<AgentFeed>(`/api/v1/property/agent-profile/${agentId}`);
+  }
+
+  async getPropertyById(propertyId: number): Promise<PropertyShow> {
+    return this.request<PropertyShow>(`/api/v1/property/${propertyId}`);
   }
 
   async deleteProperty(propertyId: number): Promise<DeleteProperty> {
-    return this.request<DeleteProperty>(`/api/property/delete/${propertyId}`, {
-      method: "DELETE",
-    });
+    return this.request<DeleteProperty>(
+      `/api/v1/property/delete/${propertyId}`,
+      {
+        method: "DELETE",
+      }
+    );
   }
 
   // Chat endpoints
   async getChatHistory(): Promise<ChatMessageSchema[]> {
-    return this.request<ChatMessageSchema[]>("/api/chat/chat-history");
+    return this.request<ChatMessageSchema[]>("/api/v1/chat/chat-history");
   }
 
   // Media endpoints
@@ -524,7 +642,7 @@ class ApiService {
     const formData = new FormData();
     formData.append("file", file);
 
-    return this.request<FileShow>(`/api/media/file-upload/${type}`, {
+    return this.request<FileShow>(`/api/v1/media/file-upload/${type}`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
@@ -534,7 +652,7 @@ class ApiService {
   }
 
   async getFiles(type: "profile" | "property"): Promise<FileShow[]> {
-    return this.request<FileShow[]>(`/api/media/file-upload/${type}`);
+    return this.request<FileShow[]>(`/api/v1/media/file-upload/${type}`);
   }
 }
 

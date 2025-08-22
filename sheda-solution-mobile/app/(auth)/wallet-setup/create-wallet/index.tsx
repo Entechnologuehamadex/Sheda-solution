@@ -4,7 +4,7 @@ import BackBtn from "@/components/common/BackBtn";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
 import Button from "@/components/common/Button";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useWallet } from "@/contexts/WalletContext";
 import * as Clipboard from "expo-clipboard";
 
@@ -17,6 +17,7 @@ const WalletRecovery = () => {
     hasStoredWallet,
     saveWalletState,
   } = useWallet();
+  const { email } = useLocalSearchParams();
   const [seedPhrase, setSeedPhrase] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isWalletCreated, setIsWalletCreated] = useState(false);
@@ -54,7 +55,7 @@ const WalletRecovery = () => {
       setIsLoading(true);
       console.log("Creating NEAR wallet...");
 
-      const result = await createWallet();
+      const result = await createWallet(email as string);
       console.log("Wallet created successfully:", result);
 
       setSeedPhrase(result.seedPhrase);
@@ -102,7 +103,9 @@ const WalletRecovery = () => {
             // Show create wallet button
             <View className="flex-1 justify-center items-center">
               <InterRegular className="text-center text-gray-600 mb-8">
-                Create a new NEAR wallet to get started
+                {email
+                  ? `Create a new NEAR wallet for ${email}`
+                  : "Create a new NEAR wallet to get started"}
               </InterRegular>
               <Button
                 onPress={handleCreateWallet}

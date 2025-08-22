@@ -8,6 +8,7 @@ import Button from "@/components/common/Button";
 import CategoryList from "@/components/CategoryList";
 import { deviceHeight, deviceWidth } from "@/constants/values";
 import HouseList from "@/components/HouseList";
+import { ApiDebug } from "@/components/ApiDebug";
 
 const Home = () => {
   return (
@@ -52,9 +53,13 @@ const Home = () => {
             {/* list goes here */}
             <HouseList />
           </View>
-        </ScrollView>
 
-       
+          {/* Temporary API Debug Component */}
+          <View className="mb-2">
+            <InterBold className="text-base mb-2">API Debug</InterBold>
+            <ApiDebug />
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

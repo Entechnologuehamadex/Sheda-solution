@@ -71,7 +71,7 @@ const Signup = () => {
           </InterSemiBold>
         </Button>
 
-        <Link href={"/login"} className="text-center">
+        <Link href={"/Login"} className="text-center">
           <InterRegular>Remember password?</InterRegular>
           <InterBold className="text-primary ml-1"> Log in</InterBold>
         </Link>

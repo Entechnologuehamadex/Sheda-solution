@@ -193,7 +193,7 @@ class NearWalletService {
 
   // mansion tissue volume rather goddess lobster camera crop cancel language load real
 
-  async createWallet(): Promise<CreateWalletResult> {
+  async createWallet(email?: string): Promise<CreateWalletResult> {
     try {
       console.log(
         `NearWalletService: Creating ${this.currentNetwork} NEAR sub-account...`
@@ -213,8 +213,20 @@ class NearWalletService {
       //   );
       // }
 
-      // Generate a random username
-      const username = this.generateUsername();
+      // Generate username from email or random
+      let username: string;
+      if (email && email.includes("@")) {
+        // Extract username from email (before @)
+        const emailUsername = email.split("@")[0];
+        // Clean the username to only allow alphanumeric characters and dots
+        username = emailUsername.replace(/[^a-zA-Z0-9.]/g, "").toLowerCase();
+        // Ensure it's not empty and add a random suffix if needed
+        if (!username) {
+          username = this.generateUsername();
+        }
+      } else {
+        username = this.generateUsername();
+      }
       const subAccountId = `${username}.sheda.testnet`;
 
       console.log("NearWalletService: Sub-account ID generated:", subAccountId);

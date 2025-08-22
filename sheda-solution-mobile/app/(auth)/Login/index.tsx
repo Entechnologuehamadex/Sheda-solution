@@ -16,7 +16,8 @@ import { useState, useEffect } from "react";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading, error, clearError, isAuthenticated } = useAuth();
+  const { login, isLoading, error, clearError, isAuthenticated, user } =
+    useAuth();
 
   const loginSchema = z.object({
     email: z.string().email({ message: "Please enter a valid email address." }),
@@ -38,13 +39,25 @@ const Login = () => {
     }
   }, [isAuthenticated]);
 
-  // Handle error display
+  // Handle error and success display
   useEffect(() => {
     if (error) {
       Alert.alert("Login Error", error);
       clearError();
     }
   }, [error, clearError]);
+
+  // Handle successful authentication
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      Alert.alert("Success", "Login successful!", [
+        {
+          text: "OK",
+          onPress: () => router.push("/(tabs)/home"),
+        },
+      ]);
+    }
+  }, [isAuthenticated, user]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -94,7 +107,7 @@ const Login = () => {
           disabled={isLoading}
         >
           <InterSemiBold className="text-background text-base">
-            {isLoading ? "Logging in..." : "Log in"}
+            {isLoading ? "Signing in..." : "Log in"}
           </InterSemiBold>
         </Button>
       </View>

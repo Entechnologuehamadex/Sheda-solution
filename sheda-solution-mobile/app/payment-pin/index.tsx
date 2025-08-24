@@ -1,48 +1,85 @@
-"use client"
+"use client";
 
-import BackBtn from "@/components/common/BackBtn"
-import Button from "@/components/common/Button"
-import InterBold from "@/components/Text/InterBold"
-import InterSemiBold from "@/components/Text/InterSemiBold"
-import InterRegular from "@/components/Text/InterRegular"
-import { View, StyleSheet, SafeAreaView } from "react-native"
-import { router, useLocalSearchParams } from "expo-router"
-import { OtpInput } from "react-native-otp-entry"
-import { useState } from "react"
+import BackBtn from "@/components/common/BackBtn";
+import Button from "@/components/common/Button";
+import InterBold from "@/components/Text/InterBold";
+import InterSemiBold from "@/components/Text/InterSemiBold";
+import InterRegular from "@/components/Text/InterRegular";
+import { View, StyleSheet, SafeAreaView, Alert } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { OtpInput } from "react-native-otp-entry";
+import { useState } from "react";
+import { useApi } from "@/contexts/ApiContext";
 
 const PaymentPin = () => {
-  const [otp, setOtp] = useState("")
+  const [otp, setOtp] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { confirmPayment, approvePayment } = useApi();
 
-  const { id, amount, source } = useLocalSearchParams()
-  const propertyId = id
-  const paymentSource = source // 'history' or 'home'
+  const { id, amount, source } = useLocalSearchParams();
+  const propertyId = id;
+  const paymentSource = source; // 'history' or 'home'
 
-  console.log("Payment source:", paymentSource) // Debug log
+  console.log("Payment source:", paymentSource); // Debug log
 
   //handle submit pin code
-  const handleSubmitePin = () => {
-    console.log("Handling submit with source:", paymentSource) // Debug log
-
-    if (paymentSource === "history") {
-      // From history tab - go to payment successful
-      console.log("Navigating to payment-successful") // Debug log
-      router.push({
-        pathname: "/payment-successful",
-        params: { otpCode: otp, id: propertyId },
-      })
-    } else {
-      // From home tab - go to appointment successful (existing flow)
-      console.log("Navigating to appointment-successful") // Debug log
-      router.push({
-        pathname: "/appointment-successful",
-        params: { otpCode: otp, id: propertyId },
-      })
+  const handleSubmitePin = async () => {
+    if (!otp || otp.length !== 4) {
+      Alert.alert("Error", "Please enter a valid 4-digit PIN");
+      return;
     }
-    setOtp("")
-  }
+
+    setIsProcessing(true);
+    try {
+      // Create payment data
+      const paymentData = {
+        contract_id: Number(propertyId),
+        payment_pin: otp,
+        amount: Number(amount),
+      };
+
+      // Confirm payment first
+      await confirmPayment(paymentData);
+
+      // Then approve payment
+      await approvePayment(Number(propertyId));
+
+      Alert.alert("Success", "Payment processed successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            if (paymentSource === "history") {
+              // From history tab - go to payment successful
+              router.push({
+                pathname: "/payment-successful",
+                params: { otpCode: otp, id: propertyId },
+              });
+            } else {
+              // From home tab - go to appointment successful (existing flow)
+              router.push({
+                pathname: "/appointment-successful",
+                params: { otpCode: otp, id: propertyId },
+              });
+            }
+          },
+        },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Payment failed. Please check your PIN and try again."
+      );
+    } finally {
+      setIsProcessing(false);
+      setOtp("");
+    }
+  };
 
   return (
-    <SafeAreaView className="container max-w-2xl mx-auto" style={{ padding: 20 }}>
+    <SafeAreaView
+      className="container max-w-2xl mx-auto"
+      style={{ padding: 20 }}
+    >
       <View>
         <BackBtn />
       </View>
@@ -54,7 +91,8 @@ const PaymentPin = () => {
       <View className="mt-8">
         <View className="">
           <InterRegular className="text-sm/[128%] text-secondaryText">
-            Enter your payment pin to commit a payment of {<InterBold>N{amount}</InterBold>} for this property
+            Enter your payment pin to commit a payment of{" "}
+            {<InterBold>N{amount}</InterBold>} for this property
           </InterRegular>
         </View>
 
@@ -73,15 +111,21 @@ const PaymentPin = () => {
           }}
         />
 
-        <Button className="rounded-lg my-4" onPress={handleSubmitePin}>
-          <InterSemiBold className="text-background text-base">Confirm payment</InterSemiBold>
+        <Button
+          className="rounded-lg my-4"
+          onPress={handleSubmitePin}
+          disabled={isProcessing}
+        >
+          <InterSemiBold className="text-background text-base">
+            {isProcessing ? "Processing..." : "Confirm payment"}
+          </InterSemiBold>
         </Button>
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default PaymentPin
+export default PaymentPin;
 
 const styles = StyleSheet.create({
   container: {
@@ -97,4 +141,4 @@ const styles = StyleSheet.create({
     color: "green",
     backgroundColor: "#D8DADC",
   },
-})
+});

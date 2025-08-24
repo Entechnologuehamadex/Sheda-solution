@@ -7,10 +7,12 @@ import {
   Image,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { useApi } from "@/contexts/ApiContext";
 import getDetails from "./getDetails"; //get local data
 import BackBtn from "@/components/common/BackBtn";
 import { HouseCardProps } from "@/components/HouseCard/types";
-import Favorite from "@/components/common/Favorite"; 
+import Favorite from "@/components/common/Favorite";
 import InterMedium from "@/components/Text/InterMedium";
 import { LOCATION, BED, BATH, MESSAGE, PHONE } from "@/assets/icons";
 import Icon from "@/components/common/Icon";
@@ -27,15 +29,88 @@ const Details = () => {
   // Safely extract id from search params
   const { id } = useLocalSearchParams();
   const propertyId = Array.isArray(id) ? id[0] : id; // Handle string | string[]
+  const { getPropertyById, isLoading, error } = useApi();
+  const [property, setProperty] = useState<HouseCardProps | null>(null);
 
-  // Fetch property details with error handling
-  let property: HouseCardProps | null = null;
-  try {
-    if (propertyId) {
-      property = getDetails(propertyId);
-    }
-  } catch (error) {
-    console.error("Error fetching property details:", error);
+  // Fetch property details from API
+  useEffect(() => {
+    const fetchProperty = async () => {
+      if (propertyId) {
+        try {
+          const propertyData = await getPropertyById(Number(propertyId));
+          // Transform API data to match HouseCardProps format
+          const transformedProperty: HouseCardProps = {
+            id: propertyData.id.toString(),
+            price: propertyData.price.toString(),
+            type: propertyData.title,
+            location: propertyData.location,
+            bedrooms: propertyData.bedroom,
+            bathrooms: propertyData.bathroom,
+            mode: propertyData.listing_type as "buy" | "rent",
+            description: propertyData.description,
+            extras: [
+              propertyData.air_condition ? "Air Conditioning" : "",
+              propertyData.pop_ceiling ? "POP Ceiling" : "",
+              propertyData.furniture ? "Furniture" : "",
+              propertyData.floor_tiles ? "Floor Tiles" : "",
+              propertyData.running_water ? "Running Water" : "",
+              propertyData.prepaid_meter ? "Prepaid Meter" : "",
+              propertyData.wifi ? "WiFi" : "",
+            ].filter(Boolean),
+            image:
+              propertyData.images?.[0]?.image_url ||
+              require("@/assets/images/apt-1.png"),
+            seller: {
+              name: "Agent", // This would come from agent profile
+              phone: "N/A",
+              photo: require("@/assets/images/my-pic.jpg"),
+              rating: 4,
+              isActive: true,
+              reviews: [],
+            },
+            isFavorite: false,
+          };
+          setProperty(transformedProperty);
+        } catch (error) {
+          console.error("Error fetching property details:", error);
+          // Fallback to local data if API fails
+          try {
+            const localProperty = getDetails(propertyId);
+            setProperty(localProperty);
+          } catch (localError) {
+            console.error("Error fetching local property details:", localError);
+          }
+        }
+      }
+    };
+
+    fetchProperty();
+  }, [propertyId, getPropertyById]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex-1 justify-center items-center">
+          <InterMedium className="text-primaryText text-lg">
+            Loading property details...
+          </InterMedium>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View className="flex-1 justify-center items-center">
+          <InterMedium className="text-primaryText text-lg">
+            Error loading property: {error}
+          </InterMedium>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   // Handle case where property is not found
@@ -154,7 +229,7 @@ const Details = () => {
             </View>
           </View>
         </View>
-        
+
         <View className="px-5 py-3 border-t border-borderColor">
           <InterRegular className="text-base/5">Description</InterRegular>
           <InterRegular className="text-secondaryText text-sm/[150%] mt-2">
@@ -203,43 +278,47 @@ const Details = () => {
           </Button>
         </View>
 
-          {/* similar listings */}
+        {/* similar listings */}
         <View className="px-5 py-3 border-t border-borderColor">
-        <InterRegular className="text-sm/[150%]">Similar listings</InterRegular>
-        
-        <View className="my-2">
-          {/* similar house placeholder */}
-          <HouseList />
-        </View>
+          <InterRegular className="text-sm/[150%]">
+            Similar listings
+          </InterRegular>
+
+          <View className="my-2">
+            {/* similar house placeholder */}
+            <HouseList />
+          </View>
         </View>
       </ScrollView>
 
-
       {/* Fixed Footer with Price per Year and Button */}
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-borderColor p-4">
-          <View className="flex-row items-center justify-between">
-            <View>
-              <InterMedium className="text-sm text-secondaryText">
-                {property.mode === "rent" ? "Rent" : "Buy" }
-              </InterMedium>
-              <InterBold className="text-lg text-primaryText">
-              {property.mode === "rent" ? `N${property.price}/yr` : `N${property.price}`}
-              </InterBold>
-            </View>
-            <Button
-              onPress={() => router.push({
-                pathname: '/property-agreement',
-                params: {id: property.id}
-              })} 
-              className="bg-primary py-3 px-6 rounded-lg"
-            >
-              <InterRegular className="text-white text-center">
-              {property.mode === "rent" ? "Rent Now" : "Buy Now" }
-              </InterRegular>
-            </Button>
+        <View className="flex-row items-center justify-between">
+          <View>
+            <InterMedium className="text-sm text-secondaryText">
+              {property.mode === "rent" ? "Rent" : "Buy"}
+            </InterMedium>
+            <InterBold className="text-lg text-primaryText">
+              {property.mode === "rent"
+                ? `N${property.price}/yr`
+                : `N${property.price}`}
+            </InterBold>
           </View>
+          <Button
+            onPress={() =>
+              router.push({
+                pathname: "/property-agreement",
+                params: { id: property.id },
+              })
+            }
+            className="bg-primary py-3 px-6 rounded-lg"
+          >
+            <InterRegular className="text-white text-center">
+              {property.mode === "rent" ? "Rent Now" : "Buy Now"}
+            </InterRegular>
+          </Button>
         </View>
-      
+      </View>
     </SafeAreaView>
   );
 };

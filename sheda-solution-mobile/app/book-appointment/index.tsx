@@ -1,11 +1,12 @@
-import { SafeAreaView, View, ScrollView } from "react-native";
+import { SafeAreaView, View, ScrollView, Alert } from "react-native";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import BackBtn from "@/components/common/BackBtn";
 import { Calendar } from "react-native-calendars";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import InterRegular from "@/components/Text/InterRegular";
 import Button from "@/components/common/Button";
+import { useApi } from "@/contexts/ApiContext";
 
 interface DATE {
   dateString: string;
@@ -16,13 +17,18 @@ interface DATE {
 }
 
 const BookAppointment = () => {
-
-    const { id } = useLocalSearchParams()
-    const propertyId = id; 
-
+  const { id } = useLocalSearchParams();
+  const propertyId = id;
+  const { bookAppointment, getSchedule, schedule, isLoading } = useApi();
 
   // Store the selected date as a string (e.g., "2025-05-16")
   const [selectedDay, setSelectedDay] = useState<string>("");
+  const [isBooking, setIsBooking] = useState(false);
+
+  // Load agent schedule on component mount
+  useEffect(() => {
+    getSchedule();
+  }, [getSchedule]);
 
   return (
     <SafeAreaView
@@ -67,7 +73,7 @@ const BookAppointment = () => {
             }}
             // style={{
             //   borderWidth: 1,
-            //   borderColor: "#E5E7EB", 
+            //   borderColor: "#E5E7EB",
             //   borderRadius: 8,
             // }}
           />
@@ -76,20 +82,48 @@ const BookAppointment = () => {
 
       <View className="absolute bottom-0 left-0 right-0 mx-auto max-w-2xl py-5 px-5">
         <Button
-          onPress={() => {
+          onPress={async () => {
             if (!selectedDay) {
-              alert("Please select a date before proceeding.");
+              Alert.alert("Error", "Please select a date before proceeding.");
               return;
             }
-            router.push({
-              pathname: "/appointment-booked",
-              params: { selectedDate: selectedDay, id: propertyId }, // Pass the selected date to the next screen and property
-            });
+
+            setIsBooking(true);
+            try {
+              // Create appointment data
+              const appointmentData = {
+                agent_id: 1, // This should come from the property details
+                property_id: Number(propertyId),
+                requested_time: selectedDay + "T10:00:00", // Default to 10 AM
+              };
+
+              await bookAppointment(appointmentData);
+
+              Alert.alert("Success", "Appointment booked successfully!", [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    router.push({
+                      pathname: "/appointment-booked",
+                      params: { selectedDate: selectedDay, id: propertyId },
+                    });
+                  },
+                },
+              ]);
+            } catch (error) {
+              Alert.alert(
+                "Error",
+                "Failed to book appointment. Please try again."
+              );
+            } finally {
+              setIsBooking(false);
+            }
           }}
           className="bg-primary py-4 rounded-lg"
+          disabled={isBooking}
         >
           <InterRegular className="text-base/5 text-white">
-            Proceed
+            {isBooking ? "Booking..." : "Proceed"}
           </InterRegular>
         </Button>
       </View>

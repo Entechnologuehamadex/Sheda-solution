@@ -18,11 +18,15 @@ const PasswordChanged = () => {
         </InterMedium>
       </View>
 
-      <Button isFull={true} className="rounded-lg mt-4" onPress={() => router.push('/login')}>
-          <InterSemiBold className="text-background text-base">
-           Back to login
-          </InterSemiBold>
-        </Button>
+      <Button
+        isFull={true}
+        className="rounded-lg mt-4"
+        onPress={() => router.push("/(auth)/Login")}
+      >
+        <InterSemiBold className="text-background text-base">
+          Back to login
+        </InterSemiBold>
+      </Button>
     </View>
   );
 };

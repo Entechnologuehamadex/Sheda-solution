@@ -1,45 +1,132 @@
-import { SafeAreaView, View } from "react-native";
-import { router, useGlobalSearchParams } from "expo-router";
-import Icon from "@/components/common/Icon";
-import { SUCCESSFUL } from "@/assets/icons";
+import React from "react";
+import { View, SafeAreaView, Alert } from "react-native";
+import { router } from "expo-router";
+import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
-import Button from "@/components/common/Button";
-import { properties } from "@/constants/property-mock";
+import { useWallet } from "@/contexts/WalletContext";
 
-const CreatedSuccessfully = () => {
+const WalletCreatedSuccessfully = () => {
+  const { walletState, connectWallet, loading, getAccountId } = useWallet();
 
-    const { id } = useGlobalSearchParams()
-    const propertyId = id;
+  const handleConnectWallet = async () => {
+    try {
+      if (walletState.account?.accountId) {
+        await connectWallet(walletState.account.accountId);
+        Alert.alert(
+          "Wallet Connected!",
+          "Your wallet has been successfully connected.",
+          [
+            {
+              text: "Continue to App",
+              onPress: () => router.push("/(tabs)/home"),
+            },
+          ]
+        );
+      } else {
+        // If no wallet in state, try to get the account ID from the service
+        const accountId = getAccountId();
+        if (accountId) {
+          await connectWallet(accountId);
+          Alert.alert(
+            "Wallet Connected!",
+            "Your wallet has been successfully connected.",
+            [
+              {
+                text: "Continue to App",
+                onPress: () => router.push("/(tabs)/home"),
+              },
+            ]
+          );
+        } else {
+          Alert.alert("Error", "No wallet found to connect.");
+        }
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to connect wallet. Please try again.");
+    }
+  };
 
+  const handleGoToDashboard = async () => {
+    try {
+      // Try to connect wallet if not already connected
+      if (!walletState.isConnected) {
+        const accountId = getAccountId();
+        if (accountId) {
+          await connectWallet(accountId);
+        }
+      }
+      router.push("/(tabs)/home");
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      // Still go to dashboard even if connection fails
+      router.push("/(tabs)/home");
+    }
+  };
 
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View className="flex-1 justify-center items-center p-5">
+        <View className="bg-white rounded-lg p-8 shadow-sm w-full max-w-md">
+          <View className="items-center mb-6">
+            <View className="w-16 h-16 bg-green-100 rounded-full items-center justify-center mb-4">
+              <InterSemiBold className="text-green-600 text-2xl">
+                ✓
+              </InterSemiBold>
+            </View>
+            <InterSemiBold className="text-xl mb-2">
+              Wallet Created Successfully!
+            </InterSemiBold>
+            <InterRegular className="text-secondaryText text-center">
+              Your NEAR wallet has been created and is ready to use.
+            </InterRegular>
+          </View>
 
-    return (
-        <SafeAreaView className="container flex-1 max-w-2xl mx-auto" style={{ padding: 20 }}>
-<View className="flex-1 justify-center items-center">
-    <View className="w-24 h-24 bg-[#D8DADC26] rounded-full justify-center items-center">
-        <Icon icon={SUCCESSFUL} width={35} height={35} />
-        </View>
-        <View className="my-4">
-            <InterSemiBold className="text-base/5 mb-1 text-center">Wallet created successful</InterSemiBold>
-            <InterRegular className="text-sm/5 text-center text-secondaryText">Your wallet is successfully created and connected to your account.</InterRegular>
-            <InterRegular className="text-sm/5 text-center text-secondaryText">Your account name is ..........</InterRegular>
-        </View> 
+          {walletState.account && (
+            <View className="mb-6">
+              <View className="mb-3">
+                <InterRegular className="text-secondaryText text-sm">
+                  Account ID
+                </InterRegular>
+                <InterSemiBold className="text-base">
+                  {walletState.account.accountId}
+                </InterSemiBold>
+              </View>
 
-        <View className="w-full">
-            <Button 
-            onPress={() => router.push('/home'
-                // pathname: "/home",
-                // params: {id: propertyId }
-            )}
-            isFull 
-            className="rounded-lg">
-                <InterSemiBold className="text-sm/5 text-white">Proceed to Home</InterSemiBold>
+              <View className="mb-3">
+                <InterRegular className="text-secondaryText text-sm">
+                  Public Key
+                </InterRegular>
+                <InterSemiBold className="text-xs break-all">
+                  {walletState.account.publicKey}
+                </InterSemiBold>
+              </View>
+            </View>
+          )}
+
+          <View className="space-y-3">
+            <Button
+              className="rounded-lg"
+              onPress={handleConnectWallet}
+              disabled={loading}
+            >
+              <InterSemiBold className="text-white">
+                {loading ? "Connecting..." : "Connect Wallet"}
+              </InterSemiBold>
             </Button>
-        </View>
-</View>
-            </SafeAreaView>
-    )
-}
 
-export default CreatedSuccessfully;
+            <Button
+              className="rounded-lg border border-borderColor"
+              color="transparent"
+              onPress={handleGoToDashboard}
+            >
+              <InterSemiBold>Continue to App</InterSemiBold>
+            </Button>
+          </View>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default WalletCreatedSuccessfully;

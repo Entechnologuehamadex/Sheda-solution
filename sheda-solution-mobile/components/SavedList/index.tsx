@@ -1,11 +1,40 @@
 import { Text, View } from "react-native";
-import { properties } from "@/constants/property-mock";
+import { useEffect } from "react";
+import { useApi } from "@/contexts/ApiContext";
 import HouseCard from "../HouseCard";
 import { HouseCardProps } from "../HouseCard/types";
 import Button from "../common/Button";
 import InterSemiBold from "../Text/InterSemiBold";
+import InterRegular from "../Text/InterRegular";
 
 const SavedList = () => {
+  const { properties, getProperties, isLoading, error } = useApi();
+
+  useEffect(() => {
+    // Load properties on component mount
+    getProperties(20, 1);
+  }, [getProperties]);
+
+  if (isLoading) {
+    return (
+      <View className="flex-row flex-wrap gap-2">
+        <InterRegular className="text-base">
+          Loading saved properties...
+        </InterRegular>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-row flex-wrap gap-2">
+        <InterRegular className="text-base text-red-500">
+          Error: {error}
+        </InterRegular>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-row flex-wrap gap-2">
       {properties?.map((house: any) => (
@@ -14,15 +43,15 @@ const SavedList = () => {
         </View>
       ))}
       <View className="w-full mb-9">
-          <Button
-            className="rounded-lg"
-            onPress={() => console.log("see more Clicked!!")}
-          >
-            <InterSemiBold className="text-background text-base">
-              See More
-            </InterSemiBold>
-          </Button>
-        </View>
+        <Button
+          className="rounded-lg"
+          onPress={() => console.log("see more Clicked!!")}
+        >
+          <InterSemiBold className="text-background text-base">
+            See More
+          </InterSemiBold>
+        </Button>
+      </View>
     </View>
   );
 };

@@ -3,25 +3,53 @@ import Button from "@/components/common/Button";
 import InterBold from "@/components/Text/InterBold";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import InterMedium from "@/components/Text/InterMedium";
 import { OtpInput } from "react-native-otp-entry";
 import styles from "./style";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useShedaApi";
 
 const Otp = () => {
   const { email } = useLocalSearchParams();
-
   const [otp, setOtp] = useState("");
+  const { verifyOtp, sendOtp, isLoading, error, clearError } = useAuth();
+
+  // Handle error display
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error);
+      clearError();
+    }
+  }, [error, clearError]);
 
   //handle submit otp code
-  const handleSubmiteOtp = () => {
-    router.push({
-      pathname: "/reset-pass",
-      params: { otpCode: otp },
-    });
-    setOtp("");
+  const handleSubmiteOtp = async () => {
+    if (!otp || otp.length !== 4) {
+      Alert.alert("Error", "Please enter a valid 4-digit OTP");
+      return;
+    }
+
+    try {
+      await verifyOtp(email as string, otp);
+      router.push({
+        pathname: "/reset-pass",
+        params: { otpCode: otp },
+      });
+      setOtp("");
+    } catch (error) {
+      console.error("OTP verification failed:", error);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      await sendOtp(email as string);
+      Alert.alert("Success", "OTP has been resent to your email");
+    } catch (error) {
+      console.error("Failed to resend OTP:", error);
+    }
   };
 
   return (
@@ -57,13 +85,20 @@ const Otp = () => {
           }}
         />
 
-        <Button className="rounded-lg my-4" onPress={handleSubmiteOtp}>
+        <Button
+          className="rounded-lg my-4"
+          onPress={handleSubmiteOtp}
+          disabled={isLoading}
+        >
           <InterSemiBold className="text-background text-base">
-            Verify
+            {isLoading ? "Verifying..." : "Verify"}
           </InterSemiBold>
         </Button>
 
-        <Pressable className="flex-row items-center justify-center gap-2 mt-10">
+        <Pressable
+          className="flex-row items-center justify-center gap-2 mt-10"
+          onPress={handleResendOtp}
+        >
           <InterBold>Send code again</InterBold>
           <View>
             <Text>00:20</Text>

@@ -1,6 +1,13 @@
 import BackBtn from "@/components/common/BackBtn";
 import InterSemiBold from "@/components/Text/InterSemiBold";
-import { View, Text, SafeAreaView, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import getDetails from "../details/getDetails";
 import Icon from "@/components/common/Icon";
@@ -10,14 +17,36 @@ import InterMedium from "@/components/Text/InterMedium";
 import InterExtraLight from "@/components/Text/InterExtraLight";
 import totalPaymemt from "../../utilities/totalPayment";
 import Button from "@/components/common/Button";
+import { useApi } from "@/contexts/ApiContext";
 
 const PropertyAgreement = () => {
   // Safely extract id from search params
   const { id } = useLocalSearchParams();
   const propertyId = id; // Handle string | string[]
   let property = getDetails(propertyId as string);
+  const { createContract } = useApi();
 
   const totalPay = totalPaymemt(property?.price, property?.damages);
+
+  const handleCommitPayment = async () => {
+    try {
+      // Create contract first
+      const contractData = {
+        property_id: Number(propertyId),
+        amount: totalPay,
+      };
+
+      await createContract(contractData);
+
+      // Navigate to currency selection
+      router.push({
+        pathname: "/select-currency",
+        params: { id: propertyId },
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to create contract. Please try again.");
+    }
+  };
 
   return (
     <SafeAreaView
@@ -111,16 +140,7 @@ const PropertyAgreement = () => {
 
       {/* <View className="absolute bottom-0 left-0 right-0 mx-auto max-w-2xl py-5 px-5"> */}
       <View className="absolute bottom-0 left-0 right-0 mx-auto max-w-2xl py-5 px-5">
-        <Button
-          // onPress={()=> router.push('/select-currency')}
-          onPress={() =>
-            router.push({
-              pathname: "/select-currency",
-              params: { id: propertyId },
-            })
-          }
-          className="rounded-lg"
-        >
+        <Button onPress={handleCommitPayment} className="rounded-lg">
           <InterSemiBold className="text-base/5 text-white">
             Commit payment
           </InterSemiBold>

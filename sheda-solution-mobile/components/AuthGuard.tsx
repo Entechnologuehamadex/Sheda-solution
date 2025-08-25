@@ -24,6 +24,13 @@ export default function AuthGuard({
   });
 
   useEffect(() => {
+    console.log("🔄 AuthGuard useEffect triggered:", {
+      isInitializing,
+      isAuthenticated,
+      requireAuth,
+      redirectTo,
+    });
+
     if (!isInitializing) {
       if (requireAuth && !isAuthenticated) {
         // User needs to be authenticated but isn't
@@ -31,11 +38,23 @@ export default function AuthGuard({
           "🔓 AuthGuard: User not authenticated, redirecting to:",
           redirectTo
         );
-        router.replace(redirectTo);
+        try {
+          router.replace(redirectTo);
+          console.log("✅ AuthGuard: Router redirect called successfully");
+        } catch (error) {
+          console.error("❌ AuthGuard: Router redirect failed:", error);
+        }
       } else if (!requireAuth && isAuthenticated) {
         // User is authenticated but shouldn't be on this page (e.g., login page)
         console.log("🔐 AuthGuard: User is authenticated, redirecting to home");
-        router.replace("/(tabs)/home");
+        try {
+          router.replace("/(tabs)/home");
+          console.log(
+            "✅ AuthGuard: Router redirect to home called successfully"
+          );
+        } catch (error) {
+          console.error("❌ AuthGuard: Router redirect to home failed:", error);
+        }
       }
     }
   }, [isAuthenticated, isInitializing, requireAuth, redirectTo]);

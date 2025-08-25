@@ -4,10 +4,11 @@ import InterBold from "@/components/Text/InterBold";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
 import StyledTextInput from "@/components/input/textInput";
-import { Text, View, Alert } from "react-native";
+import { Text, View } from "react-native";
 import { Link, router } from "expo-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useShedaApi";
+import { showAlert } from "@/components/common/CrossPlatformAlert";
 
 const Signup = () => {
   const [useremail, setUserEmail] = useState("");
@@ -16,14 +17,14 @@ const Signup = () => {
   // Handle error display
   useEffect(() => {
     if (error) {
-      Alert.alert("Error", error);
+      showAlert("Error", error);
       clearError();
     }
   }, [error, clearError]);
 
   const handleSendCode = async () => {
     if (!useremail) {
-      Alert.alert("Error", "Please enter your email address");
+      showAlert("Error", "Please enter your email address");
       return;
     }
 

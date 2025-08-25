@@ -16,9 +16,10 @@ export interface UserUpdate {
   username?: string;
   email?: string;
   phone_number?: string;
-  account_type?: "client" | "agent";
+  account_type: "client" | "agent"; // Required field according to API spec
   fullname?: string;
   location?: string;
+  agency_name?: string;
   kyc_status?: "pending" | "verified" | "rejected";
   rating?: number;
 }
@@ -285,9 +286,30 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("❌ API Error Response:", errorData);
-        throw new Error(
-          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
-        );
+
+        // Create a structured error object
+        const error = new Error();
+        (error as any).response = {
+          status: response.status,
+          data: errorData,
+        };
+
+        // Set error message
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            error.message = errorData.detail
+              .map((err: any) => err.msg || err.message)
+              .join(", ");
+          } else {
+            error.message = errorData.detail;
+          }
+        } else if (errorData.message) {
+          error.message = errorData.message;
+        } else {
+          error.message = `HTTP ${response.status}`;
+        }
+
+        throw error;
       }
 
       const data = await response.json();
@@ -352,9 +374,30 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("❌ Signup Error Response:", errorData);
-        throw new Error(
-          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
-        );
+
+        // Create a structured error object
+        const error = new Error();
+        (error as any).response = {
+          status: response.status,
+          data: errorData,
+        };
+
+        // Set error message
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            error.message = errorData.detail
+              .map((err: any) => err.msg || err.message)
+              .join(", ");
+          } else {
+            error.message = errorData.detail;
+          }
+        } else if (errorData.message) {
+          error.message = errorData.message;
+        } else {
+          error.message = `HTTP ${response.status}`;
+        }
+
+        throw error;
       }
 
       const data = await response.json();
@@ -405,9 +448,30 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("❌ Login Error Response:", errorData);
-        throw new Error(
-          errorData.detail?.[0]?.msg || `HTTP ${response.status}`
-        );
+
+        // Create a structured error object
+        const error = new Error();
+        (error as any).response = {
+          status: response.status,
+          data: errorData,
+        };
+
+        // Set error message
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            error.message = errorData.detail
+              .map((err: any) => err.msg || err.message)
+              .join(", ");
+          } else {
+            error.message = errorData.detail;
+          }
+        } else if (errorData.message) {
+          error.message = errorData.message;
+        } else {
+          error.message = `HTTP ${response.status}`;
+        }
+
+        throw error;
       }
 
       const data = await response.json();
@@ -426,11 +490,64 @@ class ApiService {
     await this.clearToken();
   }
 
-  async resetPassword(password: string): Promise<Token> {
-    return this.request<Token>("/api/v1/auth/reset-password", {
+  async resetPassword(
+    password: string,
+    otpCode: string,
+    email?: string
+  ): Promise<Token> {
+    // According to API spec, only password is needed in body
+    const requestBody = { password };
+
+    // For password reset, we need to use OTP token in Authorization header
+    const url = `${this.baseURL}/api/v1/auth/reset-password`;
+
+    console.log(`🌐 Reset Password Request: PUT ${url}`);
+    console.log("📤 Reset Password data:", requestBody);
+    console.log("🔑 Using OTP token:", otpCode);
+
+    const response = await fetch(url, {
       method: "PUT",
-      body: JSON.stringify({ password }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${otpCode}`, // OTP token as Bearer token
+      },
+      body: JSON.stringify(requestBody),
     });
+
+    console.log(
+      `📥 Response status: ${response.status} ${response.statusText}`
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("❌ Reset Password Error Response:", errorData);
+
+      const error = new Error();
+      (error as any).response = {
+        status: response.status,
+        data: errorData,
+      };
+
+      if (errorData.detail) {
+        if (Array.isArray(errorData.detail)) {
+          error.message = errorData.detail
+            .map((err: any) => err.msg || err.message)
+            .join(", ");
+        } else {
+          error.message = errorData.detail;
+        }
+      } else if (errorData.message) {
+        error.message = errorData.message;
+      } else {
+        error.message = `HTTP ${response.status}`;
+      }
+
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log("✅ Reset Password Success Response:", data);
+    return data;
   }
 
   async sendOtp(email: string): Promise<void> {

@@ -16,6 +16,7 @@ import {
   ContractResponse,
   AgentFeed,
   FileShow,
+  Token,
 } from "../services/api";
 
 // Hook return types
@@ -29,12 +30,18 @@ interface UseAuthReturn {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   verifyAccount: () => Promise<void>;
-  resetPassword: (password: string) => Promise<void>;
+  resetPassword: (
+    password: string,
+    otpCode: string,
+    email?: string
+  ) => Promise<void>;
   sendOtp: (email: string) => Promise<void>;
-  verifyOtp: (email: string, otp: string | number) => Promise<void>;
+  verifyOtp: (email: string, otp: string | number) => Promise<Token>;
   refreshToken: () => Promise<void>;
   switchAccount: (accountType: "client" | "agent") => Promise<void>;
   getMe: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
+  isUserAuthenticated: () => Promise<boolean>;
   updateMe: (userData: UserUpdate) => Promise<void>;
   deleteAccount: () => Promise<void>;
   clearError: () => void;
@@ -139,6 +146,8 @@ export function useAuth(): UseAuthReturn {
     refreshToken: api.refreshToken,
     switchAccount: api.switchAccount,
     getMe: api.getMe,
+    refreshUserData: api.refreshUserData,
+    isUserAuthenticated: api.isUserAuthenticated,
     updateMe: api.updateMe,
     deleteAccount: api.deleteAccount,
     clearError: api.clearError,

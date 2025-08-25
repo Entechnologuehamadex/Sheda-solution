@@ -3,13 +3,14 @@ import Button from "@/components/common/Button";
 import InterBold from "@/components/Text/InterBold";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
-import { Pressable, Text, View, Alert } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import InterMedium from "@/components/Text/InterMedium";
 import { OtpInput } from "react-native-otp-entry";
 import styles from "./style";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useShedaApi";
+import { showAlert } from "@/components/common/CrossPlatformAlert";
 
 const Otp = () => {
   const { email } = useLocalSearchParams();
@@ -19,7 +20,7 @@ const Otp = () => {
   // Handle error display
   useEffect(() => {
     if (error) {
-      Alert.alert("Error", error);
+      showAlert("Error", error);
       clearError();
     }
   }, [error, clearError]);
@@ -27,15 +28,21 @@ const Otp = () => {
   //handle submit otp code
   const handleSubmiteOtp = async () => {
     if (!otp || otp.length !== 4) {
-      Alert.alert("Error", "Please enter a valid 4-digit OTP");
+      showAlert("Error", "Please enter a valid 4-digit OTP");
       return;
     }
 
     try {
-      await verifyOtp(email as string, otp);
+      const token = await verifyOtp(email as string, otp);
+      console.log("🔑 OTP verification successful, token:", token);
+
       router.push({
         pathname: "/reset-pass",
-        params: { otpCode: otp },
+        params: {
+          otpCode: otp,
+          email: email as string,
+          otpToken: token.access_token, // Pass the OTP token
+        },
       });
       setOtp("");
     } catch (error) {
@@ -46,7 +53,7 @@ const Otp = () => {
   const handleResendOtp = async () => {
     try {
       await sendOtp(email as string);
-      Alert.alert("Success", "OTP has been resent to your email");
+      showAlert("Success", "OTP has been resent to your email");
     } catch (error) {
       console.error("Failed to resend OTP:", error);
     }

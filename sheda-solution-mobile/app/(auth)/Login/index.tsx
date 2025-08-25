@@ -1,6 +1,6 @@
 import InterBold from "@/components/Text/InterBold";
 import InterRegular from "@/components/Text/InterRegular";
-import { Text, View, StyleSheet, TextInput, Alert } from "react-native";
+import { Text, View, StyleSheet, TextInput } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import StyledTextInput from "@/components/input/textInput";
 import Socials from "@/components/Socials";
 import { useAuth } from "@/hooks/useShedaApi";
 import { useState, useEffect } from "react";
+import { showAlert } from "@/components/common/CrossPlatformAlert";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ const Login = () => {
   // Handle error and success display
   useEffect(() => {
     if (error) {
-      Alert.alert("Login Error", error);
+      showAlert("Login Error", error);
       clearError();
     }
   }, [error, clearError]);
@@ -50,7 +51,7 @@ const Login = () => {
   // Handle successful authentication
   useEffect(() => {
     if (isAuthenticated && user) {
-      Alert.alert("Success", "Login successful!", [
+      showAlert("Success", "Login successful!", [
         {
           text: "OK",
           onPress: () => router.push("/(tabs)/home"),
@@ -61,7 +62,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
+      showAlert("Error", "Please enter both email and password");
       return;
     }
 

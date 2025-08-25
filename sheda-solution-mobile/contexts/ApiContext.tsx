@@ -200,14 +200,20 @@ interface ApiContextType extends ApiState {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   verifyAccount: () => Promise<void>;
-  resetPassword: (password: string) => Promise<void>;
+  resetPassword: (
+    password: string,
+    otpCode: string,
+    email?: string
+  ) => Promise<void>;
   sendOtp: (email: string) => Promise<void>;
-  verifyOtp: (email: string, otp: string | number) => Promise<void>;
+  verifyOtp: (email: string, otp: string | number) => Promise<Token>;
   refreshToken: () => Promise<void>;
   switchAccount: (accountType: "client" | "agent") => Promise<void>;
 
   // User methods
   getMe: () => Promise<void>;
+  refreshUserData: () => Promise<void>;
+  isUserAuthenticated: () => Promise<boolean>;
   updateMe: (userData: UserUpdate) => Promise<void>;
   deleteAccount: () => Promise<void>;
 
@@ -303,24 +309,86 @@ export function ApiProvider({ children }: ApiProviderProps) {
           const userData = JSON.parse(userDataString);
           console.log("👤 Stored user data:", userData);
 
-          // Verify token is still valid by making a test API call
-          const user = await apiService.getMe();
-          console.log("✅ Token is valid, user data:", user);
-
-          // If successful, set authentication state
+          // First, try to restore from stored data immediately for better UX
           dispatch({ type: "SET_TOKEN", payload: token });
-          dispatch({ type: "SET_USER", payload: user });
+          dispatch({ type: "SET_USER", payload: userData });
           dispatch({ type: "SET_AUTHENTICATED", payload: true });
 
-          // Update stored user data with fresh data from API
-          await AsyncStorage.setItem("user_data", JSON.stringify(user));
-          console.log("💾 Updated stored user data");
+          // Extract and store related data from stored user data
+          if (userData.listing) {
+            dispatch({ type: "SET_MY_LISTINGS", payload: userData.listing });
+          }
+          if (userData.appointments) {
+            dispatch({
+              type: "SET_APPOINTMENTS",
+              payload: userData.appointments,
+            });
+          }
+          if (userData.account_info) {
+            dispatch({
+              type: "SET_PAYMENT_INFO",
+              payload: userData.account_info,
+            });
+          }
+          if (userData.availabilities) {
+            dispatch({
+              type: "SET_SCHEDULE",
+              payload: userData.availabilities,
+            });
+          }
+
+          console.log("✅ Restored user session from stored data");
+
+          // Then verify token is still valid by making a test API call in background
+          try {
+            const freshUser = await apiService.getMe();
+            console.log("✅ Token is valid, updating with fresh data");
+
+            // Update with fresh data
+            dispatch({ type: "SET_USER", payload: freshUser });
+
+            // Update stored user data with fresh data from API
+            await AsyncStorage.setItem("user_data", JSON.stringify(freshUser));
+            console.log("💾 Updated stored user data with fresh data");
+
+            // Extract and store fresh related data
+            if (freshUser.listing) {
+              dispatch({ type: "SET_MY_LISTINGS", payload: freshUser.listing });
+            }
+            if (freshUser.appointments) {
+              dispatch({
+                type: "SET_APPOINTMENTS",
+                payload: freshUser.appointments,
+              });
+            }
+            if (freshUser.account_info) {
+              dispatch({
+                type: "SET_PAYMENT_INFO",
+                payload: freshUser.account_info,
+              });
+            }
+            if (freshUser.availabilities) {
+              dispatch({
+                type: "SET_SCHEDULE",
+                payload: freshUser.availabilities,
+              });
+            }
+          } catch (tokenError) {
+            console.log(
+              "⚠️ Token verification failed, clearing stored data:",
+              tokenError
+            );
+            // Clear stored data since token is invalid
+            await AsyncStorage.multiRemove(["auth_token", "user_data"]);
+            await apiService.clearToken();
+            dispatch({ type: "SET_TOKEN", payload: null });
+            dispatch({ type: "SET_USER", payload: null });
+            dispatch({ type: "SET_AUTHENTICATED", payload: false });
+            console.log("🔑 Cleared invalid authentication data");
+          }
         } catch (error) {
-          // Token might be expired, clear everything
-          console.log(
-            "❌ Token expired or invalid, clearing auth data:",
-            error
-          );
+          console.log("❌ Failed to restore session:", error);
+          // Only clear data if we can't even restore from stored data
           await AsyncStorage.multiRemove(["auth_token", "user_data"]);
           await apiService.clearToken();
           dispatch({ type: "SET_TOKEN", payload: null });
@@ -359,23 +427,154 @@ export function ApiProvider({ children }: ApiProviderProps) {
       }
 
       return result;
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
+    } catch (error: any) {
+      console.error("❌ API Call Error:", error);
+
+      // Handle different types of errors
+      let errorMessage = "An error occurred";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else if (error?.response) {
+        // Handle HTTP response errors
+        const status = error.response.status;
+        const data = error.response.data;
+
+        if (data?.detail) {
+          // Handle FastAPI validation errors
+          if (Array.isArray(data.detail)) {
+            errorMessage = data.detail
+              .map((err: any) => err.msg || err.message)
+              .join(", ");
+          } else {
+            errorMessage = data.detail;
+          }
+        } else if (data?.message) {
+          errorMessage = data.message;
+        } else {
+          // Generic HTTP error messages
+          switch (status) {
+            case 400:
+              errorMessage = "Bad request. Please check your input.";
+              break;
+            case 401:
+              errorMessage = "Authentication failed. Please login again.";
+              // Handle token expiration gracefully
+              console.log("🔑 Token expired, attempting to refresh...");
+              try {
+                await refreshToken();
+                console.log("✅ Token refreshed successfully");
+                // Retry the original request
+                return await apiMethod();
+              } catch (refreshError) {
+                console.log("❌ Token refresh failed, logging out user");
+                // Token refresh failed, log out the user
+                await logout();
+                errorMessage = "Session expired. Please login again.";
+              }
+              break;
+            case 403:
+              errorMessage =
+                "Access denied. You don't have permission for this action.";
+              break;
+            case 404:
+              errorMessage = "Resource not found.";
+              break;
+            case 422:
+              errorMessage = "Validation error. Please check your input.";
+              break;
+            case 500:
+              errorMessage = "Server error. Please try again later.";
+              break;
+            default:
+              errorMessage = `Request failed (${status})`;
+          }
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      console.error("📝 Final Error Message:", errorMessage);
       dispatch({ type: "SET_ERROR", payload: errorMessage });
-      throw error;
+      throw new Error(errorMessage);
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
   };
 
   // User methods (defined first to avoid hoisting issues)
+  /**
+   * Fetches all user data including profile, listings, appointments, payment info, and schedule
+   * This function is called after login and stores all related data in the global state
+   * so individual pages don't need to make separate API calls
+   */
   const getMe = async () => {
+    console.log("🔄 Fetching all user data...");
     const user = await apiCall(() => apiService.getMe());
+    console.log("📥 Raw user data from API:", user);
+    console.log("📥 User account_type:", user?.account_type);
+    console.log("📥 User account_type type:", typeof user?.account_type);
+    console.log("📥 Full user data JSON:", JSON.stringify(user, null, 2));
+
     dispatch({ type: "SET_USER", payload: user });
+
+    // Extract and store all related data from the user response
+    if (user.listing) {
+      console.log(`📋 Found ${user.listing.length} listings, storing in state`);
+      dispatch({ type: "SET_MY_LISTINGS", payload: user.listing });
+    }
+
+    if (user.appointments) {
+      console.log(
+        `📅 Found ${user.appointments.length} appointments, storing in state`
+      );
+      dispatch({ type: "SET_APPOINTMENTS", payload: user.appointments });
+    }
+
+    if (user.account_info) {
+      console.log(
+        `💳 Found ${user.account_info.length} payment info items, storing in state`
+      );
+      dispatch({ type: "SET_PAYMENT_INFO", payload: user.account_info });
+    }
+
+    if (user.availabilities) {
+      console.log(
+        `⏰ Found ${user.availabilities.length} availability slots, storing in state`
+      );
+      dispatch({ type: "SET_SCHEDULE", payload: user.availabilities });
+    }
+
+    console.log("✅ All user data fetched and stored successfully");
 
     // Save user data to AsyncStorage
     await AsyncStorage.setItem("user_data", JSON.stringify(user));
+  };
+
+  /**
+   * Refreshes all user data by calling getMe()
+   * Useful when data might be stale or when you need to sync with the server
+   */
+  const refreshUserData = async () => {
+    console.log("🔄 Refreshing all user data...");
+    await getMe();
+  };
+
+  /**
+   * Checks if user is already authenticated by checking stored token
+   * Returns true if user has valid stored authentication data
+   */
+  const isUserAuthenticated = async (): Promise<boolean> => {
+    try {
+      const token = await AsyncStorage.getItem("auth_token");
+      const userData = await AsyncStorage.getItem("user_data");
+      return !!(token && userData);
+    } catch (error) {
+      console.error("Error checking authentication status:", error);
+      return false;
+    }
   };
 
   // Authentication methods
@@ -452,15 +651,35 @@ export function ApiProvider({ children }: ApiProviderProps) {
     }
 
     // Clear AsyncStorage
-    await AsyncStorage.multiRemove(["auth_token", "user_data"]);
-    console.log("🗑️ Cleared AsyncStorage data");
+    try {
+      await AsyncStorage.multiRemove(["auth_token", "user_data"]);
+      console.log("🗑️ Cleared AsyncStorage data");
+    } catch (storageError) {
+      console.error("❌ Failed to clear AsyncStorage:", storageError);
+    }
 
-    await apiService.clearToken();
-    console.log("🗑️ Cleared API service token");
+    try {
+      await apiService.clearToken();
+      console.log("🗑️ Cleared API service token");
+    } catch (tokenError) {
+      console.error("❌ Failed to clear API service token:", tokenError);
+    }
 
-    dispatch({ type: "RESET_STATE" });
-    console.log("🔄 Reset application state");
+    try {
+      dispatch({ type: "RESET_STATE" });
+      console.log("🔄 Reset application state");
+    } catch (dispatchError) {
+      console.error("❌ Failed to reset state:", dispatchError);
+    }
+
     console.log("✅ Logout completed successfully");
+
+    // Ensure authentication state is properly reset
+    dispatch({ type: "SET_AUTHENTICATED", payload: false });
+    dispatch({ type: "SET_USER", payload: null });
+    dispatch({ type: "SET_TOKEN", payload: null });
+
+    console.log("🔑 Authentication state reset to false");
 
     // The AuthGuard will automatically redirect to login page
     // since the user is no longer authenticated
@@ -472,10 +691,16 @@ export function ApiProvider({ children }: ApiProviderProps) {
     dispatch({ type: "SET_TOKEN", payload: token.access_token });
   };
 
-  const resetPassword = async (password: string) => {
+  const resetPassword = async (
+    password: string,
+    otpCode: string,
+    email?: string
+  ) => {
     console.log("🔐 Starting password reset...");
 
-    const token = await apiCall(() => apiService.resetPassword(password));
+    const token = await apiCall(() =>
+      apiService.resetPassword(password, otpCode, email)
+    );
     console.log("✅ Password reset successful, token received:", token);
 
     await apiService.setToken(token.access_token);
@@ -486,15 +711,10 @@ export function ApiProvider({ children }: ApiProviderProps) {
     console.log("💾 Token saved to AsyncStorage");
 
     dispatch({ type: "SET_TOKEN", payload: token.access_token });
+    dispatch({ type: "SET_AUTHENTICATED", payload: true });
 
-    // Get user data
-    try {
-      await getMe();
-      console.log("✅ User data retrieved successfully");
-    } catch (error) {
-      console.error("❌ Failed to get user data after password reset:", error);
-      // Don't fail the password reset if getMe fails
-    }
+    // Don't call getMe() here - let the user navigate and fetch data when needed
+    console.log("✅ Password reset completed successfully");
   };
 
   const sendOtp = async (email: string) => {
@@ -517,17 +737,10 @@ export function ApiProvider({ children }: ApiProviderProps) {
     dispatch({ type: "SET_TOKEN", payload: token.access_token });
     console.log("✅ Authentication state updated");
 
-    // Get user data
-    try {
-      await getMe();
-      console.log("✅ User data retrieved successfully");
-    } catch (error) {
-      console.error(
-        "❌ Failed to get user data after OTP verification:",
-        error
-      );
-      // Don't fail the OTP verification if getMe fails
-    }
+    // Don't call getMe() here because OTP token has limited scope
+    // User data will be fetched after password reset with the new token
+
+    return token; // Return the token
   };
 
   const refreshToken = async () => {
@@ -546,9 +759,58 @@ export function ApiProvider({ children }: ApiProviderProps) {
   };
 
   const updateMe = async (userData: UserUpdate) => {
-    await apiCall(() => apiService.updateMe(userData));
-    // Refresh user data
-    await getMe();
+    console.log("🔄 Updating user profile with data:", userData);
+    try {
+      await apiCall(() => apiService.updateMe(userData));
+      console.log("✅ User profile updated successfully");
+      // Refresh user data
+      await getMe();
+    } catch (error: any) {
+      console.error("❌ Profile update failed:", error);
+      console.error("❌ Error response:", error?.response?.data);
+
+      // Check if the error suggests token refresh or account type switch
+      if (
+        error?.message?.includes("refresh token") ||
+        error?.message?.includes("switch to appropriate account type") ||
+        error?.message?.includes("Token has been revoked")
+      ) {
+        console.log("🔄 Token issue detected, attempting to handle...");
+
+        // If token is revoked, force logout
+        if (error?.message?.includes("Token has been revoked")) {
+          console.log("🔑 Token revoked, forcing logout...");
+          await logout();
+          throw new Error("Your session has expired. Please login again.");
+        }
+
+        // For other token issues, try refresh first
+        try {
+          console.log("🔄 Attempting to refresh token...");
+          await refreshToken();
+          console.log("✅ Token refreshed, retrying update...");
+
+          // Retry the update with fresh token
+          await apiCall(() => apiService.updateMe(userData));
+          console.log(
+            "✅ User profile updated successfully after token refresh"
+          );
+
+          // Refresh user data
+          await getMe();
+          return;
+        } catch (refreshError) {
+          console.error("❌ Token refresh failed:", refreshError);
+
+          // If refresh fails, force logout
+          console.log("🔑 Token refresh failed, forcing logout...");
+          await logout();
+          throw new Error("Your session has expired. Please login again.");
+        }
+      }
+
+      throw error;
+    }
   };
 
   const deleteAccount = async () => {
@@ -558,12 +820,29 @@ export function ApiProvider({ children }: ApiProviderProps) {
 
   // Property methods
   const getProperties = async (limit = 20, cursor = 1) => {
-    const feed = await apiCall(() => apiService.getProperties(limit, cursor));
-    dispatch({ type: "SET_PROPERTY_FEED", payload: feed });
-    dispatch({ type: "SET_PROPERTIES", payload: feed.data });
+    try {
+      const feed = await apiCall(() => apiService.getProperties(limit, cursor));
+      dispatch({ type: "SET_PROPERTY_FEED", payload: feed });
+      dispatch({ type: "SET_PROPERTIES", payload: feed.data });
+    } catch (error: any) {
+      console.error("Failed to fetch properties:", error);
+      // Don't retry on network errors to prevent infinite loops
+      if (error?.message === "Failed to fetch") {
+        dispatch({
+          type: "SET_ERROR",
+          payload: "Network error. Please check your connection.",
+        });
+      }
+    }
   };
 
   const getMyListings = async () => {
+    // Check if we already have listings from user data
+    if (state.myListings.length > 0) {
+      console.log("📋 Using cached listings data");
+      return;
+    }
+
     const listings = await apiCall(() => apiService.getMyListings());
     dispatch({ type: "SET_MY_LISTINGS", payload: listings });
   };
@@ -618,6 +897,12 @@ export function ApiProvider({ children }: ApiProviderProps) {
   };
 
   const getPaymentInfo = async (userId?: number) => {
+    // Check if we already have payment info from user data
+    if (state.paymentInfo.length > 0) {
+      console.log("💳 Using cached payment info data");
+      return;
+    }
+
     const paymentInfo = await apiCall(() => apiService.getPaymentInfo(userId));
     dispatch({ type: "SET_PAYMENT_INFO", payload: paymentInfo });
   };
@@ -646,6 +931,12 @@ export function ApiProvider({ children }: ApiProviderProps) {
   };
 
   const getSchedule = async () => {
+    // Check if we already have schedule from user data
+    if (state.schedule.length > 0) {
+      console.log("📅 Using cached schedule data");
+      return;
+    }
+
     const schedule = await apiCall(() => apiService.getSchedule());
     dispatch({ type: "SET_SCHEDULE", payload: schedule });
   };
@@ -705,6 +996,8 @@ export function ApiProvider({ children }: ApiProviderProps) {
     refreshToken,
     switchAccount,
     getMe,
+    refreshUserData,
+    isUserAuthenticated,
     updateMe,
     deleteAccount,
     getProperties,

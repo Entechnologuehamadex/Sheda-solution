@@ -1,6 +1,6 @@
 import InterBold from "@/components/Text/InterBold";
 import InterRegular from "@/components/Text/InterRegular";
-import { Text, View, TextInput, Alert } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,7 @@ import Socials from "@/components/Socials";
 import StyledTextInput from "@/components/input/textInput";
 import { useAuth } from "@/hooks/useShedaApi";
 import { useState, useEffect } from "react";
+import { showAlert } from "@/components/common/CrossPlatformAlert";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ const Signup = () => {
   // Handle error and success display
   useEffect(() => {
     if (error) {
-      Alert.alert("Signup Error", error);
+      showAlert("Signup Error", error);
       clearError();
     }
   }, [error, clearError]);
@@ -53,7 +54,7 @@ const Signup = () => {
   // Handle successful signup
   useEffect(() => {
     if (isAuthenticated && user) {
-      Alert.alert("Success", "Account created successfully!", [
+      showAlert("Success", "Account created successfully!", [
         {
           text: "OK",
           onPress: () =>
@@ -68,17 +69,17 @@ const Signup = () => {
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
+      showAlert("Error", "Please fill in all fields");
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      showAlert("Error", "Passwords do not match");
       return;
     }
 
     if (password.length < 5) {
-      Alert.alert("Error", "Password must be at least 8 characters long");
+      showAlert("Error", "Password must be at least 8 characters long");
       return;
     }
 

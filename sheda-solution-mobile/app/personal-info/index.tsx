@@ -11,7 +11,7 @@ import BackBtn from "@/components/common/BackBtn";
 import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import * as ImagePicker from "expo-image-picker";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import getMedia from "@/utilities/ImagePicker";
 import Icon from "@/components/common/Icon";
 import { PENCIL } from "@/assets/icons";
@@ -29,7 +29,7 @@ const locationOptions: SelectOption[] = [
 ];
 
 const PersonalInfo = () => {
-  const { user, getMe, updateMe, uploadFile, isLoading, error } = useApi();
+  const { user, updateMe, uploadFile, isLoading, error } = useApi();
   const [selectedLocation, setSelectedLocation] = useState<string>(
     "User profile location"
   );
@@ -40,13 +40,15 @@ const PersonalInfo = () => {
   const [email, setEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load user data on component mount
-  useEffect(() => {
-    getMe();
-  }, [getMe]);
+  // User data is already loaded from login process, no need to fetch again
 
   // Update form fields when user data loads
   useEffect(() => {
+    console.log("👤 User data loaded in personal info:", user);
+    console.log("👤 User data JSON:", JSON.stringify(user, null, 2));
+    console.log("👤 User account_type:", user?.account_type);
+    console.log("👤 User account_type type:", typeof user?.account_type);
+
     if (user) {
       setFullName(user.fullname || "");
       setAgencyName(user.agency_name || "");
@@ -80,23 +82,82 @@ const PersonalInfo = () => {
   };
 
   const handleSaveChanges = async () => {
-    if (!user) return;
+    if (!user) {
+      Alert.alert("Error", "User data not loaded. Please try again.");
+      return;
+    }
+
+    // Note: account_type will be handled with fallback in the update data
+
+    // Validate phone number format
+    if (phoneNumber && !phoneNumber.match(/^\+\d{10,15}$/)) {
+      Alert.alert(
+        "Invalid Phone Number",
+        "Phone number must be in international format (e.g., +2341234567890)"
+      );
+      return;
+    }
+
+    // Validate required fields
+    if (!fullName.trim()) {
+      Alert.alert("Error", "Full name is required");
+      return;
+    }
+
+    if (!email.trim()) {
+      Alert.alert("Error", "Email is required");
+      return;
+    }
 
     setIsSaving(true);
     try {
-      await updateMe({
-        fullname: fullName,
-        agency_name: agencyName,
-        phone_number: phoneNumber,
-        email: email,
-        location: selectedLocation,
-        profile_pic: profileImg,
-      });
+      // Debug: Check user data
+      console.log("👤 Current user data:", user);
+      console.log("👤 User account type:", user?.account_type);
+
+      // Log the account type for debugging
+      console.log("🔍 Account type from user data:", user?.account_type);
+      console.log("🔍 Using account type:", user?.account_type || "client");
+
+      // Prepare update data, only include fields that have values
+      const updateData: any = {
+        fullname: fullName.trim(),
+        email: email.trim(),
+        account_type: user.account_type || "client", // Required field according to API spec, fallback to "client"
+      };
+
+      // Only add optional fields if they have values
+      if (agencyName.trim()) {
+        updateData.agency_name = agencyName.trim();
+      }
+
+      if (phoneNumber.trim()) {
+        updateData.phone_number = phoneNumber.trim();
+      }
+
+      if (
+        selectedLocation.trim() &&
+        selectedLocation !== "User profile location"
+      ) {
+        updateData.location = selectedLocation.trim();
+      }
+
+      if (profileImg) {
+        updateData.profile_pic = profileImg;
+      }
+
+      console.log("📤 Sending update data:", updateData);
+      console.log("📤 Update data JSON:", JSON.stringify(updateData));
+
+      await updateMe(updateData);
 
       Alert.alert("Success", "Profile updated successfully!");
       router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to update profile. Please try again.");
+    } catch (error: any) {
+      console.error("Profile update error:", error);
+      const errorMessage =
+        error?.message || "Failed to update profile. Please try again.";
+      Alert.alert("Error", errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -167,7 +228,7 @@ const PersonalInfo = () => {
                   Phone number
                 </InterRegular>
                 <StyledTextInput
-                  placeholder="Enter phone number"
+                  placeholder="+2341234567890 (International format)"
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                 />

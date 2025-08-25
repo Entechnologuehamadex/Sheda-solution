@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useApi } from "@/contexts/ApiContext";
 import HouseCard from "../HouseCard";
 import { HouseCardProps } from "../HouseCard/types";
@@ -9,11 +9,15 @@ import InterRegular from "../Text/InterRegular";
 
 const HouseList = () => {
   const { properties, getProperties, isLoading, error } = useApi();
+  const hasLoaded = useRef(false);
 
   useEffect(() => {
-    // Load properties on component mount
-    getProperties(20, 1);
-  }, [getProperties]);
+    // Only fetch once to prevent infinite loop
+    if (!hasLoaded.current) {
+      getProperties(20, 1);
+      hasLoaded.current = true;
+    }
+  }, []); // Empty dependency array
 
   if (isLoading) {
     return (
@@ -40,17 +44,8 @@ const HouseList = () => {
           <HouseCard house={house} />
         </View>
       ))}
-      {/* <View className="w-full">
-               <Button
-                 className="rounded-lg"
-                 onPress={() => console.log("see more Clicked!!")}
-               >
-                 <InterSemiBold className="text-background text-base">
-                   See More
-                 </InterSemiBold>
-               </Button>
-             </View> */}
     </View>
   );
 };
+
 export default HouseList;

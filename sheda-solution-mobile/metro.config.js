@@ -22,6 +22,7 @@ module.exports = async () => {
     crypto: "react-native-get-random-values",
     stream: "readable-stream",
     buffer: "buffer",
+    util: "util",
   };
 
   // Apply reanimatedMetroConfiq and NativeWind

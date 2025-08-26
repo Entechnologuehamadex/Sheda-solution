@@ -17,16 +17,34 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
   const pickImage = async () => {
     try {
+      // Request permission to access media library before opening picker
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission required",
+          "Please allow photo library access to upload property photos."
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
 
       if (!result.canceled) {
+        const asset = result.assets[0];
+        const file: any = {
+          uri: asset.uri,
+          name: (asset as any).fileName || `property_${Date.now()}.jpg`,
+          type: (asset as any).mimeType || "image/jpeg",
+        };
+
         // Upload the image to the server
-        const uploadedFile = await uploadFile("property", result.assets[0]);
+        const uploadedFile = await uploadFile("property", file);
 
         // Add the uploaded file URL to photos
         const newPhotos = [...photos, uploadedFile.file_url];

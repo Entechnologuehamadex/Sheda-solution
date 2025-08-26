@@ -10,7 +10,7 @@ import Icon from "@/components/common/Icon";
 import { PROFILETICK, CHEVRONRIGHT } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import InterRegular from "@/components/Text/InterRegular";
-import { getProfileList } from "./profileList";
+import { getProfileList } from "./_profileList";
 import { useMode } from "@/contexts/ModeContext";
 import { useAuth } from "@/hooks/useShedaApi";
 import { useApi } from "@/contexts/ApiContext";

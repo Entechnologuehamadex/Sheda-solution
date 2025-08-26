@@ -44,7 +44,8 @@
           "photosPermission": "The app accesses your photos to let you post houses and profile photos"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,18 +1,93 @@
 "use client";
 
-// Buffer polyfill for React Native compatibility with crypto libraries
+// Node.js polyfills for React Native compatibility with crypto libraries
 import { Buffer } from "buffer";
-global.Buffer = Buffer;
-
-// Process polyfill for React Native compatibility
-global.process = global.process || { env: {} };
-
-// Random values polyfill for crypto libraries
 import "react-native-get-random-values";
 
-// Additional Node.js polyfills for crypto libraries
-global.global = global;
-global.process = global.process || { env: {} };
+// Essential polyfills
+(global as any).Buffer = Buffer;
+(global as any).process = (global as any).process || { env: {} };
+(global as any).global = global;
+
+// Util polyfill (minimal implementation)
+(global as any).util = {
+  format: (...args: any[]) => args.join(" "),
+  inspect: (obj: any) => JSON.stringify(obj),
+  isArray: Array.isArray,
+  isBoolean: (val: any) => typeof val === "boolean",
+  isNull: (val: any) => val === null,
+  isNullOrUndefined: (val: any) => val === null || val === undefined,
+  isNumber: (val: any) => typeof val === "number",
+  isObject: (val: any) => typeof val === "object" && val !== null,
+  isPrimitive: (val: any) => {
+    return (
+      val === null ||
+      typeof val === "boolean" ||
+      typeof val === "number" ||
+      typeof val === "string" ||
+      typeof val === "symbol" ||
+      typeof val === "undefined"
+    );
+  },
+  isString: (val: any) => typeof val === "string",
+  isSymbol: (val: any) => typeof val === "symbol",
+  isUndefined: (val: any) => val === undefined,
+  log: console.log,
+  deprecate: (fn: any) => fn,
+  debuglog: () => () => {},
+  error: console.error,
+  puts: console.log,
+  print: console.log,
+  p: console.log,
+  exec: () => {},
+  pump: () => {},
+  inherits: () => {},
+  _extend: (target: any, source: any) => Object.assign(target, source),
+  TextEncoder: (global as any).TextEncoder,
+  TextDecoder: (global as any).TextDecoder,
+};
+
+// Minimal stream polyfill
+(global as any).stream = {
+  Readable: class Readable {},
+  Writable: class Writable {},
+  Duplex: class Duplex {},
+  Transform: class Transform {},
+  PassThrough: class PassThrough {},
+};
+
+// Minimal events polyfill
+(global as any).events = {
+  EventEmitter: class EventEmitter {
+    private events: { [key: string]: Function[] } = {};
+
+    on(event: string, listener: Function) {
+      if (!this.events[event]) {
+        this.events[event] = [];
+      }
+      this.events[event].push(listener);
+    }
+
+    emit(event: string, ...args: any[]) {
+      if (this.events[event]) {
+        this.events[event].forEach((listener: Function) => listener(...args));
+      }
+    }
+  },
+};
+
+// Crypto polyfill (if not already available)
+if (!(global as any).crypto) {
+  (global as any).crypto = {
+    getRandomValues: (arr: any) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256);
+      }
+      return arr;
+    },
+    subtle: {} as any,
+  };
+}
 
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
@@ -21,7 +96,7 @@ import { SplashScreen } from "expo-router";
 import { ModeProvider } from "@/contexts/ModeContext";
 import { WalletProvider } from "@/contexts/WalletContext";
 import { ApiProvider } from "@/contexts/ApiContext";
-import InitialRouter from "@/components/InitialRouter";
+import AuthRouter from "@/components/AuthRouter";
 import "./../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -59,7 +134,7 @@ export default function RootLayout() {
     <ModeProvider>
       <WalletProvider>
         <ApiProvider>
-          <InitialRouter />
+          <AuthRouter />
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />

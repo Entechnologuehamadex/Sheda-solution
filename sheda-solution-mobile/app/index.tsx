@@ -4,7 +4,6 @@ import Button from "@/components/common/Button";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import { HERO } from "@/constants/images-icons";
 import InterRegular from "@/components/Text/InterRegular";
-import { AuthDebug } from "@/components/AuthDebug";
 
 export default function Onboarding() {
   return (
@@ -56,9 +55,6 @@ export default function Onboarding() {
             <InterSemiBold className="">Create account</InterSemiBold>
           </Button>
         </View>
-
-        {/* Debug Panel */}
-        <AuthDebug />
       </View>
     </View>
   );

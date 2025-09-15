@@ -1,0 +1,3039 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sheda Solutions Backend",
+    "description": "Backend for Sheda Solutions",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://sheda-backend-production.up.railway.app",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Development"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Signup User",
+        "description": "Once accounts are created they are stored temporarily for 2 hours before deletion if email verification is not completed",
+        "operationId": "signup_user_api_v1_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignUpShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-account": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verify Account",
+        "operationId": "verify_account_api_v1_auth_verify_account_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["otp"]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login For Access Token",
+        "operationId": "login_for_access_token_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_for_access_token_api_v1_auth_login_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Reset Pwd",
+        "description": "Reset Password",
+        "operationId": "reset_pwd_api_v1_auth_reset_password_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordReset"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          },
+          {
+            "OAuth2PasswordBearer": ["otp"]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/send-otp": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Send Otp",
+        "operationId": "send_otp_api_v1_auth_send_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpSend"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Send Otp Api V1 Auth Send Otp Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-otp": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verify Otp Route",
+        "description": "Token returned from this endpoint is valid for only `5 minutes`\n\u003Ch3\u003E\u003Cb\u003EOnce the OTP is verified the token is blacklisted\u003C/b\u003E\u003C/h3\u003E\n\u003Cb\u003E\u003Ci\u003EThese tokens carry a scope that allows only actions that need OTP verification therefore cannot be used elsewhere\u003C/i\u003E\u003C/b\u003E",
+        "operationId": "verify_otp_route_api_v1_auth_verify_otp_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh-token": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Refresh Token",
+        "description": "This endpoint refreshes a user's token including the neccesary permissions for the account type,in case of \u003Cb\u003Eunauthorized\u003C/b\u003E or \u003Cb\u003Eaccount type changes\u003C/b\u003E\nThe previous token will be `blacklisted`",
+        "operationId": "refresh_token_api_v1_auth_refresh_token_put",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/switch-account": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Switch Account Type",
+        "operationId": "switch_account_type_api_v1_auth_switch_account_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwitchAccountType"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/user/me": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Me",
+        "description": "Get Current User Profile",
+        "operationId": "get_me_api_v1_user_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserShow"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/user/update/me": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Update Me",
+        "description": "pick the target field and exclude the rest,\nthe server will dynamically update,all fields are optional",
+        "operationId": "update_me_api_v1_user_update_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserUpdate"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/user/delete-accnt": {
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete Account",
+        "operationId": "delete_account_api_v1_user_delete_accnt_delete",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/user/book-appointment": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Book Appointment",
+        "operationId": "book_appointment_api_v1_user_book_appointment_get",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["client"]
+          }
+        ]
+      }
+    },
+    "/api/v1/user/cancel-appointment/{appointment_id}": {
+      "delete": {
+        "tags": ["User"],
+        "summary": "Cancel Aappointment",
+        "operationId": "cancel_aappointment_api_v1_user_cancel_appointment__appointment_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Cancel Aappointment Api V1 User Cancel Appointment  Appointment Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/create-payment-info": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create Payment Info",
+        "operationId": "create_payment_info_api_v1_user_create_payment_info_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountInfoBase"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInfoShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/user/payment-info": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Payment Info",
+        "operationId": "get_payment_info_api_v1_user_payment_info_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccountInfoShow"
+                  },
+                  "title": "Response Get Payment Info Api V1 User Payment Info Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/update-account-info/{account_info_id}": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Update Payment Info",
+        "operationId": "update_payment_info_api_v1_user_update_account_info__account_info_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account_info_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Account Info Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountInfoBase"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInfoShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/delete-accnt-info/{account_info_id}": {
+      "delete": {
+        "tags": ["User"],
+        "summary": "Delete Account Info",
+        "operationId": "delete_account_info_api_v1_user_delete_accnt_info__account_info_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account_info_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Account Info Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Delete Account Info Api V1 User Delete Accnt Info  Account Info Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/payment-info/{contract_id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Payment Info",
+        "operationId": "get_payment_info_api_v1_user_payment_info__contract_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contract_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contract Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountInfoBase"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/create-available-time": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create Schedule",
+        "operationId": "create_schedule_api_v1_user_create_available_time_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentAvailabilitySchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ]
+      }
+    },
+    "/api/v1/user/get-schedule/me": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Schedule",
+        "operationId": "get_schedule_api_v1_user_get_schedule_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityShow"
+                  },
+                  "type": "array",
+                  "title": "Response Get Schedule Api V1 User Get Schedule Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ]
+      }
+    },
+    "/api/v1/user/update-schedule/{schedule_id}": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Update Schedule",
+        "operationId": "update_schedule_api_v1_user_update_schedule__schedule_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "schedule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Schedule Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentAvailabilitySchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/confirm-payment/{contract_id}": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Confirm Client Payment",
+        "operationId": "confirm_client_payment_api_v1_user_confirm_payment__contract_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["client"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contract_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contract Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Confirm Client Payment Api V1 User Confirm Payment  Contract Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/approve-payment/{contract_id}": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Approve Payment",
+        "operationId": "approve_payment_api_v1_user_approve_payment__contract_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "contract_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contract Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Approve Payment Api V1 User Approve Payment  Contract Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/contracts/": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create Contract",
+        "operationId": "create_contract_api_v1_user_contracts__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["client"]
+          }
+        ]
+      }
+    },
+    "/api/v1/property/list-property": {
+      "post": {
+        "tags": ["Property"],
+        "summary": "List Property",
+        "description": "Upload Property",
+        "operationId": "list_property_api_v1_property_list_property_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyBase"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ]
+      }
+    },
+    "/api/v1/property/me": {
+      "get": {
+        "tags": ["Property"],
+        "summary": "Get My Listing",
+        "operationId": "get_my_listing_api_v1_property_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyShow"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Listing Api V1 Property Me Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ]
+      }
+    },
+    "/api/v1/property/update/{property_id}": {
+      "put": {
+        "tags": ["Property"],
+        "summary": "Edit Property Listing",
+        "description": "pick your field of interest and ignore the rest, the server will dynamically update them",
+        "operationId": "edit_property_listing_api_v1_property_update__property_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Property Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/property/get-properties": {
+      "get": {
+        "tags": ["Property"],
+        "summary": "Property Feed",
+        "description": "Retrieve a paginated list of available properties using cursor-based pagination. Users can filter results based on specific criteria, such as property ID, and define the number of listings returned per request. The response includes a `next_cursor` to facilitate seamless pagination.",
+        "operationId": "property_feed_api_v1_property_get_properties_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 10,
+              "description": "The amount of listings to fetch",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "The amount of listings to fetch"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The Id of the last listing",
+              "default": 1,
+              "title": "Cursor"
+            },
+            "description": "The Id of the last listing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyFeed"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/property/agent-profile{agent_id}": {
+      "get": {
+        "tags": ["Property"],
+        "summary": "Agent Profile",
+        "operationId": "agent_profile_api_v1_property_agent_profile_agent_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentFeed"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/property/delete/{property_id}": {
+      "delete": {
+        "tags": ["Property"],
+        "summary": "Delete Property",
+        "operationId": "delete_property_api_v1_property_delete__property_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["agent"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "property_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "ID of property to be deleted",
+              "title": "Property Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteProperty"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/chat-history": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Chat History",
+        "operationId": "chat_history_api_v1_chat_chat_history_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessageSchema"
+                  },
+                  "type": "array",
+                  "title": "Response Chat History Api V1 Chat Chat History Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/media/file-upload/{type}": {
+      "post": {
+        "tags": ["Media"],
+        "summary": "Upload File",
+        "description": "Add max size 500kb - 2MB",
+        "operationId": "upload_file_api_v1_media_file_upload__type__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": ["profile", "property"],
+              "type": "string",
+              "title": "Type"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_file_api_v1_media_file_upload__type__post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileShow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Media"],
+        "summary": "Get File",
+        "description": "Get uploaded files",
+        "operationId": "get_file_api_v1_media_file_upload__type__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": ["profile", "property"],
+              "type": "string",
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FileShow"
+                  },
+                  "title": "Response Get File Api V1 Media File Upload  Type  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccountInfoBase": {
+        "properties": {
+          "account_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Name"
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name"
+          },
+          "acount_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acount Number",
+            "examples": ["1234567890"]
+          }
+        },
+        "type": "object",
+        "title": "AccountInfoBase"
+      },
+      "AccountInfoShow": {
+        "properties": {
+          "account_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Name"
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name"
+          },
+          "acount_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acount Number",
+            "examples": ["1234567890"]
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": ["id", "user_id"],
+        "title": "AccountInfoShow"
+      },
+      "AccountTypeEnum": {
+        "type": "string",
+        "enum": ["client", "agent"],
+        "title": "AccountTypeEnum"
+      },
+      "AgentAvailabilitySchema": {
+        "properties": {
+          "weekday": {
+            "type": "string",
+            "title": "Weekday",
+            "example": "MONDAY"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Start Time",
+            "description": "HH:MM format",
+            "example": "09:00"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "time",
+            "title": "End Time",
+            "example": "17:00"
+          }
+        },
+        "type": "object",
+        "required": ["weekday", "start_time", "end_time"],
+        "title": "AgentAvailabilitySchema"
+      },
+      "AgentFeed": {
+        "properties": {
+          "profile_pic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Profile Pic"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "phone_number": {
+            "type": "string",
+            "maxLength": 15,
+            "minLength": 10,
+            "pattern": "^\\+\\d{10,15}$",
+            "title": "Phone Number",
+            "description": "Phone number in international format",
+            "examples": ["+2348078417891"]
+          },
+          "agency_name": {
+            "type": "string",
+            "title": "Agency Name"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "kyc_status": {
+            "$ref": "#/components/schemas/KycStatusEnum"
+          },
+          "last_seen": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating"
+          },
+          "listing": {
+            "items": {
+              "$ref": "#/components/schemas/PropertyShow"
+            },
+            "type": "array",
+            "title": "Listing",
+            "default": []
+          },
+          "availbilities": {
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityShow"
+            },
+            "type": "array",
+            "title": "Availbilities",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "phone_number",
+          "agency_name",
+          "location",
+          "kyc_status",
+          "last_seen",
+          "rating"
+        ],
+        "title": "AgentFeed"
+      },
+      "AppointmentSchema": {
+        "properties": {
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "property_id": {
+            "type": "integer",
+            "title": "Property Id"
+          },
+          "requested_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Requested Time"
+          }
+        },
+        "type": "object",
+        "required": ["agent_id", "property_id", "requested_time"],
+        "title": "AppointmentSchema"
+      },
+      "AppointmentShow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "client_id": {
+            "type": "integer",
+            "title": "Client Id"
+          },
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "property_id": {
+            "type": "integer",
+            "title": "Property Id"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AppointmentStatEnum"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "client_id",
+          "agent_id",
+          "property_id",
+          "scheduled_at",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AppointmentShow"
+      },
+      "AppointmentStatEnum": {
+        "type": "string",
+        "enum": ["pending", "confirmed", "canceled"],
+        "title": "AppointmentStatEnum"
+      },
+      "AvailabilityShow": {
+        "properties": {
+          "weekday": {
+            "type": "string",
+            "title": "Weekday",
+            "example": "MONDAY"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "time",
+            "title": "Start Time",
+            "description": "HH:MM format",
+            "example": "09:00"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "time",
+            "title": "End Time",
+            "example": "17:00"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "is_booked": {
+            "type": "boolean",
+            "title": "Is Booked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "weekday",
+          "start_time",
+          "end_time",
+          "id",
+          "agent_id",
+          "is_booked"
+        ],
+        "title": "AvailabilityShow"
+      },
+      "Body_login_for_access_token_api_v1_auth_login_post": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "Enter Phone,email,username",
+            "default": "Admin"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "description": "Enter Your Password",
+            "default": "admin"
+          }
+        },
+        "type": "object",
+        "title": "Body_login_for_access_token_api_v1_auth_login_post"
+      },
+      "Body_upload_file_api_v1_media_file_upload__type__post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_upload_file_api_v1_media_file_upload__type__post"
+      },
+      "ChatMessageSchema": {
+        "properties": {
+          "sender_id": {
+            "type": "integer",
+            "title": "Sender Id"
+          },
+          "receiver_id": {
+            "type": "integer",
+            "title": "Receiver Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "property_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Id"
+          }
+        },
+        "type": "object",
+        "required": ["sender_id", "receiver_id", "message"],
+        "title": "ChatMessageSchema"
+      },
+      "ContractCreate": {
+        "properties": {
+          "property_id": {
+            "type": "integer",
+            "title": "Property Id"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "rental_period_months": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rental Period Months"
+          },
+          "is_payment_made": {
+            "type": "boolean",
+            "title": "Is Payment Made"
+          }
+        },
+        "type": "object",
+        "required": ["property_id", "amount", "is_payment_made"],
+        "title": "ContractCreate"
+      },
+      "ContractResponse": {
+        "properties": {
+          "contract_id": {
+            "type": "integer",
+            "title": "Contract Id"
+          },
+          "property_id": {
+            "type": "integer",
+            "title": "Property Id"
+          },
+          "contract_type": {
+            "$ref": "#/components/schemas/ListingTypeEnum"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contract_id",
+          "property_id",
+          "contract_type",
+          "amount",
+          "start_date",
+          "end_date",
+          "is_active"
+        ],
+        "title": "ContractResponse"
+      },
+      "DeleteProperty": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": ["message"],
+        "title": "DeleteProperty"
+      },
+      "FileShow": {
+        "properties": {
+          "file_url": {
+            "type": "string",
+            "title": "File Url"
+          }
+        },
+        "type": "object",
+        "required": ["file_url"],
+        "title": "FileShow"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "KycStatusEnum": {
+        "type": "string",
+        "enum": ["pending", "verified", "rejected"],
+        "title": "KycStatusEnum"
+      },
+      "ListingTypeEnum": {
+        "type": "string",
+        "enum": ["rent", "sale"],
+        "title": "ListingTypeEnum"
+      },
+      "OtpSchema": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "examples": ["penivera655@gmail.com"]
+          },
+          "otp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Otp"
+          }
+        },
+        "type": "object",
+        "required": ["email", "otp"],
+        "title": "OtpSchema"
+      },
+      "OtpSend": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "examples": ["penivera655@gmail.com"]
+          }
+        },
+        "type": "object",
+        "required": ["email"],
+        "title": "OtpSend"
+      },
+      "PasswordReset": {
+        "properties": {
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "examples": ["admin"]
+          }
+        },
+        "type": "object",
+        "required": ["password"],
+        "title": "PasswordReset"
+      },
+      "PropertyBase": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "property_type": {
+            "$ref": "#/components/schemas/PropertyTypeEnum"
+          },
+          "listing_type": {
+            "$ref": "#/components/schemas/ListingTypeEnum"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PropertyStatEnum"
+          },
+          "furnished": {
+            "type": "boolean",
+            "title": "Furnished"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "bathroom": {
+            "type": "integer",
+            "title": "Bathroom"
+          },
+          "bedroom": {
+            "type": "integer",
+            "title": "Bedroom"
+          },
+          "air_condition": {
+            "type": "boolean",
+            "title": "Air Condition"
+          },
+          "pop_ceiling": {
+            "type": "boolean",
+            "title": "Pop Ceiling"
+          },
+          "floor_tiles": {
+            "type": "boolean",
+            "title": "Floor Tiles"
+          },
+          "running_water": {
+            "type": "boolean",
+            "title": "Running Water"
+          },
+          "furniture": {
+            "type": "boolean",
+            "title": "Furniture"
+          },
+          "prepaid_meter": {
+            "type": "boolean",
+            "title": "Prepaid Meter"
+          },
+          "wifi": {
+            "type": "boolean",
+            "title": "Wifi"
+          },
+          "is_negotiable": {
+            "type": "boolean",
+            "title": "Is Negotiable"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/PropertyImage"
+            },
+            "type": "array",
+            "title": "Images"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "location",
+          "price",
+          "property_type",
+          "listing_type",
+          "status",
+          "furnished",
+          "is_active",
+          "bathroom",
+          "bedroom",
+          "air_condition",
+          "pop_ceiling",
+          "floor_tiles",
+          "running_water",
+          "furniture",
+          "prepaid_meter",
+          "wifi",
+          "is_negotiable",
+          "images"
+        ],
+        "title": "PropertyBase"
+      },
+      "PropertyFeed": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PropertyShow"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "next_coursor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Coursor"
+          }
+        },
+        "type": "object",
+        "required": ["data", "next_coursor"],
+        "title": "PropertyFeed"
+      },
+      "PropertyImage": {
+        "properties": {
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "maxLength": 255,
+            "title": "Image Url",
+            "examples": ["https://example/img/property.jpg"]
+          },
+          "is_primary": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Primary",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["image_url"],
+        "title": "PropertyImage"
+      },
+      "PropertyShow": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "property_type": {
+            "$ref": "#/components/schemas/PropertyTypeEnum"
+          },
+          "listing_type": {
+            "$ref": "#/components/schemas/ListingTypeEnum"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PropertyStatEnum"
+          },
+          "furnished": {
+            "type": "boolean",
+            "title": "Furnished"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "bathroom": {
+            "type": "integer",
+            "title": "Bathroom"
+          },
+          "bedroom": {
+            "type": "integer",
+            "title": "Bedroom"
+          },
+          "air_condition": {
+            "type": "boolean",
+            "title": "Air Condition"
+          },
+          "pop_ceiling": {
+            "type": "boolean",
+            "title": "Pop Ceiling"
+          },
+          "floor_tiles": {
+            "type": "boolean",
+            "title": "Floor Tiles"
+          },
+          "running_water": {
+            "type": "boolean",
+            "title": "Running Water"
+          },
+          "furniture": {
+            "type": "boolean",
+            "title": "Furniture"
+          },
+          "prepaid_meter": {
+            "type": "boolean",
+            "title": "Prepaid Meter"
+          },
+          "wifi": {
+            "type": "boolean",
+            "title": "Wifi"
+          },
+          "is_negotiable": {
+            "type": "boolean",
+            "title": "Is Negotiable"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/PropertyImage"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "location",
+          "price",
+          "property_type",
+          "listing_type",
+          "status",
+          "furnished",
+          "is_active",
+          "bathroom",
+          "bedroom",
+          "air_condition",
+          "pop_ceiling",
+          "floor_tiles",
+          "running_water",
+          "furniture",
+          "prepaid_meter",
+          "wifi",
+          "is_negotiable",
+          "images",
+          "id",
+          "agent_id"
+        ],
+        "title": "PropertyShow"
+      },
+      "PropertyStatEnum": {
+        "type": "string",
+        "enum": ["sold", "rented", "available"],
+        "title": "PropertyStatEnum"
+      },
+      "PropertyTypeEnum": {
+        "type": "string",
+        "enum": ["apartment", "land", "shortlet", "shared_apartment"],
+        "title": "PropertyTypeEnum"
+      },
+      "PropertyUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "property_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PropertyTypeEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "listing_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ListingTypeEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PropertyStatEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "furnished": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Furnished"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "bathroom": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bathroom"
+          },
+          "bedroom": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bedroom"
+          },
+          "air_condition": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Air Condition"
+          },
+          "pop_ceiling": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pop Ceiling"
+          },
+          "floor_tiles": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Tiles"
+          },
+          "running_water": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Running Water"
+          },
+          "furniture": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Furniture"
+          },
+          "prepaid_meter": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prepaid Meter"
+          },
+          "wifi": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wifi"
+          },
+          "is_negotiable": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Negotiable"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PropertyImage"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images"
+          }
+        },
+        "type": "object",
+        "title": "PropertyUpdate"
+      },
+      "SignUpShow": {
+        "properties": {
+          "token": {
+            "$ref": "#/components/schemas/Token"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/UserShow"
+          }
+        },
+        "type": "object",
+        "required": ["token", "user_data"],
+        "title": "SignUpShow"
+      },
+      "SwitchAccountType": {
+        "properties": {
+          "switch_to": {
+            "$ref": "#/components/schemas/AccountTypeEnum",
+            "default": "agent"
+          }
+        },
+        "type": "object",
+        "title": "SwitchAccountType"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token Type",
+            "default": "Bearer"
+          }
+        },
+        "type": "object",
+        "required": ["access_token"],
+        "title": "Token"
+      },
+      "UserCreate": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 30,
+            "title": "Username",
+            "example": "Admin"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "examples": ["penivera655@gmail.com"]
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "examples": ["admin"]
+          }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "UserCreate"
+      },
+      "UserShow": {
+        "properties": {
+          "profile_pic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "maxLength": 255,
+            "title": "Profile Pic",
+            "examples": ["https://example/img/user.jpg"]
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "example": "Admin"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "examples": ["penivera655@gmail.com"]
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 15,
+                "minLength": 10,
+                "pattern": "^\\+\\d{10,15}$",
+                "description": "Phone number in international format",
+                "examples": ["+2348078417891"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number"
+          },
+          "account_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AccountTypeEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fullname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "agency_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency Name"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "is_deleted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Deleted"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "verified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified"
+          },
+          "kyc_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KycStatusEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "listing": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/PropertyShow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing",
+            "default": []
+          },
+          "appointments": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AppointmentShow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointments",
+            "default": []
+          },
+          "account_info": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AccountInfoShow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Info",
+            "default": []
+          },
+          "availabilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AvailabilityShow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Availabilities",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["account_type"],
+        "title": "UserShow"
+      },
+      "UserUpdate": {
+        "properties": {
+          "profile_pic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "maxLength": 255,
+            "title": "Profile Pic",
+            "examples": ["https://example/img/user.jpg"]
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username",
+            "example": "Admin"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "examples": ["penivera655@gmail.com"]
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 15,
+                "minLength": 10,
+                "pattern": "^\\+\\d{10,15}$",
+                "description": "Phone number in international format",
+                "examples": ["+2348078417891"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number"
+          },
+          "account_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AccountTypeEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fullname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fullname"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "kyc_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KycStatusEnum"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          }
+        },
+        "type": "object",
+        "required": ["account_type"],
+        "title": "UserUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {
+              "agent": "Allow creating and managing products",
+              "client": "Allow view and purchase of products",
+              "otp": "Temporary access for OTP verification",
+              "admin": "Admin access to all endpoints"
+            },
+            "tokenUrl": "/api/v1/auth/login"
+          }
+        }
+      }
+    }
+  }
+}

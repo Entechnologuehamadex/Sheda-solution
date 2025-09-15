@@ -8,7 +8,10 @@ import {
   TextInput,
   Image,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import InterRegular from "@/components/Text/InterRegular";
 import Button from "@/components/common/Button";
@@ -16,7 +19,7 @@ import BackBtn from "@/components/common/BackBtn";
 import SelectInput from "@/components/input/selectInput";
 import Checkbox from "@/components/input/checkbox";
 import historyHeader from "../../../constants/historyHeader";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { NoHistory } from "@/components/history/NoHistory";
 import { historyData } from "../../../constants/history-data";
 import type { HouseProps, CancelledHistory } from "@/types";
@@ -25,9 +28,148 @@ import { useMode } from "@/contexts/ModeContext";
 import { useApi } from "@/contexts/ApiContext";
 import { router } from "expo-router";
 
+// Standalone component to prevent remount on parent rerenders
+function PriceDescriptionScreen({
+  formData,
+  setFormData,
+  handleConfirmListing,
+  handlePrevStep,
+}: {
+  formData: any;
+  setFormData: (v: any) => void;
+  handleConfirmListing: () => void;
+  handlePrevStep: () => void;
+}) {
+  const [descriptionLocal, setDescriptionLocal] = useState(
+    formData.description
+  );
+  const [priceLocal, setPriceLocal] = useState(formData.price);
+
+  const syncToParent = () => {
+    if (
+      descriptionLocal !== formData.description ||
+      priceLocal !== formData.price
+    ) {
+      setFormData({
+        ...formData,
+        description: descriptionLocal,
+        price: priceLocal,
+      });
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <View className="px-5 pt-5">
+          <View className="flex-row items-center mb-7">
+            <BackBtn onPress={handlePrevStep} />
+            <InterSemiBold className="text-[18px] text-black ml-5">
+              List a property
+            </InterSemiBold>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              gap: 8,
+              marginVertical: 20,
+              width: "100%",
+            }}
+          >
+            {[1, 2, 3, 4].map((step) => (
+              <View
+                key={step}
+                style={{
+                  flex: 1,
+                  height: 4,
+                  backgroundColor: step <= 4 ? "#C1272D" : "#E5E5E5",
+                  borderRadius: 2,
+                }}
+              />
+            ))}
+          </View>
+        </View>
+
+        <ScrollView
+          className="flex-1 px-5"
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="none"
+          contentContainerStyle={{ paddingBottom: 24 }}
+        >
+          <View className="mb-7">
+            <InterSemiBold className="text-[18px] text-black mb-4">
+              Add a description
+            </InterSemiBold>
+            <TextInput
+              className="border border-[#E5E5E5] rounded-lg p-4 h-[120px] text-black text-[16px] font-['Inter-Regular'] mb-5"
+              placeholder="Your description goes here..."
+              placeholderTextColor="#999"
+              multiline
+              textAlignVertical="top"
+              value={descriptionLocal}
+              onChangeText={setDescriptionLocal}
+              blurOnSubmit={false}
+              returnKeyType="default"
+              onBlur={syncToParent}
+            />
+          </View>
+
+          <View className="mb-0">
+            <InterSemiBold className="text-[18px] text-black mb-4">
+              Set Price
+            </InterSemiBold>
+            <TextInput
+              className="border border-[#E5E5E5] rounded-lg p-4 text-black text-[16px] font-['Inter-Regular'] mb-3"
+              placeholder="500,000"
+              placeholderTextColor="#999"
+              keyboardType="numeric"
+              value={priceLocal}
+              onChangeText={setPriceLocal}
+              blurOnSubmit={false}
+              returnKeyType="done"
+              onBlur={syncToParent}
+            />
+          </View>
+
+          <View className="mb-10">
+            <Checkbox
+              label="Is this price negotiable?"
+              value={formData.isNegotiable}
+              onChange={(value) =>
+                setFormData({ ...formData, isNegotiable: value })
+              }
+            />
+          </View>
+        </ScrollView>
+
+        <View className="px-5 pb-8">
+          <Button
+            onPress={() => {
+              syncToParent();
+              handleConfirmListing();
+            }}
+            isFull={true}
+            className="rounded-lg bg-[#C1272D]"
+          >
+            <InterSemiBold className="text-white text-[16px]">
+              Confirm and list
+            </InterSemiBold>
+          </Button>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
 const History = () => {
   const { isSeller } = useMode();
-  const { appointments, getMyListings } = useApi();
+  const { appointments, getMyListings, uploadFile, listProperty } = useApi();
   const [activeIndex, setIsActiveIndex] = useState<null | number>(0);
   const [activeItem, setActiveItem] = useState<null | any>("Ongoing");
   const [history, setHistory] = useState<
@@ -36,7 +178,7 @@ const History = () => {
   const [isLoading, setLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     propertyType: "Apartment",
     status: "For rent",
     location: "Lekki, Lagos",
@@ -48,7 +190,11 @@ const History = () => {
     price: "500,000",
     isNegotiable: false,
     documentsUploaded: false,
-  });
+    photos: [] as string[],
+    documents: [] as string[],
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleHistoryClick = (index: number, item: string) => {
     setIsActiveIndex(index);
@@ -56,14 +202,10 @@ const History = () => {
   };
 
   const handleHistoryPress = () => {
-    // Alert.alert("Debug", "History button pressed!")
-    console.log("History button pressed, current showHistory:", showHistory);
     setShowHistory(true);
-    console.log("showHistory set to true");
   };
 
   const handleBackFromHistory = () => {
-    console.log("Back from history pressed");
     setShowHistory(false);
     setCurrentStep(0);
   };
@@ -89,8 +231,88 @@ const History = () => {
     setCurrentStep(6);
   };
 
-  const handleAuthorize = () => {
-    setCurrentStep(7);
+  const pickDocumentImage = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission required",
+          "Please allow photo library access to upload documents."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        const asset = result.assets[0];
+        const uploaded = await uploadFile("property", asset);
+        setFormData({
+          ...formData,
+          documents: [...(formData.documents || []), uploaded.file_url],
+        });
+      }
+    } catch (error) {
+      Alert.alert(
+        "Upload Error",
+        "Failed to upload document. Please try again."
+      );
+    }
+  };
+
+  const handleAuthorize = async () => {
+    try {
+      // Transform formData to match API schema strictly (per api.json)
+      const propertyData = {
+        title: `${formData.propertyType} in ${formData.location}`,
+        description: formData.description,
+        location: formData.location,
+        price: parseFloat((formData.price || "0").replace(/,/g, "")),
+        property_type: (formData.propertyType || "apartment").toLowerCase() as
+          | "apartment"
+          | "land"
+          | "shortlet"
+          | "shared apartment",
+        listing_type: (formData.status || "rent").toLowerCase().includes("rent")
+          ? ("rent" as const)
+          : ("sale" as const),
+        status: "available" as const,
+        furnished: (formData.furnishing || "Unfurnished") !== "Unfurnished",
+        is_active: true,
+        bathroom: parseInt(formData.bathrooms || "1", 10),
+        bedroom: parseInt(formData.bedrooms || "1", 10),
+        air_condition: formData.extras.includes("Air conditioner"),
+        pop_ceiling: formData.extras.includes("Pop Ceiling"),
+        floor_tiles: formData.extras.includes("Floor Tiles"),
+        running_water: formData.extras.includes("Running water"),
+        furniture: formData.extras.includes("Furniture"),
+        prepaid_meter: formData.extras.includes("Prepaid meter"),
+        wifi: formData.extras.includes("Wi-Fi"),
+        is_negotiable: !!formData.isNegotiable,
+        images: (formData.photos || []).map((url, index) => ({
+          image_url: url,
+          is_primary: index === 0,
+        })),
+      };
+
+      // Submit the property listing to /api/v1/property/list-property
+      await listProperty(propertyData);
+
+      // Reset flow and show success
+      setFormData(initialFormData);
+      setCurrentStep(8);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Failed to submit property listing. Please try again."
+      );
+    }
   };
 
   const handleGoToHomepage = () => {
@@ -106,6 +328,50 @@ const History = () => {
     setFormData({ ...formData, extras: updatedExtras });
   };
 
+  const pickImage = async () => {
+    try {
+      // Request permission to access media library before opening picker
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission required",
+          "Please allow photo library access to upload property photos."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        const asset = result.assets[0];
+
+        // Upload the image to the server - use the same format as personal-info
+        const uploadedFile = await uploadFile("property", asset);
+
+        // Add the uploaded file URL to photos
+        const newPhotos = [...formData.photos, uploadedFile.file_url];
+        setFormData({ ...formData, photos: newPhotos });
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to upload image. Please try again.";
+      Alert.alert("Upload Error", errorMessage);
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    const newPhotos = formData.photos.filter((_, i) => i !== index);
+    setFormData({ ...formData, photos: newPhotos });
+  };
+
   useEffect(() => {
     const fetchHistory = async () => {
       setLoading(true);
@@ -114,15 +380,18 @@ const History = () => {
           // For sellers, fetch their property listings
           await getMyListings();
           // Transform listings to history format
-          const listingsData = historyData[activeItem] || [];
+          const listingsData = (historyData[
+            String(activeItem) as keyof typeof historyData
+          ] || []) as unknown as (HouseProps | CancelledHistory)[];
           setHistory(listingsData);
         } else {
           // For buyers, use appointment history or mock data
-          const data = historyData[activeItem];
+          const data = historyData[
+            String(activeItem) as keyof typeof historyData
+          ] as unknown as (HouseProps | CancelledHistory)[];
           setHistory(data);
         }
       } catch (error) {
-        console.error("Error fetching history:", error);
         setHistory(null);
       } finally {
         setLoading(false);
@@ -133,18 +402,6 @@ const History = () => {
       fetchHistory();
     }
   }, [activeItem, isSeller, showHistory, getMyListings]);
-
-  // Debug useEffect to track state changes
-  useEffect(() => {
-    console.log(
-      "State changed - isSeller:",
-      isSeller,
-      "showHistory:",
-      showHistory,
-      "currentStep:",
-      currentStep
-    );
-  }, [isSeller, showHistory, currentStep]);
 
   // Progress Indicator Component
   const ProgressIndicator = ({ currentStep }: { currentStep: number }) => (
@@ -527,138 +784,198 @@ const History = () => {
   };
 
   // Screen 3: Photo Upload Form
-  const PhotoUploadForm = () => (
-    <SafeAreaView className="flex-1 bg-white">
-      {/* Header & Progress */}
-      <View className="px-3 sm:px-4 md:px-6 pt-5">
-        <View className="flex-row items-center mb-6">
-          <BackBtn onPress={handlePrevStep} />
-          <InterSemiBold className="text-base sm:text-lg text-black ml-3 sm:ml-5">
-            List a property
-          </InterSemiBold>
+  const PhotoUploadForm = () => {
+    const renderPhotoSlot = (index: number) => {
+      const hasPhoto = formData.photos[index];
+
+      return (
+        <TouchableOpacity
+          key={index}
+          onPress={hasPhoto ? () => removePhoto(index) : pickImage}
+          className="w-[47%] sm:w-[30%] aspect-square bg-[#F5F5F5] rounded-lg justify-center items-center mb-4 border border-[#E5E5E5]"
+        >
+          {hasPhoto ? (
+            <Image
+              source={{ uri: hasPhoto }}
+              className="w-full h-full rounded-lg"
+              resizeMode="cover"
+            />
+          ) : (
+            <View className="w-5 h-5 justify-center items-center">
+              <View className="w-3.5 h-0.5 bg-primary rounded-sm" />
+              <View className="w-0.5 h-3.5 bg-primary rounded-sm absolute" />
+            </View>
+          )}
+        </TouchableOpacity>
+      );
+    };
+
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        {/* Header & Progress */}
+        <View className="px-3 sm:px-4 md:px-6 pt-5">
+          <View className="flex-row items-center mb-6">
+            <BackBtn onPress={handlePrevStep} />
+            <InterSemiBold className="text-base sm:text-lg text-black ml-3 sm:ml-5">
+              List a property
+            </InterSemiBold>
+          </View>
+
+          <ProgressIndicator currentStep={3} />
         </View>
 
-        <ProgressIndicator currentStep={3} />
-      </View>
+        {/* Scrollable Content */}
+        <ScrollView className="flex-1 px-3 sm:px-4 md:px-6">
+          <InterSemiBold className="text-base sm:text-lg text-black mb-6">
+            Add at least 4 photos
+          </InterSemiBold>
 
-      {/* Scrollable Content */}
-      <ScrollView className="flex-1 px-3 sm:px-4 md:px-6">
-        <InterSemiBold className="text-base sm:text-lg text-black mb-6">
-          Add at least 4 photos
-        </InterSemiBold>
+          {/* Photo Grid */}
+          <View className="flex-row flex-wrap justify-between mb-8">
+            {[0, 1, 2, 3].map(renderPhotoSlot)}
+          </View>
 
-        {/* Photo Grid */}
-        <View className="flex-row flex-wrap justify-between mb-8">
-          {[1, 2, 3, 4].map((item) => (
+          {/* Add More Button */}
+          {formData.photos.length >= 4 && (
             <TouchableOpacity
-              key={item}
-              className="w-[47%] sm:w-[30%] aspect-square bg-[#F5F5F5] rounded-lg justify-center items-center mb-4"
+              onPress={pickImage}
+              className="flex-row items-center justify-between py-3 px-3 bg-[#F5F5F5] rounded-lg mb-10"
             >
-              <View className="w-5 h-5 justify-center items-center">
-                <View className="w-3.5 h-0.5 bg-primary rounded-sm" />
-                <View className="w-0.5 h-3.5 bg-primary rounded-sm absolute" />
+              <InterRegular className="text-sm sm:text-base text-black">
+                Add more
+              </InterRegular>
+              <View className="w-4 h-4 justify-center items-center">
+                <View className="w-2.5 h-0.5 bg-primary rounded-sm" />
+                <View className="w-0.5 h-2.5 bg-primary rounded-sm absolute" />
               </View>
             </TouchableOpacity>
-          ))}
+          )}
+        </ScrollView>
+
+        {/* Bottom CTA */}
+        <View className="px-3 sm:px-4 md:px-6 pb-8">
+          <Button
+            onPress={handleNextStep}
+            isFull={true}
+            className="rounded-lg bg-primary"
+          >
+            <InterSemiBold className="text-sm sm:text-base text-white">
+              Next
+            </InterSemiBold>
+          </Button>
         </View>
-
-        {/* Add More Button */}
-        <TouchableOpacity className="flex-row items-center justify-between py-3 px-3 bg-[#F5F5F5] rounded-lg mb-10">
-          <InterRegular className="text-sm sm:text-base text-black">
-            Add more
-          </InterRegular>
-          <View className="w-4 h-4 justify-center items-center">
-            <View className="w-2.5 h-0.5 bg-primary rounded-sm" />
-            <View className="w-0.5 h-2.5 bg-primary rounded-sm absolute" />
-          </View>
-        </TouchableOpacity>
-      </ScrollView>
-
-      {/* Bottom CTA */}
-      <View className="px-3 sm:px-4 md:px-6 pb-8">
-        <Button
-          onPress={handleNextStep}
-          isFull={true}
-          className="rounded-lg bg-primary"
-        >
-          <InterSemiBold className="text-sm sm:text-base text-white">
-            Next
-          </InterSemiBold>
-        </Button>
-      </View>
-    </SafeAreaView>
-  );
+      </SafeAreaView>
+    );
+  };
 
   // Screen 4: Price Description Form
-  const PriceDescriptionForm = () => (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="px-5 pt-5">
-        <View className="flex-row items-center mb-7">
-          <BackBtn onPress={handlePrevStep} />
-          <InterSemiBold className="text-[18px] text-black ml-5">
-            List a property
-          </InterSemiBold>
-        </View>
+  const PriceDescriptionForm = () => {
+    const [descriptionLocal, setDescriptionLocal] = useState(
+      formData.description
+    );
+    const [priceLocal, setPriceLocal] = useState(formData.price);
 
-        <ProgressIndicator currentStep={4} />
-      </View>
+    const syncToParent = () => {
+      if (
+        descriptionLocal !== formData.description ||
+        priceLocal !== formData.price
+      ) {
+        setFormData({
+          ...formData,
+          description: descriptionLocal,
+          price: priceLocal,
+        });
+      }
+    };
 
-      <ScrollView className="flex-1 px-5">
-        <View className="mb-7">
-          <InterSemiBold className="text-[18px] text-black mb-4">
-            Add a description
-          </InterSemiBold>
-          <TextInput
-            className="border border-[#E5E5E5] rounded-lg p-4 h-[120px] text-black text-[16px] font-['Inter-Regular'] mb-5"
-            placeholder="Your description goes here..."
-            placeholderTextColor="#999"
-            multiline
-            textAlignVertical="top"
-            value={formData.description}
-            onChangeText={(text) =>
-              setFormData({ ...formData, description: text })
-            }
-          />
-        </View>
-
-        <View className="mb-0">
-          <InterSemiBold className="text-[18px] text-black mb-4">
-            Set Price
-          </InterSemiBold>
-          <TextInput
-            className="border border-[#E5E5E5] rounded-lg p-4 text-black text-[16px] font-['Inter-Regular'] mb-3"
-            placeholder="500,000"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            value={formData.price}
-            onChangeText={(text) => setFormData({ ...formData, price: text })}
-          />
-        </View>
-
-        <View className="mb-10">
-          <Checkbox
-            label="Is this price negotiable?"
-            value={formData.isNegotiable}
-            onChange={(value) =>
-              setFormData({ ...formData, isNegotiable: value })
-            }
-          />
-        </View>
-      </ScrollView>
-
-      <View className="px-5 pb-8">
-        <Button
-          onPress={handleConfirmListing}
-          isFull={true}
-          className="rounded-lg bg-[#C1272D]"
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         >
-          <InterSemiBold className="text-white text-[16px]">
-            Confirm and list
-          </InterSemiBold>
-        </Button>
-      </View>
-    </SafeAreaView>
-  );
+          <View className="px-5 pt-5">
+            <View className="flex-row items-center mb-7">
+              <BackBtn onPress={handlePrevStep} />
+              <InterSemiBold className="text-[18px] text-black ml-5">
+                List a property
+              </InterSemiBold>
+            </View>
+
+            <ProgressIndicator currentStep={4} />
+          </View>
+
+          <ScrollView
+            className="flex-1 px-5"
+            keyboardShouldPersistTaps="always"
+            keyboardDismissMode="none"
+            contentContainerStyle={{ paddingBottom: 24 }}
+          >
+            <View className="mb-7">
+              <InterSemiBold className="text-[18px] text-black mb-4">
+                Add a description
+              </InterSemiBold>
+              <TextInput
+                className="border border-[#E5E5E5] rounded-lg p-4 h-[120px] text-black text-[16px] font-['Inter-Regular'] mb-5"
+                placeholder="Your description goes here..."
+                placeholderTextColor="#999"
+                multiline
+                textAlignVertical="top"
+                value={descriptionLocal}
+                onChangeText={setDescriptionLocal}
+                blurOnSubmit={false}
+                returnKeyType="default"
+                onBlur={syncToParent}
+              />
+            </View>
+
+            <View className="mb-0">
+              <InterSemiBold className="text-[18px] text-black mb-4">
+                Set Price
+              </InterSemiBold>
+              <TextInput
+                className="border border-[#E5E5E5] rounded-lg p-4 text-black text-[16px] font-['Inter-Regular'] mb-3"
+                placeholder="500,000"
+                placeholderTextColor="#999"
+                keyboardType="numeric"
+                value={priceLocal}
+                onChangeText={setPriceLocal}
+                blurOnSubmit={false}
+                returnKeyType="done"
+                onBlur={syncToParent}
+              />
+            </View>
+
+            <View className="mb-10">
+              <Checkbox
+                label="Is this price negotiable?"
+                value={formData.isNegotiable}
+                onChange={(value) =>
+                  setFormData({ ...formData, isNegotiable: value })
+                }
+              />
+            </View>
+          </ScrollView>
+
+          <View className="px-5 pb-8">
+            <Button
+              onPress={() => {
+                syncToParent();
+                handleConfirmListing();
+              }}
+              isFull={true}
+              className="rounded-lg bg-[#C1272D]"
+            >
+              <InterSemiBold className="text-white text-[16px]">
+                Confirm and list
+              </InterSemiBold>
+            </Button>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  };
 
   // Screen 5: Property Summary Screen
   const PropertySummaryScreen = () => (
@@ -669,21 +986,29 @@ const History = () => {
         </InterSemiBold>
 
         <View className="w-full h-[200px] bg-[#F5F5F5] rounded-xl mb-5 overflow-hidden">
-          <Image
-            source={require("../../../assets/images/apt-1.png")}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
+          {formData.photos && formData.photos.length > 0 ? (
+            <Image
+              source={{ uri: formData.photos[0] }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          ) : (
+            <Image
+              source={require("../../../assets/images/apt-1.png")}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          )}
         </View>
 
         <InterSemiBold className="text-[18px] text-black mb-2">
-          Modern Self-contained apartment
+          {formData.propertyType || "Property"}
         </InterSemiBold>
 
         <View className="flex-row items-center mb-8">
           <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
           <InterRegular className="text-[14px] text-[#666666]">
-            Lekki, Lagos
+            {formData.location || "Location not specified"}
           </InterRegular>
         </View>
 
@@ -692,9 +1017,7 @@ const History = () => {
             Description
           </InterSemiBold>
           <InterRegular className="text-[14px] text-[#666666] leading-5">
-            This tastefully furnished modern self-contained apartment is located
-            at km 20, lekki-ajah expressway, 5 minutes drive from moobil filling
-            station.
+            {formData.description || "No description provided."}
           </InterRegular>
         </View>
 
@@ -703,18 +1026,20 @@ const History = () => {
             Rent/yr
           </InterSemiBold>
           <InterSemiBold className="text-[16px] text-black">
-            N320,000.00
+            {`N${formData.price || "0"}`}
           </InterSemiBold>
         </View>
 
-        <View className="flex-row justify-between items-center py-[15px] mb-[60px]">
-          <InterSemiBold className="text-[16px] text-black">
-            Damages
-          </InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">
-            N30,000.00
-          </InterSemiBold>
-        </View>
+        {!!(formData as any).damages && (
+          <View className="flex-row justify-between items-center py-[15px] mb-[60px]">
+            <InterSemiBold className="text-[16px] text-black">
+              Damages
+            </InterSemiBold>
+            <InterSemiBold className="text-[16px] text-black">
+              {`N${(formData as any).damages}`}
+            </InterSemiBold>
+          </View>
+        )}
       </ScrollView>
 
       <View className="flex-row px-6 pb-[30px] space-x-[15px]">
@@ -775,14 +1100,44 @@ const History = () => {
         </InterRegular>
 
         <TouchableOpacity
-          onPress={handleDocumentUploaded}
-          className="h-[200px] bg-[#F5F5F5] rounded-lg border-2 border-[#E5E5E5] border-dashed justify-center items-center mb-15"
+          onPress={pickDocumentImage}
+          className="h-[200px] bg-[#F5F5F5] rounded-lg border-2 border-[#E5E5E5] border-dashed justify-center items-center mb-5"
         >
           <View className="w-6 h-6 justify-center items-center relative">
             <View className="w-4 h-0.5 bg-[#C1272D] rounded-sm" />
             <View className="w-0.5 h-4 bg-[#C1272D] rounded-sm absolute" />
           </View>
         </TouchableOpacity>
+
+        {!!formData.documents?.length && (
+          <View className="mb-10">
+            {formData.documents.map((doc, idx) => (
+              <View
+                key={`${doc}-${idx}`}
+                className="flex-row items-center justify-between py-3 border-b border-[#E5E5E5]"
+              >
+                <InterRegular
+                  className="text-[14px] text-black flex-1 mr-3"
+                  numberOfLines={1}
+                >
+                  {doc}
+                </InterRegular>
+                <TouchableOpacity
+                  onPress={() =>
+                    setFormData({
+                      ...formData,
+                      documents: formData.documents.filter((_, i) => i !== idx),
+                    })
+                  }
+                  className="px-3 py-1 rounded-lg"
+                  style={{ backgroundColor: "#C1272D0A" }}
+                >
+                  <InterRegular className="text-primary">Remove</InterRegular>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       <View className="flex-row px-5 pb-[30px] space-x-[15px]">
@@ -817,21 +1172,29 @@ const History = () => {
         </InterSemiBold>
 
         <View className="w-full h-[200px] bg-[#F5F5F5] rounded-[12px] mb-5 overflow-hidden">
-          <Image
-            source={require("../../../assets/images/apt-1.png")}
-            className="w-full h-full"
-            resizeMode="cover"
-          />
+          {formData.photos && formData.photos.length > 0 ? (
+            <Image
+              source={{ uri: formData.photos[0] }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          ) : (
+            <Image
+              source={require("../../../assets/images/apt-1.png")}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
+          )}
         </View>
 
         <InterSemiBold className="text-[18px] text-black mb-2">
-          Modern Self-contained apartment
+          {formData.propertyType || "Property"}
         </InterSemiBold>
 
         <View className="flex-row items-center mb-5">
           <View className="w-4 h-4 rounded-full bg-[#E5E5E5] mr-2" />
           <InterRegular className="text-[14px] text-[#666]">
-            Lekki, Lagos
+            {formData.location || "Location not specified"}
           </InterRegular>
         </View>
 
@@ -839,9 +1202,7 @@ const History = () => {
           Description
         </InterSemiBold>
         <InterRegular className="text-[14px] text-[#666] leading-[20px] mb-5">
-          This tastefully furnished modern self-contained apartment is located
-          at km 20, lekki-ajah expressway, 5 minutes drive from moobil filling
-          station.
+          {formData.description || "No description provided."}
         </InterRegular>
 
         <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5]">
@@ -849,25 +1210,29 @@ const History = () => {
             Rent/yr
           </InterSemiBold>
           <InterSemiBold className="text-[16px] text-black">
-            N320,000.00
+            {`N${formData.price || "0"}`}
           </InterSemiBold>
         </View>
 
-        <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5] mb-7">
-          <InterSemiBold className="text-[16px] text-black">
-            Damages
-          </InterSemiBold>
-          <InterSemiBold className="text-[16px] text-black">
-            N30,000.00
-          </InterSemiBold>
-        </View>
+        {!!(formData as any).damages && (
+          <View className="flex-row justify-between py-[15px] border-b border-[#E5E5E5] mb-7">
+            <InterSemiBold className="text-[16px] text-black">
+              Damages
+            </InterSemiBold>
+            <InterSemiBold className="text-[16px] text-black">
+              {`N${(formData as any).damages}`}
+            </InterSemiBold>
+          </View>
+        )}
 
         <View className="flex-row justify-between items-center mb-15">
           <InterSemiBold className="text-[16px] text-black">
             Document upload status
           </InterSemiBold>
           <InterRegular className="text-[14px] text-[#C1272D]">
-            Uploaded
+            {formData.documentsUploaded || (formData.documents?.length || 0) > 0
+              ? "Uploaded"
+              : "Not uploaded"}
           </InterRegular>
         </View>
       </ScrollView>
@@ -884,7 +1249,7 @@ const History = () => {
         </Button>
 
         <Button
-          onPress={handleNextStep}
+          onPress={handleAuthorize}
           className="flex-1 flex-shrink-0 bg-[#C1272D] py-3 sm:py-4 rounded-lg"
         >
           <InterSemiBold className="text-white text-sm sm:text-base whitespace-nowrap">
@@ -936,7 +1301,14 @@ const History = () => {
       case 3:
         return <PhotoUploadForm />;
       case 4:
-        return <PriceDescriptionForm />;
+        return (
+          <PriceDescriptionScreen
+            formData={formData}
+            setFormData={setFormData}
+            handleConfirmListing={handleConfirmListing}
+            handlePrevStep={handlePrevStep}
+          />
+        );
       case 5:
         return <PropertySummaryScreen />;
       case 6:
@@ -949,15 +1321,6 @@ const History = () => {
         return <PropertyListingOverview />;
     }
   };
-
-  console.log(
-    "Rendering - isSeller:",
-    isSeller,
-    "showHistory:",
-    showHistory,
-    "currentStep:",
-    currentStep
-  );
 
   // Main render logic
   if (showHistory || !isSeller) {

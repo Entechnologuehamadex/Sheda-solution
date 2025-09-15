@@ -26,39 +26,71 @@ import InterBold from "@/components/Text/InterBold";
 import { deviceHeight } from "@/constants/values";
 
 const Details = () => {
-  // Safely extract id from search params
-  const { id } = useLocalSearchParams();
+  // Safely extract id and propertyData from search params
+  const { id, propertyData } = useLocalSearchParams();
   const propertyId = Array.isArray(id) ? id[0] : id; // Handle string | string[]
   const { getPropertyById, isLoading, error } = useApi();
   const [property, setProperty] = useState<HouseCardProps | null>(null);
+  const [hasTriedApi, setHasTriedApi] = useState(false);
 
-  // Fetch property details from API
+  // Use passed property data or fetch from API
   useEffect(() => {
-    const fetchProperty = async () => {
-      if (propertyId) {
+    const loadProperty = async () => {
+      console.log("🔍 Details: Loading property details");
+      console.log(
+        "🔍 Details: Property ID:",
+        propertyId,
+        "Type:",
+        typeof propertyId
+      );
+      console.log("🔍 Details: Property data passed:", !!propertyData);
+
+      // First, try to use the passed property data
+      if (propertyData) {
         try {
-          const propertyData = await getPropertyById(Number(propertyId));
+          const parsedProperty = JSON.parse(propertyData as string);
+          console.log(
+            "🔍 Details: Using passed property data:",
+            parsedProperty
+          );
+          setProperty(parsedProperty);
+          return;
+        } catch (error) {
+          console.error(
+            "🔍 Details: Failed to parse passed property data:",
+            error
+          );
+        }
+      }
+
+      // If no passed data, try API call
+      if (propertyId && !hasTriedApi) {
+        setHasTriedApi(true);
+        console.log("🔍 Details: No passed data, fetching from API");
+        console.log("🔍 Details: Converting to number:", Number(propertyId));
+        try {
+          const apiPropertyData = await getPropertyById(Number(propertyId));
           // Transform API data to match HouseCardProps format
           const transformedProperty: HouseCardProps = {
-            id: propertyData.id.toString(),
-            price: propertyData.price.toString(),
-            type: propertyData.title,
-            location: propertyData.location,
-            bedrooms: propertyData.bedroom,
-            bathrooms: propertyData.bathroom,
-            mode: propertyData.listing_type as "buy" | "rent",
-            description: propertyData.description,
+            id: apiPropertyData.id.toString(),
+            price: apiPropertyData.price.toString(),
+            type: apiPropertyData.title,
+            location: apiPropertyData.location,
+            bedrooms: apiPropertyData.bedroom,
+            bathrooms: apiPropertyData.bathroom,
+            mode: apiPropertyData.listing_type as "buy" | "rent",
+            description: apiPropertyData.description,
             extras: [
-              propertyData.air_condition ? "Air Conditioning" : "",
-              propertyData.pop_ceiling ? "POP Ceiling" : "",
-              propertyData.furniture ? "Furniture" : "",
-              propertyData.floor_tiles ? "Floor Tiles" : "",
-              propertyData.running_water ? "Running Water" : "",
-              propertyData.prepaid_meter ? "Prepaid Meter" : "",
-              propertyData.wifi ? "WiFi" : "",
+              apiPropertyData.air_condition ? "Air Conditioning" : "",
+              apiPropertyData.pop_ceiling ? "POP Ceiling" : "",
+              apiPropertyData.furniture ? "Furniture" : "",
+              apiPropertyData.floor_tiles ? "Floor Tiles" : "",
+              apiPropertyData.running_water ? "Running Water" : "",
+              apiPropertyData.prepaid_meter ? "Prepaid Meter" : "",
+              apiPropertyData.wifi ? "WiFi" : "",
             ].filter(Boolean),
             image:
-              propertyData.images?.[0]?.image_url ||
+              apiPropertyData.images?.[0]?.image_url ||
               require("@/assets/images/apt-1.png"),
             seller: {
               name: "Agent", // This would come from agent profile
@@ -72,20 +104,21 @@ const Details = () => {
           };
           setProperty(transformedProperty);
         } catch (error) {
-          console.error("Error fetching property details:", error);
+          console.error("🔍 Details: API call failed:", error);
           // Fallback to local data if API fails
           try {
             const localProperty = getDetails(propertyId);
             setProperty(localProperty);
           } catch (localError) {
-            console.error("Error fetching local property details:", localError);
+            // Property not found in local data either
+            setProperty(null);
           }
         }
       }
     };
 
-    fetchProperty();
-  }, [propertyId, getPropertyById]);
+    loadProperty();
+  }, [propertyId, propertyData, getPropertyById, hasTriedApi]);
 
   // Show loading state
   if (isLoading) {
@@ -126,7 +159,6 @@ const Details = () => {
     );
   }
 
-  console.log(property.seller);
   return (
     <SafeAreaView style={{ flex: 1, height: deviceHeight }}>
       <ScrollView

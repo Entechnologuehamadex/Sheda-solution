@@ -24,7 +24,9 @@ const ActiveCard = ({ house }: { house: HouseProps }) => {
           }}
         >
           <View className="items-end py-4">
-            <InterRegular className="text-white bg-primary p-2 rounded-l-lg">Expires in 10 days</InterRegular>
+            <InterRegular className="text-white bg-primary p-2 rounded-l-lg">
+              Expires in 10 days
+            </InterRegular>
           </View>
         </ImageBackground>
       </View>
@@ -70,7 +72,10 @@ const ActiveCard = ({ house }: { house: HouseProps }) => {
             onPress={() =>
               router.push({
                 pathname: "/details/[id]",
-                params: { id: house.id },
+                params: {
+                  id: String(house.id),
+                  propertyData: JSON.stringify(house),
+                },
               })
             }
           >
@@ -80,19 +85,19 @@ const ActiveCard = ({ house }: { house: HouseProps }) => {
       </View>
 
       <View className="flex-row justify-center border-t border-borderColor p-5">
-      <Button
-            isFull={false}
-            color=""
-            className="p-0 m-0 flex-row"
-            onPress={() =>
-              router.push({
-                pathname: "/details/[id]",
-                params: { id: house.id },
-              })
-            }
-          >
-       <InterRegular className="text-primary">Open dispute</InterRegular>
-       </Button>
+        <Button
+          isFull={false}
+          color=""
+          className="p-0 m-0 flex-row"
+          onPress={() =>
+            router.push({
+              pathname: "/details/[id]",
+              params: { id: String(house.id) },
+            })
+          }
+        >
+          <InterRegular className="text-primary">Open dispute</InterRegular>
+        </Button>
       </View>
     </View>
   );

@@ -21,9 +21,7 @@ const AppointmentBooked = () => {
     if (id) {
       property = getDetails(id as string);
     }
-  } catch (error) {
-    console.error("Error fetching property details:", error);
-  }
+  } catch (error) {}
 
   // useEffect(() => {
   // const data = getDetails(id as string)

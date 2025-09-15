@@ -87,12 +87,23 @@ const HouseCard = ({ house }: { house: HouseProps }) => {
 
           <TouchableOpacity
             className="flex-row items-center"
-            onPress={() =>
+            onPress={() => {
+              console.log("🏠 HouseCard: View Details clicked");
+              console.log(
+                "🏠 HouseCard: House ID:",
+                house.id,
+                "Type:",
+                typeof house.id
+              );
+              console.log("🏠 HouseCard: Full house object:", house);
               router.push({
                 pathname: "/details/[id]",
-                params: { id: house.id },
-              })
-            }
+                params: {
+                  id: String(house.id),
+                  propertyData: JSON.stringify(house),
+                },
+              });
+            }}
           >
             <InterRegular className="text-primary">View Details</InterRegular>
             <MaterialCommunityIcons

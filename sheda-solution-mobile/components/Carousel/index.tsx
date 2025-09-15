@@ -8,16 +8,17 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { properties } from "@/constants/property-mock";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import InterBold from "../Text/InterBold";
 import totalPayment from "@/utilities/totalPayment";
+import { useApi } from "@/contexts/ApiContext";
 
 const deviceWidth = Dimensions.get("window").width; // Get device width
 
 export default function FeaturedCarousel() {
   const ref = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue(0);
+  const { properties } = useApi();
 
   // Handle pagination dot press
   const onPressPagination = (index: number) => {
@@ -112,32 +113,31 @@ export default function FeaturedCarousel() {
                       </View>
                     </View>
 
-                      {/* Pagination Dots */}
-                  <Pagination.Basic
-                    progress={progress}
-                    data={properties}
-                    dotStyle={{
-                      backgroundColor: "#FFFFFF33",
-                      borderRadius: 9999,
-                      width: 8,
-                      height: 8,
-                    }}
-                    activeDotStyle={{
-                      backgroundColor: "#ffffff",
-                      borderRadius: 9999,
-                      width: 8,
-                      height: 8,
-                    }}
-                    containerStyle={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      gap: 4,
-                      marginTop: 15,
-                    }}
-                    onPress={onPressPagination}
-                  />
+                    {/* Pagination Dots */}
+                    <Pagination.Basic
+                      progress={progress}
+                      data={properties}
+                      dotStyle={{
+                        backgroundColor: "#FFFFFF33",
+                        borderRadius: 9999,
+                        width: 8,
+                        height: 8,
+                      }}
+                      activeDotStyle={{
+                        backgroundColor: "#ffffff",
+                        borderRadius: 9999,
+                        width: 8,
+                        height: 8,
+                      }}
+                      containerStyle={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        gap: 4,
+                        marginTop: 15,
+                      }}
+                      onPress={onPressPagination}
+                    />
                   </View>
-
                 </View>
               </ImageBackground>
             </View>

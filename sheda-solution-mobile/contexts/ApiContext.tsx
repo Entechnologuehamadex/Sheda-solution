@@ -820,12 +820,24 @@ export function ApiProvider({ children }: ApiProviderProps) {
 
   // Property methods
   const getProperties = async (limit = 20, cursor = 1) => {
+    console.log(
+      "🌐 ApiContext: getProperties called with limit:",
+      limit,
+      "cursor:",
+      cursor
+    );
+    console.log(
+      "🌐 ApiContext: Current properties count:",
+      state.properties.length
+    );
+
     try {
       const feed = await apiCall(() => apiService.getProperties(limit, cursor));
+      console.log("🌐 ApiContext: API response:", feed);
       dispatch({ type: "SET_PROPERTY_FEED", payload: feed });
       dispatch({ type: "SET_PROPERTIES", payload: feed.data });
     } catch (error: any) {
-      console.error("Failed to fetch properties:", error);
+      console.error("🌐 ApiContext: getProperties failed:", error);
       // Don't retry on network errors to prevent infinite loops
       if (error?.message === "Failed to fetch") {
         dispatch({
@@ -839,7 +851,6 @@ export function ApiProvider({ children }: ApiProviderProps) {
   const getMyListings = async () => {
     // Check if we already have listings from user data
     if (state.myListings.length > 0) {
-      console.log("📋 Using cached listings data");
       return;
     }
 
@@ -872,7 +883,22 @@ export function ApiProvider({ children }: ApiProviderProps) {
   };
 
   const getPropertyById = async (propertyId: number) => {
-    return await apiCall(() => apiService.getPropertyById(propertyId));
+    console.log(
+      "🔍 ApiContext: getPropertyById called with ID:",
+      propertyId,
+      "Type:",
+      typeof propertyId
+    );
+    try {
+      const result = await apiCall(() =>
+        apiService.getPropertyById(propertyId)
+      );
+      console.log("🔍 ApiContext: getPropertyById success:", result);
+      return result;
+    } catch (error) {
+      console.error("🔍 ApiContext: getPropertyById failed:", error);
+      throw error;
+    }
   };
 
   // Appointment methods

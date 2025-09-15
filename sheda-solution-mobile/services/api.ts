@@ -269,23 +269,11 @@ class ApiService {
       ...options,
     };
 
-    console.log(`🌐 API Request: ${options.method || "GET"} ${url}`);
-    console.log("📤 Request config:", config);
-
     try {
       const response = await fetch(url, config);
 
-      console.log(
-        `📥 Response status: ${response.status} ${response.statusText}`
-      );
-      console.log(
-        "📥 Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("❌ API Error Response:", errorData);
 
         // Create a structured error object
         const error = new Error();
@@ -313,10 +301,8 @@ class ApiService {
       }
 
       const data = await response.json();
-      console.log("✅ API Success Response:", data);
       return data;
     } catch (error) {
-      console.error("❌ API Request failed:", error);
       throw error;
     }
   }
@@ -324,7 +310,6 @@ class ApiService {
   // Test API connectivity
   async testConnection(): Promise<boolean> {
     try {
-      console.log("🔍 Testing API connection...");
       const response = await fetch(`${this.baseURL}/api/v1/health`, {
         method: "GET",
         headers: {
@@ -332,14 +317,8 @@ class ApiService {
         },
       });
 
-      console.log(
-        "🔍 Health check response:",
-        response.status,
-        response.statusText
-      );
       return response.ok;
     } catch (error) {
-      console.error("🔍 API connection test failed:", error);
       return false;
     }
   }
@@ -348,9 +327,6 @@ class ApiService {
   async signup(userData: UserCreate): Promise<UserShow> {
     // For signup, we don't need Authorization header since user isn't authenticated yet
     const url = `${this.baseURL}/api/v1/auth/signup`;
-
-    console.log(`🌐 Signup Request: POST ${url}`);
-    console.log("📤 Signup data:", userData);
 
     const config: RequestInit = {
       method: "POST",
@@ -363,17 +339,8 @@ class ApiService {
     try {
       const response = await fetch(url, config);
 
-      console.log(
-        `📥 Signup Response status: ${response.status} ${response.statusText}`
-      );
-      console.log(
-        "📥 Signup Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("❌ Signup Error Response:", errorData);
 
         // Create a structured error object
         const error = new Error();
@@ -401,10 +368,8 @@ class ApiService {
       }
 
       const data = await response.json();
-      console.log("✅ Signup Success Response:", data);
       return data;
     } catch (error) {
-      console.error("❌ Signup Request failed:", error);
       throw error;
     }
   }
@@ -418,9 +383,6 @@ class ApiService {
   async login(username: string, password: string): Promise<Token> {
     // For login, we don't need Authorization header since user isn't authenticated yet
     const url = `${this.baseURL}/api/v1/auth/login`;
-
-    console.log(`🌐 Login Request: POST ${url}`);
-    console.log("📤 Login data:", { username });
 
     const formData = new URLSearchParams();
     formData.append("username", username);
@@ -437,17 +399,8 @@ class ApiService {
     try {
       const response = await fetch(url, config);
 
-      console.log(
-        `📥 Login Response status: ${response.status} ${response.statusText}`
-      );
-      console.log(
-        "📥 Login Response headers:",
-        Object.fromEntries(response.headers.entries())
-      );
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("❌ Login Error Response:", errorData);
 
         // Create a structured error object
         const error = new Error();
@@ -475,10 +428,8 @@ class ApiService {
       }
 
       const data = await response.json();
-      console.log("✅ Login Success Response:", data);
       return data;
     } catch (error) {
-      console.error("❌ Login Request failed:", error);
       throw error;
     }
   }
@@ -501,10 +452,6 @@ class ApiService {
     // For password reset, we need to use OTP token in Authorization header
     const url = `${this.baseURL}/api/v1/auth/reset-password`;
 
-    console.log(`🌐 Reset Password Request: PUT ${url}`);
-    console.log("📤 Reset Password data:", requestBody);
-    console.log("🔑 Using OTP token:", otpCode);
-
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -514,13 +461,8 @@ class ApiService {
       body: JSON.stringify(requestBody),
     });
 
-    console.log(
-      `📥 Response status: ${response.status} ${response.statusText}`
-    );
-
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("❌ Reset Password Error Response:", errorData);
 
       const error = new Error();
       (error as any).response = {
@@ -546,7 +488,6 @@ class ApiService {
     }
 
     const data = await response.json();
-    console.log("✅ Reset Password Success Response:", data);
     return data;
   }
 
@@ -757,15 +698,71 @@ class ApiService {
   // Media endpoints
   async uploadFile(type: "profile" | "property", file: any): Promise<FileShow> {
     const formData = new FormData();
-    formData.append("file", file);
 
-    return this.request<FileShow>(`/api/v1/media/file-upload/${type}`, {
+    // For React Native, we need to format the file object properly
+    const fileToUpload = {
+      uri: file.uri,
+      type: file.mimeType || file.type || "image/jpeg",
+      name: file.fileName || file.name || `image_${Date.now()}.jpg`,
+    };
+
+    formData.append("file", fileToUpload as any);
+
+    // For file uploads, we need to bypass the normal request method
+    // because it sets Content-Type: application/json
+    const token = await this.getToken();
+    const url = `${this.baseURL}/api/v1/media/file-upload/${type}`;
+
+    const config: RequestInit = {
       method: "POST",
       headers: {
-        "Content-Type": "multipart/form-data",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        // Don't set Content-Type - let FormData set it with boundary
       },
       body: formData,
-    });
+    };
+
+    try {
+      // Implement a RN-compatible timeout using Promise.race
+      const timeoutMs = 30000;
+      const timeoutPromise = new Promise<Response>((_, reject) => {
+        const id = setTimeout(() => {
+          clearTimeout(id);
+          reject(new Error("Request timeout"));
+        }, timeoutMs);
+      });
+
+      const response = (await Promise.race([
+        fetch(url, config),
+        timeoutPromise,
+      ])) as Response;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Upload failed: ${response.status} ${response.statusText} - ${errorText}`
+        );
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        // Provide more specific error messages
+        if (error.message === "Network request failed") {
+          throw new Error(
+            "Network connection failed. Please check your internet connection and try again."
+          );
+        } else if (error.name === "AbortError") {
+          throw new Error(
+            "Upload timed out. Please try again with a smaller image."
+          );
+        } else {
+          throw new Error(`Upload failed: ${error.message}`);
+        }
+      }
+      throw error;
+    }
   }
 
   async getFiles(type: "profile" | "property"): Promise<FileShow[]> {

@@ -1,7 +1,7 @@
 import { View, Image, TouchableOpacity, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import InterSemiBold from "@/components/Text/InterSemiBold";
 import BackBtn from "@/components/common/BackBtn";
 import { PROFILE } from "@/constants/images-icons";
@@ -20,106 +20,33 @@ import { router } from "expo-router";
 const Profile = () => {
   const { mode, toggleMode, isSeller } = useMode();
   const { logout, isLoading, isAuthenticated } = useAuth();
-  const { user, isLoading: isProfileLoading } = useApi();
-
-  // Debug function to show current auth state
-  const debugShowAuthState = () => {
-    console.log("🔧 Debug: Current authentication state:");
-    console.log("🔧 Debug: isAuthenticated:", isAuthenticated);
-    console.log("🔧 Debug: user:", user);
-    console.log("🔧 Debug: current URL:", window.location.href);
-    console.log("🔧 Debug: localStorage:", Object.keys(localStorage));
-
-    // Check AsyncStorage
-    AsyncStorage.getItem("auth_token").then((token) => {
-      console.log("🔧 Debug: auth_token in AsyncStorage:", token);
-    });
-    AsyncStorage.getItem("user_data").then((userData) => {
-      console.log("🔧 Debug: user_data in AsyncStorage:", userData);
-    });
-  };
-
-  // Debug function to manually clear auth state
-  const debugClearAuth = async () => {
-    console.log("🔧 Debug: Manually clearing authentication state...");
-    try {
-      // Clear AsyncStorage
-      await AsyncStorage.multiRemove(["auth_token", "user_data"]);
-      console.log("🔧 Debug: Cleared AsyncStorage");
-
-      // Force redirect to login page
-      console.log("🔧 Debug: Forcing redirect to login...");
-      try {
-        router.replace("/(auth)/Login");
-        console.log("🔧 Debug: Router redirect called");
-      } catch (routerError) {
-        console.error("🔧 Debug: Router redirect failed:", routerError);
-
-        // Fallback: try direct navigation
-        try {
-          window.location.href = "/Login";
-          console.log("🔧 Debug: Direct navigation called");
-        } catch (navError) {
-          console.error("🔧 Debug: Direct navigation failed:", navError);
-
-          // Last resort: force page reload
-          console.log("🔧 Debug: Forcing page reload...");
-          window.location.reload();
-        }
-      }
-    } catch (error) {
-      console.error("🔧 Debug: Failed to clear auth state:", error);
-    }
-  };
-
-  // Debug function to force navigation to login
-  const debugForceLogin = () => {
-    console.log("🔧 Debug: Force navigating to login...");
-    try {
-      // Try multiple navigation methods
-      window.location.href = "http://localhost:8081/Login";
-      console.log("🔧 Debug: Direct URL navigation called");
-    } catch (error) {
-      console.error("🔧 Debug: Direct navigation failed:", error);
-      window.location.reload();
-    }
-  };
+  const { user, isLoading: isProfileLoading, switchAccount } = useApi();
+  const [isSwitching, setIsSwitching] = useState(false);
 
   // User data is already loaded from login process, no need to fetch again
 
   const handleLogout = async () => {
-    console.log("🚪 Logout button clicked");
-
     // For web environment, use confirm instead of Alert
     if (Platform.OS === "web") {
       const confirmed = window.confirm("Are you sure you want to logout?");
       if (!confirmed) {
-        console.log("❌ Logout cancelled by user");
         return;
       }
 
-      console.log("🔄 Starting logout process...");
       try {
         await logout();
-        console.log("✅ Logout completed successfully");
-
         // Force redirect to login page immediately
-        console.log("🔄 Redirecting to login page...");
         try {
           router.replace("/(auth)/Login");
-          console.log("✅ Router redirect called successfully");
         } catch (routerError) {
-          console.error("❌ Router redirect failed:", routerError);
           // Fallback: try push instead of replace
           try {
             router.push("/(auth)/Login");
-            console.log("✅ Router push fallback successful");
           } catch (pushError) {
-            console.error("❌ Router push also failed:", pushError);
+            // Silent fallback
           }
         }
       } catch (error) {
-        console.error("❌ Logout failed:", error);
         alert("Failed to logout. Please try again.");
       }
     } else {
@@ -128,36 +55,25 @@ const Profile = () => {
         {
           text: "Cancel",
           style: "cancel",
-          onPress: () => {
-            console.log("❌ Logout cancelled by user");
-          },
         },
         {
           text: "Logout",
           style: "destructive",
           onPress: async () => {
-            console.log("🔄 Starting logout process...");
             try {
               await logout();
-              console.log("✅ Logout completed successfully");
-
               // Force redirect to login page immediately
-              console.log("🔄 Redirecting to login page...");
               try {
                 router.replace("/(auth)/Login");
-                console.log("✅ Router redirect called successfully");
               } catch (routerError) {
-                console.error("❌ Router redirect failed:", routerError);
                 // Fallback: try push instead of replace
                 try {
                   router.push("/(auth)/Login");
-                  console.log("✅ Router push fallback successful");
                 } catch (pushError) {
-                  console.error("❌ Router push also failed:", pushError);
+                  // Silent fallback
                 }
               }
             } catch (error) {
-              console.error("❌ Logout failed:", error);
               Alert.alert("Error", "Failed to logout. Please try again.");
             }
           },
@@ -207,45 +123,36 @@ const Profile = () => {
             </View>
 
             <View className="mt-3">
-              <Button className="rounded-lg" onPress={toggleMode}>
+              <Button
+                className="rounded-lg"
+                onPress={async () => {
+                  try {
+                    setIsSwitching(true);
+                    const target =
+                      user?.account_type === "agent" ? "client" : "agent";
+                    await switchAccount(target as any);
+                    // Sync UI mode with account type
+                    toggleMode();
+                    Alert.alert("Success", `Switched to ${target} account.`);
+                  } catch (e: any) {
+                    Alert.alert(
+                      "Error",
+                      e?.message || "Failed to switch account."
+                    );
+                  } finally {
+                    setIsSwitching(false);
+                  }
+                }}
+                disabled={isSwitching}
+              >
                 <InterMedium className="text-white">
-                  {isSeller
+                  {isSwitching
+                    ? "Switching..."
+                    : isSeller
                     ? "Switch to buyer account"
                     : "Switch to seller account"}
                 </InterMedium>
               </Button>
-
-              {/* Debug buttons for web */}
-              {Platform.OS === "web" && (
-                <>
-                  <Button
-                    className="rounded-lg mt-2 bg-blue-500"
-                    onPress={debugShowAuthState}
-                  >
-                    <InterMedium className="text-white">
-                      🔍 Debug: Show Auth State
-                    </InterMedium>
-                  </Button>
-
-                  <Button
-                    className="rounded-lg mt-2 bg-red-500"
-                    onPress={debugClearAuth}
-                  >
-                    <InterMedium className="text-white">
-                      🔧 Debug: Clear Auth State
-                    </InterMedium>
-                  </Button>
-
-                  <Button
-                    className="rounded-lg mt-2 bg-green-500"
-                    onPress={debugForceLogin}
-                  >
-                    <InterMedium className="text-white">
-                      🚀 Debug: Force Login Page
-                    </InterMedium>
-                  </Button>
-                </>
-              )}
             </View>
           </View>
         </View>

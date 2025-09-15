@@ -22,8 +22,7 @@ const CancelledCard = ({ house }: { house: HouseProps }) => {
             height: 175,
             borderRadius: 8,
           }}
-        >
-        </ImageBackground>
+        ></ImageBackground>
       </View>
 
       <View className="px-3 py-2 w-full">
@@ -67,7 +66,10 @@ const CancelledCard = ({ house }: { house: HouseProps }) => {
             onPress={() =>
               router.push({
                 pathname: "/details/[id]",
-                params: { id: house.id },
+                params: {
+                  id: String(house.id),
+                  propertyData: JSON.stringify(house),
+                },
               })
             }
           >
@@ -77,19 +79,19 @@ const CancelledCard = ({ house }: { house: HouseProps }) => {
       </View>
 
       <View className="flex-row justify-center border-t border-borderColor p-5">
-      <Button
-            isFull={false}
-            color=""
-            className="p-0 m-0 flex-row"
-            onPress={() =>
-              router.push({
-                pathname: "/details/[id]",
-                params: { id: house.id },
-              })
-            }
-          >
-       <InterRegular className="text-primary">View details</InterRegular>
-       </Button>
+        <Button
+          isFull={false}
+          color=""
+          className="p-0 m-0 flex-row"
+          onPress={() =>
+            router.push({
+              pathname: "/details/[id]",
+              params: { id: String(house.id) },
+            })
+          }
+        >
+          <InterRegular className="text-primary">View details</InterRegular>
+        </Button>
       </View>
     </View>
   );

@@ -3,14 +3,36 @@ import HeaderBar from "@/components/HeaderBar";
 import InterBold from "@/components/Text/InterBold";
 import InterRegular from "@/components/Text/InterRegular";
 import InterSemiBold from "@/components/Text/InterSemiBold";
-import { ScrollView, Text, View, SafeAreaView } from "react-native";
+import {
+  ScrollView,
+  Text,
+  View,
+  SafeAreaView,
+  RefreshControl,
+} from "react-native";
 import Button from "@/components/common/Button";
 import CategoryList from "@/components/CategoryList";
 import { deviceHeight, deviceWidth } from "@/constants/values";
 import HouseList from "@/components/HouseList";
-import { ApiDebug } from "@/components/ApiDebug";
+import { useApi } from "@/contexts/ApiContext";
+import { useState } from "react";
 
 const Home = () => {
+  const { getProperties, isLoading } = useApi();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    console.log("🔄 Home: Pull to refresh triggered");
+    try {
+      await getProperties(20, 1);
+    } catch (error) {
+      console.error("🔄 Home: Refresh failed:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     // <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
     <SafeAreaView style={{ flex: 1 }}>
@@ -25,6 +47,9 @@ const Home = () => {
           className="mt-2 flex-1"
           contentContainerStyle={{ paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View className="mb-3">
             <InterBold className="text-base mb-1">Featured</InterBold>
@@ -52,12 +77,6 @@ const Home = () => {
             </View>
             {/* list goes here */}
             <HouseList />
-          </View>
-
-          {/* Temporary API Debug Component */}
-          <View className="mb-2">
-            <InterBold className="text-base mb-2">API Debug</InterBold>
-            <ApiDebug />
           </View>
         </ScrollView>
       </View>

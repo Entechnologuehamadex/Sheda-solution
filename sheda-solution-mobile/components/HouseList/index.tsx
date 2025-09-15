@@ -14,10 +14,22 @@ const HouseList = () => {
   useEffect(() => {
     // Only fetch once to prevent infinite loop
     if (!hasLoaded.current) {
+      console.log("🏠 HouseList: Fetching properties...");
       getProperties(20, 1);
       hasLoaded.current = true;
     }
   }, []); // Empty dependency array
+
+  // Log properties data to see what we're getting
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      console.log("🏠 HouseList: Properties loaded:", properties.length);
+      console.log(
+        "🏠 HouseList: Property IDs:",
+        properties.map((p) => ({ id: p.id, type: typeof p.id }))
+      );
+    }
+  }, [properties]);
 
   if (isLoading) {
     return (

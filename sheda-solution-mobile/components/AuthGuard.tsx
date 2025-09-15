@@ -16,52 +16,24 @@ export default function AuthGuard({
 }: AuthGuardProps) {
   const { isAuthenticated, isInitializing } = useAuth();
 
-  console.log("🔍 AuthGuard Debug:", {
-    isAuthenticated,
-    isInitializing,
-    requireAuth,
-    redirectTo,
-  });
-
   useEffect(() => {
-    console.log("🔄 AuthGuard useEffect triggered:", {
-      isInitializing,
-      isAuthenticated,
-      requireAuth,
-      redirectTo,
-    });
-
     if (!isInitializing) {
       if (requireAuth && !isAuthenticated) {
         // User needs to be authenticated but isn't
-        console.log(
-          "🔓 AuthGuard: User not authenticated, redirecting to:",
-          redirectTo
-        );
         try {
           router.replace(redirectTo);
-          console.log("✅ AuthGuard: Router redirect called successfully");
-        } catch (error) {
-          console.error("❌ AuthGuard: Router redirect failed:", error);
-        }
+        } catch (error) {}
       } else if (!requireAuth && isAuthenticated) {
         // User is authenticated but shouldn't be on this page (e.g., login page)
-        console.log("🔐 AuthGuard: User is authenticated, redirecting to home");
         try {
           router.replace("/(tabs)/home");
-          console.log(
-            "✅ AuthGuard: Router redirect to home called successfully"
-          );
-        } catch (error) {
-          console.error("❌ AuthGuard: Router redirect to home failed:", error);
-        }
+        } catch (error) {}
       }
     }
   }, [isAuthenticated, isInitializing, requireAuth, redirectTo]);
 
   // Show loading indicator while checking authentication status
   if (isInitializing) {
-    console.log("⏳ AuthGuard: Still initializing, showing loading...");
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -73,17 +45,9 @@ export default function AuthGuard({
   const shouldRender =
     (requireAuth && isAuthenticated) || (!requireAuth && !isAuthenticated);
 
-  console.log("🎯 AuthGuard render decision:", {
-    shouldRender,
-    requireAuth,
-    isAuthenticated,
-  });
-
   if (shouldRender) {
-    console.log("✅ AuthGuard: Rendering children");
     return <>{children}</>;
   } else {
-    console.log("❌ AuthGuard: Not rendering children (redirect will happen)");
     return null;
   }
 }

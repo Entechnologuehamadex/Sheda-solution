@@ -43,14 +43,14 @@ export default function Onboarding() {
           <Button
             isFull={true}
             className="rounded-lg"
-            onPress={() => router.push("/(auth)/Login")}
+            onPress={() => router.push("/(auth)/login")}
           >
             <InterSemiBold className="text-background">Sign in</InterSemiBold>
           </Button>
           <Button
             isFull={true}
             color="tranparent"
-            onPress={() => router.push("/(auth)/Signup")}
+            onPress={() => router.push("/(auth)/signup")}
             className="rounded-lg border border-borderColor"
           >
             <InterSemiBold className="">Create account</InterSemiBold>

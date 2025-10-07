@@ -118,7 +118,7 @@ const Login = () => {
         </View>
         <Socials />
 
-        <Link href={"/Signup"} className="text-center mt-4">
+        <Link href={"/signup"} className="text-center mt-4">
           <InterRegular className="mr-1">Don’t have an account?</InterRegular>
           <InterBold className=""> Sign up</InterBold>
         </Link>

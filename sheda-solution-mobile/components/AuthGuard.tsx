@@ -6,13 +6,13 @@ import { useAuth } from "@/hooks/useShedaApi";
 interface AuthGuardProps {
   children: React.ReactNode;
   requireAuth?: boolean;
-  redirectTo?: "/(auth)/Login" | "/(auth)/Signup" | "/";
+  redirectTo?: "/(auth)/login" | "/(auth)/signup" | "/";
 }
 
 export default function AuthGuard({
   children,
   requireAuth = true,
-  redirectTo = "/(auth)/Login",
+  redirectTo = "/(auth)/login",
 }: AuthGuardProps) {
   const { isAuthenticated, isInitializing } = useAuth();
 

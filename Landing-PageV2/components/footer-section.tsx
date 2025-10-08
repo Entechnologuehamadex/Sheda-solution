@@ -13,11 +13,8 @@ export default function FooterSection() {
             <div className="mb-4">
               <Image src="/sheda-logo.svg" alt="Sheda Solutions" width={200} height={40} className="h-8 w-auto" />
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed hidden lg:block">
+            <p className="text-sm text-gray-700 leading-relaxed block">
               Making real estate operations affable, available, affordable, and secure through blockchain.
-            </p>
-            <p className="text-sm text-gray-700 leading-relaxed lg:hidden">
-              Securely link your wallet across blockchain networks using personalized domains.
             </p>
           </div>
 

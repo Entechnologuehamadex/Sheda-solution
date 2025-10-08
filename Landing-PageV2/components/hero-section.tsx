@@ -17,9 +17,9 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-[#ffffff] to-[#f4ceceff] overflow-hidden">
+    <section className="relative min-h-fit bg-gradient-to-b from-[#ffffff] to-[#f4ceceff] overflow-hidden">
       {/* Desktop Navigation */}
-     <nav className="hidden lg:flex items-center justify-between px-16 py-6 border-b border-gray-200">
+      <nav className="hidden lg:flex items-center justify-between px-16 py-6 fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 shadow-sm">
 
         <div className="flex items-center gap-2">
           <Image
@@ -70,7 +70,7 @@ export default function HeroSection() {
       </nav>
 
       {/* Mobile Navigation */}
-      <nav className="lg:hidden flex items-center justify-between px-6 py-4">
+      <nav className="lg:hidden flex items-center justify-between px-6 py-4 fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 shadow-sm">
         <div className="flex items-center gap-2">
           <Image
             src="/sheda-logo.svg"
@@ -160,7 +160,7 @@ export default function HeroSection() {
       )}
 
       {/* Hero Content */}
-      <div className="container mx-auto px-6 lg:px-16 pt-8 lg:pt-20 pb-0">
+      <div className="container mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-0">
         <div className="max-w-6xl mx-auto text-center relative">
           <h1 className="text-[32px] leading-tight lg:text-[64px] lg:leading-[1.1] font-bold text-gray-900 mb-6 text-balance">
             Revolutionizing Real Estate with Blockchain Technologies

@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button"
 
 export default function HeroSection() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [showPopup, setShowPopup] = useState(false);
+  
+  const handleClick = () => {
+    setShowPopup(true);
+    // Hide popup automatically after 2 seconds
+    setTimeout(() => setShowPopup(false), 2000);
+  };
 
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-[#ffffff] to-[#f4ceceff] overflow-hidden">
@@ -40,14 +47,26 @@ export default function HeroSection() {
           <Link href="#faq" className="text-lg font-medium text-gray-900 hover:text-gray-700">
             FAQs
           </Link>
-          <Link href="#get-started" className="text-lg font-medium text-gray-900 hover:text-gray-700">
+          <Link href="https://sheda-solutions.gitbook.io/sheda-solutions" className="text-lg font-medium text-gray-900 hover:text-gray-700">
             Litepaper
           </Link>
         </div>
 
-        <Button className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-sm font-semibold">
-          Get the App
-        </Button>
+        <div className="relative inline-block">
+      <button
+        onClick={handleClick}
+        className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-3 rounded-lg text-sm font-semibold"
+      >
+        Get the App
+      </button>
+
+      {showPopup && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap animate-fade">
+          Coming soon
+        </div>
+      )}
+    </div>
+
       </nav>
 
       {/* Mobile Navigation */}
@@ -118,9 +137,23 @@ export default function HeroSection() {
             </Link>
 
             <div className="pt-4 border-t border-gray-200">
-              <Button className="w-full bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-sm font-semibold">
-                Get the App
-              </Button>
+            <div className="relative inline-block">
+      <Link href="#" onClick={handleClick} className="w-full lg:w-auto">
+        <Image
+          src="/get-app-button.svg"
+          alt="Get the App"
+          width={150}
+          height={48}
+          className="w-auto h-12 mx-auto lg:mx-0 cursor-pointer"
+        />
+      </Link>
+
+      {showPopup && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap animate-fade">
+          Coming soon
+        </div>
+      )}
+    </div>
             </div>
           </div>
         </div>
@@ -138,17 +171,25 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col lg:flex-row items-center justify-center gap-4 mb-12 lg:mb-16">
-            <Link href="#" className="w-full lg:w-auto">
-              <Image
-                src="/get-app-button.svg"
-                alt="Get the App"
-                width={150}
-                height={48}
-                className="w-auto h-12 mx-auto lg:mx-0"
-              />
-            </Link>
+          <div className="relative inline-block">
+      <Link href="#" onClick={handleClick} className="w-full lg:w-auto">
+        <Image
+          src="/get-app-button.svg"
+          alt="Get the App"
+          width={150}
+          height={48}
+          className="w-auto h-12 mx-auto lg:mx-0 cursor-pointer"
+        />
+      </Link>
 
-            <Link href="#" className="w-full lg:w-auto">
+      {showPopup && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap animate-fade">
+          Coming soon
+        </div>
+      )}
+    </div>
+
+            <Link href="https://formspree.io/f/xqaelyne" className="w-full lg:w-auto">
               <Image
                 src="/join-waitlist-button.svg"
                 alt="Join Waitlist"

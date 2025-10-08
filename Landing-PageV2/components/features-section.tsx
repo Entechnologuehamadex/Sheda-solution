@@ -1,7 +1,18 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { useState } from "react";
 
 export default function FeaturesSection() {
+  const [showPopup, setShowPopup] = useState(false);
+    
+    const handleClick = () => {
+      setShowPopup(true);
+      // Hide popup automatically after 2 seconds
+      setTimeout(() => setShowPopup(false), 2000);
+    };
+
   return (
     <section className="bg-gradient-to-b from-white to-[#FFF5F5] py-16 lg:py-24 px-6">
       <div className="container mx-auto max-w-7xl">
@@ -35,9 +46,21 @@ export default function FeaturesSection() {
               Search apartments, book inspections, sign offers on-chain. Stress-free and transparent.
             </p>
 
-            <Button className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-30% md:w-full lg:w-auto">
-              Get the App
-            </Button>
+            
+        <div className="relative inline-block">
+      <button
+        onClick={handleClick}
+        className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-4 rounded-lg text-sm font-semibold"
+      >
+        Get the App
+      </button>
+
+      {showPopup && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap animate-fade">
+          Coming soon
+        </div>
+      )}
+    </div>
           </div>
 
           {/* Right Column - Phone Mockup */}
@@ -86,9 +109,12 @@ export default function FeaturesSection() {
               premium real estate.
             </p>
 
-            <Button className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-30% lg:w-auto">
-              Join Waitlist
-            </Button>
+            <Button
+  onClick={() => window.open("https://formspree.io/f/xqaelyne", "_blank")}
+  className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-[30%] lg:w-auto"
+>
+  Join Waitlist
+</Button>
           </div>
         </div>
 
@@ -109,9 +135,20 @@ export default function FeaturesSection() {
               All services blockchain-secured for transparency and efficiency.
             </p>
 
-            <Button className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-30% lg:w-auto">
-              Get The App
-            </Button>
+            <div className="relative inline-block">
+      <button
+        onClick={handleClick}
+        className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-4 rounded-lg text-sm font-semibold"
+      >
+        Get the App
+      </button>
+
+      {showPopup && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap animate-fade">
+          Coming soon
+        </div>
+      )}
+    </div>
           </div>
 
           {/* Right Column - Property Card */}
@@ -158,9 +195,13 @@ export default function FeaturesSection() {
               Securely tokenize and manage real-world assets.
             </p>
 
-            <Button className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-30% lg:w-auto">
-              Join Waitlist
-            </Button>
+            <Button
+  onClick={() => window.open("https://formspree.io/f/xqaelyne", "_blank")}
+  className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-[30%] lg:w-auto"
+>
+  Join Waitlist
+</Button>
+
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Twitter, Send, Linkedin, Facebook } from "lucide-react"
+import { Instagram, Twitter, Send, Linkedin, Facebook } from "lucide-react"
 
 export default function FooterSection() {
   return (
@@ -30,25 +30,25 @@ export default function FooterSection() {
                 <h3 className="text-[#C53030] font-semibold mb-4">Company</h3>
                 <ul className="space-y-3">
                   <li>
-                    <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                    <Link href="#about" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
                       About us
                     </Link>
                   </li>
-                  <li className="hidden lg:block">
-                    <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                  <li className="block">
+                    <Link href="https://sheda-solutions.gitbook.io/sheda-solutions" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
                       Litepaper
                     </Link>
                   </li>
                   <li>
-                    <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
-                      <span className="lg:hidden">Blog</span>
-                      <span className="hidden lg:inline">Contact</span>
+                    <Link href="https://medium.com/@entechnologue/exploring-rwa-assets-in-blockchain-and-decentralized-solution-0084106d092d" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                      <span className="inline">Blog</span>
+                      {/* <span className="inline">Contact</span> */}
                     </Link>
                   </li>
                   <li>
                     <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
-                      <span className="lg:hidden">Contact</span>
-                      <span className="hidden lg:inline">Blog</span>
+                      <span className="inline">Contact</span>
+                      {/* <span className="hidden lg:inline">Blog</span> */}
                     </Link>
                   </li>
                   <li>
@@ -92,7 +92,7 @@ export default function FooterSection() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                  <Link href="#faq" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
                     FAQs
                   </Link>
                 </li>
@@ -116,17 +116,17 @@ export default function FooterSection() {
 
           {/* Social Icons */}
           <div className="flex items-center gap-4 order-1 lg:order-2">
-            <Link href="#" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Twitter">
+            <Link href="https://x.com/Shedasolutions" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Twitter">
               <Twitter className="w-5 h-5" />
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Telegram">
+            <Link href="https://t.me/shedasolutions" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Telegram">
               <Send className="w-5 h-5" />
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="LinkedIn">
+            <Link href="https://www.linkedin.com/company/sinas-sheda-solutions/" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="LinkedIn">
               <Linkedin className="w-5 h-5" />
             </Link>
             <Link href="#" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Facebook">
-              <Facebook className="w-5 h-5" />
+              <Instagram className="w-5 h-5" />
             </Link>
           </div>
         </div>

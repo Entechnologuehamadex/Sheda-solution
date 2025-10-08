@@ -189,7 +189,7 @@ export default function HeroSection() {
       )}
     </div>
 
-            <Link href="https://formspree.io/f/xqaelyne" className="w-full lg:w-auto">
+            <Link href="https://t.me/+0freci5Se-pkMGVk" className="w-full lg:w-auto">
               <Image
                 src="/join-waitlist-button.svg"
                 alt="Join Waitlist"

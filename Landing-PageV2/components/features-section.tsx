@@ -110,7 +110,7 @@ export default function FeaturesSection() {
             </p>
 
             <Button
-  onClick={() => window.open("https://formspree.io/f/xqaelyne", "_blank")}
+  onClick={() => window.open("https://t.me/+0freci5Se-pkMGVk", "_blank")}
   className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-[30%] lg:w-auto"
 >
   Join Waitlist
@@ -196,7 +196,7 @@ export default function FeaturesSection() {
             </p>
 
             <Button
-  onClick={() => window.open("https://formspree.io/f/xqaelyne", "_blank")}
+  onClick={() => window.open("https://t.me/+0freci5Se-pkMGVk", "_blank")}
   className="bg-[#C62828] hover:bg-[#B71C1C] text-white px-8 py-6 rounded-lg text-base font-semibold w-[30%] lg:w-auto"
 >
   Join Waitlist

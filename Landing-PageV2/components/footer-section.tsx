@@ -46,7 +46,7 @@ export default function FooterSection() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                    <Link href="mailto:shedasolutions@gmail.com" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
                       <span className="inline">Contact</span>
                       {/* <span className="hidden lg:inline">Blog</span> */}
                     </Link>
@@ -97,7 +97,7 @@ export default function FooterSection() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
+                  <Link href="https://t.me/hamadex_entechnologue" className="text-sm text-gray-900 hover:text-[#C53030] transition-colors">
                     Support
                   </Link>
                 </li>
@@ -125,7 +125,7 @@ export default function FooterSection() {
             <Link href="https://www.linkedin.com/company/sinas-sheda-solutions/" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="LinkedIn">
               <Linkedin className="w-5 h-5" />
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Facebook">
+            <Link href="https://www.instagram.com/shedasolutions" className="text-gray-600 hover:text-[#C53030] transition-colors" aria-label="Facebook">
               <Instagram className="w-5 h-5" />
             </Link>
           </div>

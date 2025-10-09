@@ -18,9 +18,9 @@ export default function GetStartedSection() {
           <div className="hidden md:flex items-center justify-between lg:px-16 lg:pt-16 relative z-10">
             {/* Left Content */}
             <div className="flex-1 max-w-xl">
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">Get started now</h2>
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8">Get started now</h2>
               <p className="text-white text-lg lg:text-xl mb-8">The solution to stress-free real estate operations</p>
-              <div className="flex gap-4">
+              <div className="flex lg:mb-20 gap-4">
                 <a href="#" className="inline-block transition-transform hover:scale-105">
                   <img
                     src="/google-play.svg"
@@ -43,7 +43,7 @@ export default function GetStartedSection() {
               <img
                 src="/get-started-phone.svg"
                 alt="Sheda Solutions App"
-                className="h-64 lg:h-80 w-auto"
+                className="h-64 lg:h-95 w-auto"
               />
             </div>
           </div>
@@ -80,3 +80,4 @@ export default function GetStartedSection() {
     </section>
   )
 }
+

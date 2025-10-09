@@ -12,7 +12,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Sheda Landing Oage",
+  title: "Sheda Landing Page",
   description: "Created with Retep-dev",
   generator: "Retep-dev",
 }

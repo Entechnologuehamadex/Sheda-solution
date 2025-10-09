@@ -31,7 +31,7 @@ export default function HeroSection() {
           />
         </div>
 
-        <div className="flex items-center gap-15">
+        <div className="flex items-center gap-8">
           <Link href="#hero" className="text-lg font-medium text-gray-900 hover:text-gray-700">
             Home
           </Link>

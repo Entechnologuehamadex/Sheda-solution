@@ -14,7 +14,7 @@ export default function FeaturesSection() {
     };
 
   return (
-    <section className="bg-gradient-to-b from-white to-[#FFF5F5] py-16 lg:py-24 px-6">
+    <section className="bg-white py-10 lg:py-24 px-6">
       <div className="container mx-auto max-w-7xl">
         {/* Features Header */}
         <div className="text-center mb-8 lg:mb-12">

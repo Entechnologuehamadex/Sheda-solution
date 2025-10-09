@@ -4,7 +4,7 @@ import { Instagram, Twitter, Send, Linkedin, Facebook } from "lucide-react"
 
 export default function FooterSection() {
   return (
-    <footer className="bg-white py-12 px-4 md:px-8 lg:px-16">
+    <footer className="bg-white py-12 px-6 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Top Section */}
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-12 mb-12">

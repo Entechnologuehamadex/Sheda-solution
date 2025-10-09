@@ -3,7 +3,7 @@ import Image from "next/image"
 export default function BenefitsSection() {
   return (
     <section className="py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-6 max-w-7xl">
         {/* Section Header */}
         <div className="text-center mb-8 lg:mb-12">
           <span className="text-[#C62828] bg-[#C1272D08]
